@@ -1,7 +1,37 @@
 
-#include "PEEngine.h"
+#include "PEState.h"
 
 using namespace PE;
+
+PE::calibration::calibration(const TValue& init_values_per_step, const TAccuracy& init_sensor_accuracy, const TValue& init_sensor_calibration, const TAccuracy& accuracy_limit)
+: m_value_per_step(init_values_per_step)
+, m_sensor_accuracy(init_sensor_accuracy)
+, m_sensor_calibration(init_sensor_calibration)
+, m_accuracy_limit(accuracy_limit)
+{
+}
+
+void PE::calibration::set_reference_value(const TValue& reference_values, const TAccuracy& reference_accuracy)
+{
+}
+
+void PE::calibration::set_sensor_steps(const TValue& sensor_steps)
+{
+}
+
+const TValue& PE::calibration::get_values_per_step() const
+{
+}
+
+const TAccuracy& PE::calibration::get_sensor_accuracy() const
+{
+}
+
+const TValue& PE::calibration::get_sensor_calibration() const
+{
+}
+
+/*
 
 State::State( const TValue& distance_per_tick, const TAccuracy& acc, const TAccuracy& acc_limit, const TValue& calibration )
 : m_distance_per_tick(distance_per_tick)
@@ -89,5 +119,5 @@ void State::_process()
       }
    }
 }
-
+*/
 

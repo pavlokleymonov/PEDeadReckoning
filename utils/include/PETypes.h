@@ -9,7 +9,7 @@ namespace PE
 {
    typedef int8_t TSensorID;
 
-   typedef uint32_t TTimestamp;
+   typedef double TTimestamp;
 
    typedef double TValue;
 
@@ -48,8 +48,6 @@ namespace PE
       E_A_GNSS_FIX      = 0x2, //A=Autonomous GNSS Fix
       E_D_DIFF_GNSS_FIX = 0x3, //D=Differential GNSS Fix (e.g.:SBAS)
    };
-
-   static const double UNKNOWN_KALMAN_GAIN = 1.0;
 
    static const double UNCALIBRATED_SENSOR = 0.0;
 

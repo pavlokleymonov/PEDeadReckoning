@@ -1,0 +1,12 @@
+*.log
+*.user
+*.orig
+*.txt~
+*~
+*.user.*
+*.swp
+*.swo
+build*
+b
+.project
+.cproject
