@@ -1,4 +1,19 @@
 /**
+ * Position Engine provides dead reckoning engine to obtain position
+ * information based on fusion of different kind of sensors.
+ *
+ * Copyright 2017 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
+ *
+ * Distributed under the OSI-approved BSD License (the "License");
+ * see accompanying file Copyright.txt for details.
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the License for more information.
+ */
+
+
+/**
  * Unit test of the PEToolsTest class.
  *
  * Code under test:

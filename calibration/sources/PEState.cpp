@@ -1,123 +1,137 @@
+/**
+ * Position Engine provides dead reckoning engine to obtain position
+ * information based on fusion of different kind of sensors.
+ *
+ * Copyright 2017 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
+ *
+ * Distributed under the OSI-approved BSD License (the "License");
+ * see accompanying file Copyright.txt for details.
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the License for more information.
+ */
 
 #include "PEState.h"
 
+#define RELIABLE_SCALE_FACTOR 0.01
+
 using namespace PE;
 
-PE::calibration::calibration(const TValue& init_values_per_step, const TAccuracy& init_sensor_accuracy, const TValue& init_sensor_calibration, const TAccuracy& accuracy_limit)
-: m_value_per_step(init_values_per_step)
-, m_sensor_accuracy(init_sensor_accuracy)
-, m_sensor_calibration(init_sensor_calibration)
-, m_accuracy_limit(accuracy_limit)
+
+TValue PE::calibration::calc_callibration(const TValue& old_values_per_step, const TValue& new_values_per_step)
 {
-}
-
-void PE::calibration::set_reference_value(const TValue& reference_values, const TAccuracy& reference_accuracy)
-{
-}
-
-void PE::calibration::set_sensor_steps(const TValue& sensor_steps)
-{
-}
-
-const TValue& PE::calibration::get_values_per_step() const
-{
-}
-
-const TAccuracy& PE::calibration::get_sensor_accuracy() const
-{
-}
-
-const TValue& PE::calibration::get_sensor_calibration() const
-{
-}
-
-/*
-
-State::State( const TValue& distance_per_tick, const TAccuracy& acc, const TAccuracy& acc_limit, const TValue& calibration )
-: m_distance_per_tick(distance_per_tick)
-, m_acc(acc)
-, m_acc_limit(acc_limit)
-, m_callibration(calibration)
-{
-   _clear();
-}
-
-void State::reset()
-{
-   _clear();
-}
-
-
-void State::set_src_distance(const TValue& distance, const TAccuracy& acc)
-{
-   if (m_acc_limit<acc)
+   if ( old_values_per_step > new_values_per_step )
    {
-      _clear();
-   }
-   else if (PE::INVALID == m_src_distnace)
-   {
-      _clear();
-      m_src_distnace  = 0;
-      m_src_acc_sum   = acc;
-      m_src_acc_count = 1;
-      m_src_acc       = acc;
+      return 100 - ((old_values_per_step - new_values_per_step) * 100.0 / old_values_per_step);
    }
    else
    {
-      m_src_distnace+=distance;
-      _process();
-      m_src_acc_sum+=acc;
-      m_src_acc_count++;
-      m_src_acc=m_src_acc_sum / m_src_acc_count;
+      return 100 - ((new_values_per_step - old_values_per_step) * 100.0 / new_values_per_step);
    }
 }
 
-void State::set_odo_ticks(const TValue& ticks)
+
+PE::calibration::calibration(const TValue& init_values_per_step, const TAccuracy& accuracy_limit)
+: m_values_per_step(init_values_per_step)
+, m_sensor_accuracy(PE::MAX_ACCURACY)
+, m_sensor_calibration(0)
+, m_accuracy_limit(accuracy_limit)
 {
-   m_odo_ticks+=ticks;
+   _clear_reference();
+   _clear_sensor();
 }
 
-const TValue& State::get_distance_per_tick() const
+void PE::calibration::add_reference_value(const TValue& reference_values, const TAccuracy& reference_accuracy)
 {
-   return m_distance_per_tick;
-}
-
-const TAccuracy& State::get_accuracy() const
-{
-   return m_acc;
-}
-
-const TValue& State::get_calibartion() const
-{
-   return m_callibration;
-}
-
-void State::_clear()
-{
-   m_src_distnace = PE::INVALID;
-   m_src_acc_sum = 0;
-   m_src_acc_count = 0;
-   m_src_acc = m_acc_limit;
-   m_odo_ticks = 0;
-}
-
-
-void State::_process()
-{
-   if (0 < m_src_acc && 0 < m_odo_ticks)
+   if ( m_accuracy_limit < reference_accuracy )
    {
-      TValue raw_calibration       = m_src_distnace / m_src_acc;
-      TValue raw_distance_per_tick = m_src_distnace / m_odo_ticks;
-      if ( raw_distance_per_tick > 0 &&
-           raw_distance_per_tick != m_distance_per_tick &&
-           raw_calibration > m_callibration &&
-           m_src_acc > m_acc )
+      _clear_reference();
+      _clear_sensor();
+   }
+   else if ( 0 == m_reference_accumulated_count )
+   {
+      m_reference_accumulated_values = reference_values;
+      m_reference_accumulated_accuracy = reference_accuracy;
+      m_reference_accumulated_count = 1;
+   }
+   else
+   {
+      m_reference_accumulated_values += reference_values;
+      m_reference_accumulated_accuracy += reference_accuracy;
+      m_reference_accumulated_count++;
+      _process();
+   }
+}
+
+void PE::calibration::add_sensor_steps(const TValue& sensor_steps, const TAccuracy& sensor_accuracy)
+{
+   m_sensor_accumulated_steps += sensor_steps;
+   m_sensor_accumulated_accuracy += sensor_accuracy;
+   m_sensor_accumulated_count++;
+}
+
+void PE::calibration::_clear_reference()
+{
+   m_reference_accumulated_values = 0;
+   m_reference_accumulated_accuracy = 0;
+   m_reference_accumulated_count = 0;
+}
+
+
+TAccuracy PE::calibration::_get_reference_accuracy()
+{
+   if ( 0 >= m_reference_accumulated_count )
+   {
+      return PE::MAX_ACCURACY;
+   }
+   else if ( 0 >= m_reference_accumulated_accuracy )
+   {
+      return PE::MAX_ACCURACY;
+   }
+   else
+   {
+      return m_reference_accumulated_accuracy / m_reference_accumulated_count;
+   }
+}
+
+
+void PE::calibration::_clear_sensor()
+{
+   m_sensor_accumulated_steps = 0;
+   m_sensor_accumulated_accuracy = 0;
+   m_sensor_accumulated_count = 0;
+}
+
+
+TAccuracy PE::calibration::_get_sensor_accuracy()
+{
+   if ( 0 >= m_sensor_accumulated_count )
+   {
+      return PE::MAX_ACCURACY;
+   }
+   else if ( 0 >= m_sensor_accumulated_accuracy )
+   {
+      return PE::MAX_ACCURACY;
+   }
+   else
+   {
+      return m_sensor_accumulated_accuracy / m_sensor_accumulated_count;
+   }
+}
+
+
+void PE::calibration::_process()
+{
+   if ( fabs(m_reference_accumulated_values * RELIABLE_SCALE_FACTOR) > _get_reference_accuracy() )
+   {
+      if ( fabs(m_sensor_accumulated_steps * RELIABLE_SCALE_FACTOR) > _get_sensor_accuracy() )
       {
-         m_distance_per_tick = raw_distance_per_tick;
-         m_acc = m_src_acc;
-         m_callibration = 100.0 < raw_calibration ? 100.0 : raw_calibration;
+         TValue raw_values_per_step = m_reference_accumulated_values / m_sensor_accumulated_steps;
+         m_sensor_accuracy = _get_reference_accuracy();
+         m_sensor_calibration = calc_callibration(m_values_per_step, raw_values_per_step);
+         m_values_per_step = raw_values_per_step;
       }
    }
 }
-*/
 
