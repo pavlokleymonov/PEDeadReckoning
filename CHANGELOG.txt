@@ -1,0 +1,5 @@
+= Position Engine Release History and Change Log =
+
+=== 0.1 (17 March 2017) ===
+ - Added calibration for ideal sensors (ut coverage 77.3% )
+ - Added tools for converting coordinates to/from distance and heading (ut coverage 100%)

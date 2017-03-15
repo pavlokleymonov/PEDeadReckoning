@@ -14,14 +14,16 @@ enable_testing()
 include_directories(
    ${GTEST_GMOCK_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}
-   ${REPOSITORY_ROOT}/clibration/include
+   ${REPOSITORY_ROOT}/calibration/include
+   ${REPOSITORY_ROOT}/utils/include
 )
 
-#Test class PEState
-add_executable(test_PEState
+#Test class PE::calibration
+add_executable(test_pe_calibration
    ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
-   ${REPOSITORY_ROOT}/calibration/source/PEState.cpp
-   PEStateTest.cpp
+   ${REPOSITORY_ROOT}/calibration/sources/PECalibration.cpp
+   PECalibrationTest.cpp
 )
-#target_link_libraries(test_PEState pthread CommonAPI)
-add_test(NAME test_PEState COMMAND test_PEState)
+
+target_link_libraries(test_pe_calibration pthread )
+add_test(NAME test_pe_calibration COMMAND test_pe_calibration)

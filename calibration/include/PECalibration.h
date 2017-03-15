@@ -5,33 +5,35 @@
  * Copyright 2017 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
  *
  * Distributed under the OSI-approved BSD License (the "License");
- * see accompanying file Copyright.txt for details.
+ * see accompanying file LICENSE.txt for details.
  *
  * This software is distributed WITHOUT ANY WARRANTY; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the License for more information.
  */
-#ifndef __PE_State_H__
-#define __PE_State_H__
+#ifndef __PE_Callibration_H__
+#define __PE_Callibration_H__
 
 #include "PETypes.h"
 namespace PE
 {
-
-/**
- * Makes calibartion of incoming sensor value to the reference value
- *
- */
-class calibration
-{
-public:
    /**
     * Calcs sensor calibration status. range [0..100] percent.
     *
     * @param  old_values_per_step   old values per one step
     * @param  new_values_per_step   new values per one step
+    *
+    * @return    calibration status. range [0..100] percent.
     */
-   static TValue calc_callibration(const TValue& old_values_per_step, const TValue& new_values_per_step);
+   TValue calc_callibration(const TValue& old_values_per_step, const TValue& new_values_per_step);
+
+/**
+ * Makes calibartion of incoming sensor steps to the reference value
+ *
+ */
+class calibration
+{
+public:
    /**
     * Constructor of calibration
     *
@@ -58,28 +60,20 @@ public:
     *
     * @return    how many values per one sensor step
     */
-   const TValue& get_values_per_step() const
-      {
-         return m_values_per_step;
-      }
+   const TValue& get_values_per_step() const;
    /**
     * Returns sensor accuracy
     *
     * @return    accuracy of the sensors according to values
     */
-   const TAccuracy& get_sensor_accuracy() const
-      {
-         return m_sensor_accuracy;
-      }
+   const TAccuracy& get_sensor_accuracy() const;
    /**
     * Returns sensor calibartion status
     *
     * @return    calibration status. range [0..100] percent.
     */
-   const TValue& get_sensor_calibration() const
-      {
-         return m_sensor_calibration;
-      }
+   const TValue& get_sensor_calibration() const;
+
 private:
    TValue    m_values_per_step;
    TAccuracy m_sensor_accuracy;
@@ -100,10 +94,9 @@ private:
    void _clear_sensor();
    TAccuracy _get_sensor_accuracy();
 
-
    void _process();
 };
 
 
 } //namespace PE
-#endif //__PE_State_H__
+#endif //__PE_Callibration_H__

@@ -17,7 +17,7 @@ include_directories(
    ${REPOSITORY_ROOT}/utils/include
 )
 
-#Test tools stuff
+#Test tools PE::TOOLS
 add_executable(test_pe_tools
    ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
    ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
