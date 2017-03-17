@@ -79,4 +79,28 @@ void PE::TOOLS::get_next_coordinates(const TValue& lat1, const TValue& lon1, con
    lon2 = fmod(PE::TOOLS::to_degrees(rLon2)+540, 360.0) -180.0;
 }
 
+TValue PE::TOOLS::calc_convergence_persent(const TValue& first, const TValue& second)
+{
+   if ( first == second )
+   {
+      return 100.0;
+   }
+
+   if ( 0 > first*second ) //different sign is treated alwas as 0%
+   {
+      return 0.0;
+   }
+
+   TValue a_first  = fabs(first);
+   TValue a_second = fabs(second);
+   if ( a_first > a_second )
+   {
+      return 100 - ((a_first - a_second) * 100.0 / a_first);
+   }
+   else
+   {
+      return 100 - ((second - first) * 100.0 / second);
+   }
+}
+
 

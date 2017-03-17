@@ -184,6 +184,36 @@ TEST_F(PEToolsTest, complex_test)
    EXPECT_NEAR( -5.1234567, lon, 0.0000001);
 }
 
+TEST_F(PEToolsTest, convergence_zero_test)
+{
+   EXPECT_NEAR(100.0, PE::TOOLS::calc_convergence_persent(0,0),0.0001);
+   EXPECT_NEAR(0.0, PE::TOOLS::calc_convergence_persent(100,0),0.0001);
+   EXPECT_NEAR(0.0, PE::TOOLS::calc_convergence_persent(0,100),0.0001);
+   EXPECT_NEAR(0.0, PE::TOOLS::calc_convergence_persent(-1,0),0.0001);
+   EXPECT_NEAR(0.0, PE::TOOLS::calc_convergence_persent(0,-1),0.0001);
+}
+
+TEST_F(PEToolsTest, convergence_negative_positive_values_test)
+{
+   EXPECT_NEAR(0.0, PE::TOOLS::calc_convergence_persent(-100,100),0.0001);
+   EXPECT_NEAR(0.0, PE::TOOLS::calc_convergence_persent(100,-100),0.0001);
+}
+
+TEST_F(PEToolsTest, convergence_negative_values_test)
+{
+   EXPECT_NEAR(1.0, PE::TOOLS::calc_convergence_persent(-100,-1),0.0001);
+   EXPECT_NEAR(1.0, PE::TOOLS::calc_convergence_persent(-0.1,-0.001),0.0001);
+}
+
+TEST_F(PEToolsTest, convergence_positive_values_test)
+{
+   EXPECT_NEAR(10.0, PE::TOOLS::calc_convergence_persent(0.0001,0.00001),0.0001);
+   EXPECT_NEAR(10.0, PE::TOOLS::calc_convergence_persent(0.00001,0.0001),0.0001);
+   EXPECT_NEAR(99.0, PE::TOOLS::calc_convergence_persent(0.0001,0.000099),0.0001);
+   EXPECT_NEAR(99.0, PE::TOOLS::calc_convergence_persent(0.000099,0.0001),0.0001);
+   EXPECT_NEAR(99.99, PE::TOOLS::calc_convergence_persent(100,99.99),0.0001);
+   EXPECT_NEAR(99.99, PE::TOOLS::calc_convergence_persent(99.99,100),0.0001);
+}
 
 int main(int argc, char *argv[])
 {

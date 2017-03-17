@@ -17,16 +17,6 @@
 #include "PETypes.h"
 namespace PE
 {
-   /**
-    * Calcs sensor calibration status. range [0..100] percent.
-    *
-    * @param  old_values_per_step   old values per one step
-    * @param  new_values_per_step   new values per one step
-    *
-    * @return    calibration status. range [0..100] percent.
-    */
-   TValue calc_callibration(const TValue& old_values_per_step, const TValue& new_values_per_step);
-
 /**
  * Makes calibartion of incoming sensor steps to the reference value
  *

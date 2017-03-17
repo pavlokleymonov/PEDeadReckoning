@@ -13,29 +13,13 @@
  */
 
 #include "PECalibration.h"
+#include "PETools.h"
 #include <math.h>
 
 
 #define RELIABLE_SCALE_FACTOR 0.01
 
 using namespace PE;
-
-
-TValue PE::calc_callibration(const TValue& old_values_per_step, const TValue& new_values_per_step)
-{
-   if ( 0 != old_values_per_step && old_values_per_step > new_values_per_step )
-   {
-      return 100 - ((old_values_per_step - new_values_per_step) * 100.0 / old_values_per_step);
-   }
-   else if ( 0 != new_values_per_step )
-   {
-      return 100 - ((new_values_per_step - old_values_per_step) * 100.0 / new_values_per_step);
-   }
-   else
-   {
-      return 0;
-   }
-}
 
 
 PE::calibration::calibration(const TValue& init_values_per_step, const TAccuracy& accuracy_limit)
@@ -155,7 +139,7 @@ void PE::calibration::_process()
       {
          TValue raw_values_per_step = m_reference_accumulated_values / m_sensor_accumulated_steps;
          m_sensor_accuracy = _get_reference_accuracy();
-         m_sensor_calibration = PE::calc_callibration(m_values_per_step, raw_values_per_step);
+         m_sensor_calibration = PE::TOOLS::calc_convergence_persent(m_values_per_step,raw_values_per_step);
          m_values_per_step = raw_values_per_step;
       }
    }

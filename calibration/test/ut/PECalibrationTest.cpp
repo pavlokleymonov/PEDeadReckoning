@@ -33,6 +33,147 @@ public:
    }
 };
 
+/**
+* tests wrong negative reference accuracy
+*/
+TEST_F(PECalibrationTest, negative_reference_accuracy_test)
+{
+   PE::calibration calib(0,10.0);
+
+   calib.add_sensor_steps(100,1.0);
+   calib.add_reference_value(500,-1.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(100,1.0);
+   calib.add_reference_value(500,-1.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(100,1.0);
+   calib.add_reference_value(500,-1.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(100,1.0);
+   calib.add_reference_value(500,-1.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+}
+
+
+
+/**
+* tests wrong negative sensor accuracy
+*/
+TEST_F(PECalibrationTest, negative_sensor_accuracy_test)
+{
+   PE::calibration calib(0,10.0);
+
+   calib.add_sensor_steps(10,-1.0);
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,-1.0);
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,-1.0);
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+}
+
+/**
+* tests wrong zero sensor accuracy
+*/
+TEST_F(PECalibrationTest, zero_sensor_accuracy_test)
+{
+   PE::calibration calib(0,10.0);
+
+   calib.add_sensor_steps(10,0.0);
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,0.0);
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,0.0);
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+}
+
+
+/**
+* tests slow sensors data
+*/
+TEST_F(PECalibrationTest, slow_sensor_data_test)
+{
+   PE::calibration calib(0,10.0);
+
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_reference_value(600,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(120,1.0);
+   calib.add_reference_value(100,10.0);
+   EXPECT_NEAR(10.0, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,1.0);
+   calib.add_reference_value(100,10.0);
+   EXPECT_NEAR(10.0, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(100.0, calib.get_sensor_calibration(), 0.01);
+   EXPECT_NEAR(10.0, calib.get_values_per_step(), 0.01);
+}
+
+
+/**
+* tests ignoring incoming sensors data without valid reference data
+*/
+TEST_F(PECalibrationTest, no_reference_data_test)
+{
+   PE::calibration calib(0,10.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_reference_value(500,10.0);
+   EXPECT_NEAR(PE::MAX_ACCURACY, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_sensor_steps(10,1.0);
+   calib.add_reference_value(600,10.0);
+   EXPECT_NEAR(10.0, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(0.0, calib.get_sensor_calibration(), 0.01);
+
+   calib.add_sensor_steps(10,1.0);
+   calib.add_reference_value(100,10.0);
+   EXPECT_NEAR(10.0, calib.get_sensor_accuracy(), 0.01);
+   EXPECT_NEAR(100.0, calib.get_sensor_calibration(), 0.01);
+   EXPECT_NEAR(10.0, calib.get_values_per_step(), 0.01);
+}
+
+
 TEST_F(PECalibrationTest, calc_callibration_no_init_calibartion_limit_10m_test)
 {
    PE::calibration calib(0,10.0);
@@ -94,41 +235,6 @@ TEST_F(PECalibrationTest, calc_callibration_no_init_calibartion_limit_10m_test)
    EXPECT_NEAR(100.0, calib.get_sensor_calibration(), 0.1);
    EXPECT_NEAR(2.0, calib.get_values_per_step(), 0.001);
 }
-
-//Test calc calibration status
-TEST_F(PECalibrationTest, calc_callibration_status_test)
-{
-   //both values are null
-   EXPECT_EQ(0.0, PE::calc_callibration(0,0));
-
-   //first value is null
-   EXPECT_EQ(0.0, PE::calc_callibration(0,1000));
-
-   //second value is null
-   EXPECT_EQ(0.0, PE::calc_callibration(10,0));
-
-   //fisrt > second*10 = 10%
-   EXPECT_EQ(10.0, PE::calc_callibration(10,1));
-
-   //100 < 1000 = 10%
-   EXPECT_EQ(10.0, PE::calc_callibration(100,1000));
-
-   //1000 > 100 = 10%
-   EXPECT_EQ(10.0, PE::calc_callibration(1000,100));
-
-   //1 > 10000 = 0.01%
-   EXPECT_NEAR(0.01, PE::calc_callibration(1,10000), 0.01);
-
-   //2430 > 2428 = 99.92%
-   EXPECT_NEAR(99.92, PE::calc_callibration(2430,2428),0.01);
-
-   //1500 < 2500 = 60.0%
-   EXPECT_NEAR(60.0, PE::calc_callibration(1500,2500),0.01);
-
-   //2500 > 1500 = 60.0%
-   EXPECT_NEAR(60.0, PE::calc_callibration(2500, 1500),0.01);
-}
-
 
 int main(int argc, char *argv[])
 {

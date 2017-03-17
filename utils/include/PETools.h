@@ -86,6 +86,17 @@ TValue to_heading(const TValue& lat1, const TValue& lon1,const TValue& lat2, con
  */
 void get_next_coordinates(const TValue& lat1, const TValue& lon1, const TValue& distance, const TValue& heading, TValue& lat2, TValue& lon2);
 
+/**
+ * Calcs convergence persentage between two values. range [0..100] percent.
+ * Bigger is better convergence.
+ *
+ * @param  first   first value to estimate
+ * @param  second  second value to estimate
+ *
+ * @return    convergence status. range [0..100] percent.
+ */
+TValue calc_convergence_persent(const TValue& first, const TValue& second);
+
 
 } // namespace TOOLS
 } // namespace PE

@@ -22,6 +22,7 @@ include_directories(
 add_executable(test_pe_calibration
    ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
    ${REPOSITORY_ROOT}/calibration/sources/PECalibration.cpp
+   ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
    PECalibrationTest.cpp
 )
 
