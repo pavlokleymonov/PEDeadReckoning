@@ -42,49 +42,41 @@ TValue to_degrees(const TValue& radians);
  * Uses fast algorithm.
  * Accuracy better then 1 meter for distance less then 10km.
  *
- * @param lat1    latitude of first coordinate in degrees
- * @param lon1    longitude of first coordinate in degrees
- * @param lat2    latitude of second coordinate in degrees
- * @param lon2    longitude of second coordinate in degrees
- * @return        distance in meters
+ * @param first    first position
+ * @param second   second position
+ * @return         distance in meters
  */
-TValue to_distance(const TValue& lat1, const TValue& lon1,const TValue& lat2, const TValue& lon2);
+TValue to_distance(const TPosition& first, const TPosition& second);
 
 /**
  * Calculates distance between two coordinates.
  * Uses slow but precise algorithm.
  * Accuracy better then 1 meter for distance less then 1000km.
  *
- * @param lat1    latitude of first coordinate in degrees
- * @param lon1    longitude of first coordinate in degrees
- * @param lat2    latitude of second coordinate in degrees
- * @param lon2    longitude of second coordinate in degrees
- * @return        distance in meters
+ * @param first    first position
+ * @param second   second position
+ * @return         distance in meters
  */
-TValue to_distance_precise(const TValue& lat1, const TValue& lon1,const TValue& lat2, const TValue& lon2);
+TValue to_distance_precise(const TPosition& first, const TPosition& second);
 
 /**
  * Calculates heading between two coordinates.
  *
- * @param lat1    latitude of first coordinate in degrees
- * @param lon1    longitude of first coordinate in degrees
- * @param lat2    latitude of second coordinate in degrees
- * @param lon2    longitude of second coordinate in degrees
- * @return        heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+ * @param first    first position
+ * @param second   second position
+ * @return         heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
  */
-TValue to_heading(const TValue& lat1, const TValue& lon1,const TValue& lat2, const TValue& lon2);
+TValue to_heading(const TPosition& first, const TPosition& second);
 
 /**
  * Calculates new coordinates based on distance, heading and first coordinates.
  *
- * @param [in]lat1     latitude of first coordinate in degrees
- * @param [in]lon1     longitude of first coordinate in degrees
- * @param [in]distnce  distance in meters
- * @param [in]heading  heading in degrees
- * @param [out]lat2    latitude of second coordinate in degrees
- * @param [out]lon2    longitude of second coordinate in degrees
+ * @param position   start position
+ * @param distnce    distance in meters
+ * @param heading    heading in degrees
+ * @return           new calculated position
  */
-void get_next_coordinates(const TValue& lat1, const TValue& lon1, const TValue& distance, const TValue& heading, TValue& lat2, TValue& lon2);
+TPosition to_position(const TPosition& start, const TValue& distance, const TValue& heading);
 
 /**
  * Calcs convergence persentage between two values. range [0..100] percent.
@@ -92,10 +84,9 @@ void get_next_coordinates(const TValue& lat1, const TValue& lon1, const TValue& 
  *
  * @param  first   first value to estimate
  * @param  second  second value to estimate
- *
- * @return    convergence status. range [0..100] percent.
+ * @return         convergence status. range [0..100] percent.
  */
-TValue calc_convergence_persent(const TValue& first, const TValue& second);
+TValue to_convergence(const TValue& first, const TValue& second);
 
 
 } // namespace TOOLS

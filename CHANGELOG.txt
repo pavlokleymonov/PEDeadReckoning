@@ -2,6 +2,10 @@
 
 TODO:
 - add normalization of null value for sensors
+      - normalisation of angular velocity sensors
+      - normalisation of linear acceleration 
+- add filtering for GNSS by speed limit
+- remove RELIABLE_SCALE_FACTOR from calibration (obsolete)
 - add fusion sensors
 - add API for providing sensors data to the Position Engine
       - GNSS data sensor

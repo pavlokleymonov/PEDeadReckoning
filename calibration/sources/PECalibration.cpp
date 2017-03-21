@@ -17,7 +17,7 @@
 #include <math.h>
 
 
-#define RELIABLE_SCALE_FACTOR 0.01
+#define CALIBRATION_RELIABLE_SCALE_FACTOR 0.01
 
 using namespace PE;
 
@@ -133,13 +133,13 @@ TAccuracy PE::calibration::_get_sensor_accuracy()
 
 void PE::calibration::_process()
 {
-   if ( fabs(m_reference_accumulated_values * RELIABLE_SCALE_FACTOR) > _get_reference_accuracy() )
+   if ( fabs(m_reference_accumulated_values * CALIBRATION_RELIABLE_SCALE_FACTOR) > _get_reference_accuracy() )
    {
-      if ( fabs(m_sensor_accumulated_steps * RELIABLE_SCALE_FACTOR) > _get_sensor_accuracy() )
+      if ( fabs(m_sensor_accumulated_steps * CALIBRATION_RELIABLE_SCALE_FACTOR) > _get_sensor_accuracy() )
       {
          TValue raw_values_per_step = m_reference_accumulated_values / m_sensor_accumulated_steps;
          m_sensor_accuracy = _get_reference_accuracy();
-         m_sensor_calibration = PE::TOOLS::calc_convergence_persent(m_values_per_step,raw_values_per_step);
+         m_sensor_calibration = PE::TOOLS::to_convergence(m_values_per_step,raw_values_per_step);
          m_values_per_step = raw_values_per_step;
       }
    }

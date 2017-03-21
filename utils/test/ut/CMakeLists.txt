@@ -17,12 +17,22 @@ include_directories(
    ${REPOSITORY_ROOT}/utils/include
 )
 
+#build gtest static library
+add_library ( gtest STATIC 
+   ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
+)
+
 #Test tools PE::TOOLS
 add_executable(test_pe_tools
-   ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
    ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
    PEToolsTest.cpp
 )
-
-target_link_libraries(test_pe_tools pthread)
+target_link_libraries(test_pe_tools gtest pthread)
 add_test(NAME test_pe_tools COMMAND test_pe_tools)
+
+#Test types PE::Types
+add_executable(test_pe_types
+   PETypesTest.cpp
+)
+target_link_libraries(test_pe_types gtest pthread)
+add_test(NAME test_pe_types COMMAND test_pe_types)

@@ -18,13 +18,36 @@ include_directories(
    ${REPOSITORY_ROOT}/utils/include
 )
 
-#Test class PE::calibration
-add_executable(test_pe_calibration
+#build gtest static library
+add_library ( gtest STATIC 
    ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
-   ${REPOSITORY_ROOT}/calibration/sources/PECalibration.cpp
-   ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
-   PECalibrationTest.cpp
 )
 
-target_link_libraries(test_pe_calibration pthread )
+#build petools static library
+add_library ( petools STATIC 
+   ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
+)
+
+#Test class PE::calibration
+add_executable(test_pe_calibration
+   ${REPOSITORY_ROOT}/calibration/sources/PECalibration.cpp
+   PECalibrationTest.cpp
+)
+target_link_libraries(test_pe_calibration petools gtest pthread )
 add_test(NAME test_pe_calibration COMMAND test_pe_calibration)
+
+#Test class PE::normalisation
+add_executable(test_pe_normalisation
+   ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
+   PENormalisationTest.cpp
+)
+target_link_libraries(test_pe_normalisation petools gtest pthread )
+add_test(NAME test_pe_normalisation COMMAND test_pe_normalisation)
+
+#Test class PE::position_filter
+add_executable(test_pe_position_filter
+   ${REPOSITORY_ROOT}/calibration/sources/PEPositionFilter.cpp
+   PEPositionFilterTest.cpp
+)
+target_link_libraries(test_pe_position_filter petools gtest pthread )
+add_test(NAME test_pe_position_filter COMMAND test_pe_position_filter)
