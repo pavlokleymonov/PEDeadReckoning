@@ -63,3 +63,11 @@ const TValue& PE::position_filter::get_speed_limit()
    return m_Speed_limit;
 }
 
+
+
+void PE::position_filter_distancy::add_position(const TTimestamp& timestamp, const TPosition& position)
+{
+   //TODO
+}
+
+

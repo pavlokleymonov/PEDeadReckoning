@@ -63,5 +63,31 @@ private:
 };
 
 
+class I_position_filter
+{
+public:
+   virtual ~I_position_filter() {};
+   virtual void add_position(const TTimestamp& timestamp, const TPosition& position) = 0;
+   virtual const TTimestamp& get_timestamp() const = 0;
+   virtual const TPosition& get_position() const = 0;
+};
+
+class position_filter_distancy: public I_position_filter
+{
+public:
+   void add_position(const TTimestamp& timestamp, const TPosition& position);
+   const TTimestamp& get_timestamp() const
+      {
+         return m_Timestamp;
+      }
+   const TPosition& get_position() const
+      {
+         return m_Position;
+      }
+private:
+   TTimestamp   m_Timestamp;
+   TPosition    m_Position;
+};
+
 } //namespace PE
 #endif //__PE_PositionFilter_H__

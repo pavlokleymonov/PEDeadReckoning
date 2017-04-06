@@ -32,6 +32,10 @@ namespace PE
 
    static const double EARTH_RADIUS_M = 6371000.0;
 
+   static const double ABS_MAX_LATITUDE = 90;
+
+   static const double ABS_MAX_LONGITUDE = 180;
+
    static const TTimestamp MAX_TIMESTAMP = std::numeric_limits<TTimestamp>::max();
 
    static const TValue MAX_VALUE = std::numeric_limits<TValue>::max();
@@ -45,12 +49,22 @@ namespace PE
    struct TPosition
    {
       TPosition()
-         : Latitude(MAX_VALUE)
-         , Longitude(MAX_VALUE)
+         : Latitude(ABS_MAX_LATITUDE+1)
+         , Longitude(ABS_MAX_LONGITUDE+1)
+         , LatitudeAcc(MAX_ACCURACY)
+         , LongitudeAcc(MAX_ACCURACY)
          {};
       TPosition(const TValue& lat, const TValue& lon)
          : Latitude(lat)
          , Longitude(lon)
+         , LatitudeAcc(MAX_ACCURACY)
+         , LongitudeAcc(MAX_ACCURACY)
+         {};
+      TPosition(const TValue& lat, const TValue& lon, const TAccuracy& latAcc, const TAccuracy& lonAcc)
+         : Latitude(lat)
+         , Longitude(lon)
+         , LatitudeAcc(latAcc)
+         , LongitudeAcc(lonAcc)
          {};
       /**
        * The latitude in decimal degrees (-90..+90)
@@ -61,11 +75,22 @@ namespace PE
        */
       TValue Longitude;
       /**
+       * The latitude accuracy in decimal degrees
+       */
+      TAccuracy LatitudeAcc;
+      /**
+       * The longitude accuracy in decimal degrees
+       */
+      TAccuracy LongitudeAcc;
+      /**
        * Is position valid. All values have to be valid
        */
       bool is_valid() const
          {
-            return ( MAX_VALUE != Latitude && MAX_VALUE != Longitude );
+            return ( ABS_MAX_LATITUDE >= Latitude && 
+                    -ABS_MAX_LATITUDE <= Latitude && 
+                     ABS_MAX_LONGITUDE >= Longitude &&
+                    -ABS_MAX_LONGITUDE <= Longitude );
          };
    };
 
