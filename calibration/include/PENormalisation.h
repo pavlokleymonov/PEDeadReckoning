@@ -26,40 +26,66 @@ class normalisation
 public:
    /**
     * Constructor of normalisation
+    * initial values are unset and unknown
     *
-    * @param  init_null     initial quiet zero value of the sensor
+    * @param  count      minimum smaples count to get stable normalisation, has to be set based on sensor behavior
+    *                    has to be defined based on statistics of the sensor
     */
-   normalisation(const TValue& init_null);
+   explicit normalisation(const size_t count);
+
    /**
-    * Destructor of normalisation
+    * Constructor of normalisation
     *
+    * @param  init_mean  initial mean value
+    * @param  init_sigma initial sigma value
+    * @param  count      minimum smaples count to get stable normalisation, has to be set based on sensor behavior
+    *                    has to be defined based on statistics of the sensor
     */
-   virtual ~normalisation();
+   normalisation(const TValue& init_mean, const TValue& init_sigma, const size_t init_reliable ,const size_t count);
    /**
-    * Adds new sensor steps to the normalisation
+    * Adds new raw value of the sensor to the normalisation
     *
-    * @param  sensor_steps     sensor steps
+    * @param  value     Raw sensor measurement
     */
-   virtual void add_sensor_steps(const TValue& sensor_steps);
+   void add_sensor(const TValue& value);
+
    /**
-    * Returns null value of the sensor
-    *         This means that null values coresponds to sensor value in quiet state
+    * Returns expected value of the sensor
     *
-    * @return    quiet zero value of the sensor
+    * @return    mean value of the sensor
     */
-   virtual const TValue& get_null();
+   const TValue& get_mean() const
+      {
+         return m_mean;
+      }
+   /**
+    * Returns standart deviation of the sensor signal
+    *
+    * @return    sigma in unit of sensor value.
+    */
+   const TValue& get_sigma() const
+      {
+         return m_sigma;
+      }
    /**
     * Returns sensor reliable status
     *
     * @return    reliable status. range [0..100] percent.
     */
-   const TValue& get_null_reliable();
+    size_t get_reliable() const
+       {
+          return m_reliable;
+       }
 
 private:
-   TValue    m_null;
-   TValue    m_reliable;
-   TValue    m_sensor_accumulated_steps;
-   TValue    m_sensor_accumulated_count;
+   TValue    m_mean;
+   TValue    m_sigma;
+   size_t    m_reliable;
+   const size_t m_min_sample_count;
+
+   TValue    m_accumulated_value;
+   TValue    m_accumulated_delta_sigma;
+   size_t    m_sample_count;
 };
 
 
