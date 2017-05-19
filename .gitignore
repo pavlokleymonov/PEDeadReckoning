@@ -6,7 +6,7 @@
 *.user.*
 *.swp
 *.swo
-build*
+build
 b
 .project
 .cproject
