@@ -18,7 +18,7 @@
 
 using namespace PE;
 
-PE::normalisation::normalisation(const size_t count)
+PE::normalisation::normalisation()
 : m_mean(0.0)
 , m_sigma(0.0)
 , m_reliable(0.0)
