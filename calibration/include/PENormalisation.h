@@ -18,7 +18,7 @@
 namespace PE
 {
 /**
- * Calculates null value of the sensors
+ * Finding real zero value of the sensors and its accuracy
  *
  */
 class normalisation
@@ -26,24 +26,20 @@ class normalisation
 public:
    /**
     * Constructor of normalisation
-    * initial values are unset and unknown
-    *
-    * @param  count      minimum smaples count to get stable normalisation, has to be set based on sensor behavior
-    *                    has to be defined based on statistics of the sensor
+    * initial values are unset and unknowned
     */
-   explicit normalisation(const size_t count);
+   normalisation();
 
    /**
     * Constructor of normalisation
     *
-    * @param  init_mean  initial mean value
-    * @param  init_sigma initial sigma value
-    * @param  count      minimum smaples count to get stable normalisation, has to be set based on sensor behavior
-    *                    has to be defined based on statistics of the sensor
+    * @param  init_mean     initial mean value
+    * @param  init_sigma    initial sigma value
+    * @param  init_reliable initial reliable
     */
-   normalisation(const TValue& init_mean, const TValue& init_sigma, const size_t init_reliable ,const size_t count);
+   normalisation(const TValue& init_mean, const TValue& init_sigma, const TValue init_reliable);
    /**
-    * Adds new raw value of the sensor to the normalisation
+    * Adds new raw value of the sensor to the normalization
     *
     * @param  value     Raw sensor measurement
     */
@@ -72,7 +68,7 @@ public:
     *
     * @return    reliable status. range [0..100] percent.
     */
-    size_t get_reliable() const
+    TValue get_reliable() const
        {
           return m_reliable;
        }
@@ -80,12 +76,12 @@ public:
 private:
    TValue    m_mean;
    TValue    m_sigma;
-   size_t    m_reliable;
-   const size_t m_min_sample_count;
+   TValue    m_reliable;
 
    TValue    m_accumulated_value;
    TValue    m_accumulated_delta_sigma;
-   size_t    m_sample_count;
+   TValue    m_accumulated_delta_reliable;
+   TValue    m_sample_count;
 };
 
 
