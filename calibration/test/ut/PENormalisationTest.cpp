@@ -35,9 +35,6 @@ public:
 
 /**
  * check set of same values
- * init_mean = 0 - no init expected value
- * init_sigma = 0 - no init standart deviation value
- * init_reliable = 0% - uncallibrated value
  */
 TEST_F(PENormalisationTest, no_init_values_amount_of_same_values_3)
 {
@@ -63,10 +60,8 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_same_values_3)
 }
 
 /**
- * check mean value form set [10.0...10.05]
- * init_mean = 0 - no init expected value
- * init_sigma = 0 - no init standart deviation value
- * init_reliable = 0% - uncallibrated value
+ * check values form set [10.0...10.05]
+ * no initial settings
  */
 TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
 {
@@ -90,6 +85,10 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
    EXPECT_NEAR(10.023518, norm.get_mean(),    0.000001);
    EXPECT_NEAR( 0.011265, norm.get_sigma(),   0.000001);
    EXPECT_NEAR(70.181770, norm.get_reliable(),0.000001);
+   EXPECT_NEAR(120.2822062, norm.get_accumulated_value(),   0.000001);
+   EXPECT_NEAR(0.123918864, norm.get_accumulated_sigma(),   0.000001);
+   EXPECT_NEAR(771.9994714, norm.get_accumulated_reliable(),0.000001);
+   EXPECT_NEAR(         12, norm.get_sample_count(),        0.000001);
 
    norm.add_sensor(10.02808851);
    EXPECT_NEAR(10.023869, norm.get_mean(),    0.000001);
@@ -133,23 +132,17 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
 }
 
 /**
- * check mean value form set [10.0...10.05]
- * init_mean = 10.023518
- * init_sigma = 0.011265
- * init_reliable = 70.181770 %
+ * check values form set [10.0...10.05]
+ * Initial settings are correct
+ * 
  */
 TEST_F(PENormalisationTest, set_init_and_amount_of_values_28)
 {
-   PE::normalisation norm = PE::normalisation(10.023518, 0.011265, 70.181770);
-   EXPECT_NEAR(10.023518, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.011265, norm.get_sigma(),   0.000001);
-   EXPECT_NEAR(70.181770, norm.get_reliable(),0.000001);
-
-   /*TODO: finished unittest investigation
+   PE::normalisation norm = PE::normalisation(120.2822062, 0.123918864, 771.9994714, 12);
    norm.add_sensor(10.02808851);
-   EXPECT_NEAR(10.025803, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.006776, norm.get_sigma(),   0.000001);
-   EXPECT_NEAR(68.223777, norm.get_reliable(),0.000001);
+   EXPECT_NEAR(10.023869, norm.get_mean(),    0.000001);
+   EXPECT_NEAR( 0.010678, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR(72.392200, norm.get_reliable(),0.000001);
 
    norm.add_sensor(10.02160893);
    norm.add_sensor(10.0345712);
@@ -185,7 +178,6 @@ TEST_F(PENormalisationTest, set_init_and_amount_of_values_28)
    EXPECT_NEAR(10.024251, norm.get_mean(),    0.000001);
    EXPECT_NEAR( 0.012306, norm.get_sigma(),   0.000001);
    EXPECT_NEAR(88.241321, norm.get_reliable(),0.000001);
-   */
 }
 
 int main(int argc, char *argv[])

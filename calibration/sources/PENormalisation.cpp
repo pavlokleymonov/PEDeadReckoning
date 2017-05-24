@@ -23,20 +23,20 @@ PE::normalisation::normalisation()
 , m_sigma(0.0)
 , m_reliable(0.0)
 , m_accumulated_value(0.0)
-, m_accumulated_delta_sigma(0.0)
-, m_accumulated_delta_reliable(0.0)
+, m_accumulated_sigma(0.0)
+, m_accumulated_reliable(0.0)
 , m_sample_count(0)
 {
 }
 
-PE::normalisation::normalisation(const TValue& init_mean, const TValue& init_sigma, const TValue init_reliable)
-: m_mean(init_mean)
-, m_sigma(init_sigma)
-, m_reliable(init_reliable)
-, m_accumulated_value(init_mean)
-, m_accumulated_delta_sigma(init_sigma)
-, m_accumulated_delta_reliable(init_reliable)
-, m_sample_count(1)
+PE::normalisation::normalisation(const TValue& accumulated_value, const TValue& accumulated_sigma, const TValue& accumulated_reliable, const TValue& sample_count)
+: m_mean(0.0)
+, m_sigma(0.0)
+, m_reliable(0.0)
+, m_accumulated_value(accumulated_value)
+, m_accumulated_sigma(accumulated_sigma)
+, m_accumulated_reliable(accumulated_reliable)
+, m_sample_count(sample_count)
 {
 }
 
@@ -47,21 +47,21 @@ void PE::normalisation::add_sensor(const TValue& value)
       TValue old_mean = m_accumulated_value / m_sample_count;
       m_mean = (m_accumulated_value + value) / (m_sample_count + 1);
 
-      m_accumulated_delta_sigma += fabs( m_mean - value );
-      m_sigma = m_accumulated_delta_sigma / m_sample_count;
+      m_accumulated_sigma += fabs( m_mean - value );
+      m_sigma = m_accumulated_sigma / m_sample_count;
 
       TValue delta_mean = fabs( old_mean - m_mean );
 
       if ( 0.0 == m_sigma )
       {
-         m_accumulated_delta_reliable += 100;
+         m_accumulated_reliable += 100;
       }
       else if ( delta_mean < m_sigma )
       {
-         m_accumulated_delta_reliable += 100 - delta_mean / m_sigma * 100;
+         m_accumulated_reliable += 100 - delta_mean / m_sigma * 100;
       }
 
-      m_reliable = m_accumulated_delta_reliable / m_sample_count;
+      m_reliable = m_accumulated_reliable / m_sample_count;
    }
    m_accumulated_value += value;
    m_sample_count += 1;
