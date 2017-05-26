@@ -29,7 +29,6 @@ public:
     * initial values are unset and unknowned
     */
    normalisation();
-
    /**
     * Constructor of normalisation
     *
@@ -40,68 +39,51 @@ public:
     */
    normalisation(const TValue& accumulated_value, const TValue& accumulated_sigma, const TValue& accumulated_reliable, const TValue& sample_count);
    /**
+    * Destructor of normalisation
+    */
+   virtual ~normalisation();
+   /**
     * Adds new raw value of the sensor to the normalization
     *
     * @param  value     Raw sensor measurement
     */
-   void add_sensor(const TValue& value);
+   virtual void add_sensor(const TValue& value);
    /**
     * Returns expected value of the sensor
     *
     * @return    mean value of the sensor
     */
-   const TValue& get_mean() const
-      {
-         return m_mean;
-      }
+   const TValue& get_mean() const;
    /**
     * Returns standart deviation of the sensor signal
     *
     * @return    sigma in unit of sensor value.
     */
-   const TValue& get_sigma() const
-      {
-         return m_sigma;
-      }
+   const TValue& get_sigma() const;
    /**
     * Returns sensor reliable status
     *
     * @return    reliable status. range [0..100] percent.
     */
-   const TValue& get_reliable() const
-      {
-         return m_reliable;
-      }
+   const TValue& get_reliable() const;
    /**
     * Returns accumulated value of the sensor
     */
-   const TValue& get_accumulated_value() const
-      {
-         return m_accumulated_value;
-      }
+   const TValue& get_accumulated_value() const;
    /**
     * Returns accumulated sigmas
     */
-   const TValue& get_accumulated_sigma() const
-      {
-         return m_accumulated_sigma;
-      }
+   const TValue& get_accumulated_sigma() const;
    /**
     * Returns accumulated reliable status
     */
-   const TValue& get_accumulated_reliable() const
-      {
-         return m_accumulated_reliable;
-      }
+   const TValue& get_accumulated_reliable() const;
    /**
     * Returns sensors sample count
     */
-   const TValue& get_sample_count() const
-      {
-         return m_sample_count;
-      }
+   const TValue& get_sample_count() const;
 
-private:
+protected:
    TValue    m_mean;
    TValue    m_sigma;
    TValue    m_reliable;

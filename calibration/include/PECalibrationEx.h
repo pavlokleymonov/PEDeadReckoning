@@ -15,11 +15,14 @@
 #define __PE_CallibrationEx_H__
 
 #include "PETypes.h"
+#include "PENormalisation.h"
 namespace PE
 {
 /**
  * Makes calibartion of incoming sensor steps to the reference value
- * extended algorithm
+ * extended algorithm based on normalization.
+ * Assumtion that all gaps in incoming values are filter outed.
+ * Consistency of the values has to be checked by another stuff
  *
  */
 class calibration_ex
@@ -29,67 +32,50 @@ public:
     * Constructor of calibration
     *
     */
-   calibration_ex(const TValue& ref_limit, const size_t min_ref_count);
+   calibration_ex(PE::normalisation& norm, const TValue& accuracy_limit);
    /**
     * Adds new reference value to the calibration
     *
-    * @param  ref_value      values of reference value
-    * @param  ref_accuracy   accuracy of the reference value
+    * @param  value      values of reference value
+    * @param  accuracy   accuracy of the reference value
     */
-   void add_reference(const TValue& ref_value, const TValue& ref_accuracy);
+   void add_reference(const TValue& value, const TValue& accuracy);
    /**
     * Adds new sensor raw value to the calibration
     *
-    * @param  sen_value     raw sensor value
+    * @param  value     raw sensor value
     */
-   void add_sensor(const TValue& sen_value);
+   void add_sensor(const TValue& value);
    /**
     * Returns scale factor between sensors and reference value
     *
     * @return    scale factor
     */
-   const TValue& get_scale() const
-      {
-         return m_scale;
-      }
+   const TValue get_scale() const;
    /**
     * Returns sensor accuracy
     *
-    * @return    accuracy of the sensors according to reference value
+    * @return    accuracy of the sensors which is equal to three sigmas
     */
-   const TValue& get_accuracy() const
-      {
-         return m_accuracy;
-      }
+   const TValue get_accuracy() const;
    /**
     * Returns sensor calibartion status
     *
-    * @return    calibration status. range [0..100] percent.
+    * @return    calibration status. range [0..100] percent based on reliable status 
     */
-   const TValue& get_calibration() const
-      {
-         return m_calibration;
-      }
+   const TValue get_calibration() const;
 
 private:
-   TValue     m_scale;
-   TValue     m_calibration;
-   TValue     m_accuracy;
+   PE::normalisation& m_norm;
 
+   const TValue       m_accuracy_limit;
 
-   const TValue  m_reference_limit;
-   const size_t  m_minimum_reference_count;
+   bool               m_last_ref_valid;
+   bool               m_last_sen_valid;
 
-
-   TValue     m_reference_accumulated;
-   TValue     m_sensor_accumulated;
-
-   TAccuracy  m_accuracy_accumulated;
-   size_t     m_reference_count;
-
-
-   size_t m_reference_count;
-
+   TValue             m_ref_accumulated;
+   TValue             m_sen_accumulated;
+   TValue             m_sen_chunk;
 };
 
 

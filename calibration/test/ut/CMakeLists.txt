@@ -14,6 +14,7 @@ enable_testing()
 include_directories(
    ${GTEST_GMOCK_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}/mocks
    ${REPOSITORY_ROOT}/calibration/include
    ${REPOSITORY_ROOT}/utils/include
 )
@@ -35,6 +36,15 @@ add_executable(test_pe_calibration
 )
 target_link_libraries(test_pe_calibration petools gtest pthread )
 add_test(NAME test_pe_calibration COMMAND test_pe_calibration)
+
+#Test class PE::calibrationEx
+add_executable(test_pe_calibration_ex
+   ${REPOSITORY_ROOT}/calibration/sources/PECalibrationEx.cpp
+   ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
+   PECalibrationExTest.cpp
+)
+target_link_libraries(test_pe_calibration_ex petools gtest pthread )
+add_test(NAME test_pe_calibration_ex COMMAND test_pe_calibration_ex)
 
 #Test class PE::normalisation
 add_executable(test_pe_normalisation

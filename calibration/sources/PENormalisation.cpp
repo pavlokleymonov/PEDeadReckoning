@@ -40,6 +40,10 @@ PE::normalisation::normalisation(const TValue& accumulated_value, const TValue& 
 {
 }
 
+PE::normalisation::~normalisation()
+{
+}
+
 void PE::normalisation::add_sensor(const TValue& value)
 {
    if ( 0 < m_sample_count )
@@ -67,4 +71,38 @@ void PE::normalisation::add_sensor(const TValue& value)
    m_sample_count += 1;
 }
 
+const TValue& PE::normalisation::get_mean() const
+{
+   return m_mean;
+}
+
+const TValue& PE::normalisation::get_sigma() const
+{
+   return m_sigma;
+}
+
+const TValue& PE::normalisation::get_reliable() const
+{
+   return m_reliable;
+}
+
+const TValue& PE::normalisation::get_accumulated_value() const
+{
+   return m_accumulated_value;
+}
+
+const TValue& PE::normalisation::get_accumulated_sigma() const
+{
+   return m_accumulated_sigma;
+}
+
+const TValue& PE::normalisation::get_accumulated_reliable() const
+{
+   return m_accumulated_reliable;
+}
+
+const TValue& PE::normalisation::get_sample_count() const
+{
+   return m_sample_count;
+}
 
