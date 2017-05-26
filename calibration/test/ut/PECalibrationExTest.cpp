@@ -44,6 +44,27 @@ public:
 */
 TEST_F(PECalibrationExTest, _6_sensors_2_valid_ref_test)
 {
+   PE::normalisation norm;
+   PE::calibration_ex calib(norm,10); //10 meters accuracy
+
+   calib.add_sensor(1000); //has to be ignored before first valid ref
+   calib.add_sensor(1000); //has to be ignored before first valid ref
+
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+
+   EXPECT_EQ(10, calib.get_scale());
+   EXPECT_EQ(0, calib.get_accuracy());
+   EXPECT_EQ(100, calib.get_calibration());
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+
+/*
    PE::Mock_normalisation mock;
 
    PE::calibration_ex calib(mock,10); //10 meters accuracy
@@ -59,6 +80,7 @@ TEST_F(PECalibrationExTest, _6_sensors_2_valid_ref_test)
 
    calib.add_sensor(500);
    calib.add_sensor(500);
+   */
 }
 
 int main(int argc, char *argv[])
