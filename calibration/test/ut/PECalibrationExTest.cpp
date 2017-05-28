@@ -40,9 +40,66 @@ public:
 };
 
 /**
-* tests 6 sensors 2 valid reference
-*/
-TEST_F(PECalibrationExTest, _6_sensors_2_valid_ref_test)
+ * tests 10 sensors 3 valid reference 2 invalid references
+ * callback check
+ */
+TEST_F(PECalibrationExTest, _10_sensors_3_valid_2_invalid_ref_test_CB)
+{
+//TODO
+   PE::Mock_normalisation mock;
+
+   PE::calibration_ex calib(mock,10); //10 meters accuracy
+
+   calib.add_sensor(1000); //has to be ignored before first valid ref
+   calib.add_sensor(1000); //has to be ignored before first valid ref
+
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+   //Expecte call has to be set before real call
+   PE::TValue ratio = (500+500+500+500)/(100+100);
+   EXPECT_CALL(mock,add_sensor(Eq(ByRef(ratio))));
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+}
+
+
+
+/**
+ * tests 6 sensors 3 valid reference
+ * callback check
+ */
+TEST_F(PECalibrationExTest, _6_sensors_3_valid_ref_test_CB)
+{
+   PE::Mock_normalisation mock;
+
+   PE::calibration_ex calib(mock,10); //10 meters accuracy
+
+   calib.add_sensor(1000); //has to be ignored before first valid ref
+   calib.add_sensor(1000); //has to be ignored before first valid ref
+
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+   //Expecte call has to be set before real call
+   PE::TValue ratio = (500+500+500+500)/(100+100);
+   EXPECT_CALL(mock,add_sensor(Eq(ByRef(ratio))));
+   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
+   calib.add_sensor(500);
+   calib.add_sensor(500);
+}
+
+/**
+ * tests 6 sensors 3 valid reference
+ */
+TEST_F(PECalibrationExTest, _6_sensors_3_valid_ref_test)
 {
    PE::normalisation norm;
    PE::calibration_ex calib(norm,10); //10 meters accuracy
@@ -63,24 +120,6 @@ TEST_F(PECalibrationExTest, _6_sensors_2_valid_ref_test)
    EXPECT_EQ(100, calib.get_calibration());
    calib.add_sensor(500);
    calib.add_sensor(500);
-
-/*
-   PE::Mock_normalisation mock;
-
-   PE::calibration_ex calib(mock,10); //10 meters accuracy
-
-   calib.add_sensor(1000); //has to be ignored before first valid ref
-   calib.add_sensor(1000); //has to be ignored before first valid ref
-
-   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
-   calib.add_sensor(500);
-   calib.add_sensor(500);
-   calib.add_reference(100,5); //added 100 meters with accuracy +/-5meters 
-   EXPECT_CALL(mock,add_sensor(_));
-
-   calib.add_sensor(500);
-   calib.add_sensor(500);
-   */
 }
 
 int main(int argc, char *argv[])
