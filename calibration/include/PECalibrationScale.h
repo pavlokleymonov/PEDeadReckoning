@@ -11,8 +11,8 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the License for more information.
  */
-#ifndef __PE_CallibrationEx_H__
-#define __PE_CallibrationEx_H__
+#ifndef __PE_CallibrationScale_H__
+#define __PE_CallibrationScale_H__
 
 #include "PETypes.h"
 #include "PENormalisation.h"
@@ -21,18 +21,23 @@ namespace PE
 /**
  * Makes calibartion of incoming sensor steps to the reference value
  * extended algorithm based on normalization.
- * Assumtion that all gaps in incoming values are filter outed.
- * Consistency of the values has to be checked by another stuff
+ * Preconditions:
+ *  - all gaps in incoming values are filter outed
+ *  - reference value is filtered
+ *  - sensor value is adjusted to offset of zero
  *
  */
-class calibration_ex
+class calibration_scale
 {
 public:
    /**
-    * Constructor of calibration
+    * Constructor of Scale calibration
+    *
+    * @param  norm            instance of normalisation class
+    * @param  accuracy_limit  accuracy for reference value, all values above this limit will be excluded from the calculation
     *
     */
-   calibration_ex(PE::normalisation& norm, const TValue& accuracy_limit);
+   calibration_scale(PE::normalisation& norm, const TValue& accuracy_limit);
    /**
     * Adds new reference value to the calibration
     *
@@ -43,7 +48,7 @@ public:
    /**
     * Adds new sensor raw value to the calibration
     *
-    * @param  value     raw sensor value
+    * @param  value     raw sensor value, zero offset has to be adjusted before
     */
    void add_sensor(const TValue& value);
    /**
@@ -80,4 +85,4 @@ private:
 
 
 } //namespace PE
-#endif //__PE_CallibrationEx_H__
+#endif //__PE_CallibrationScale_H__

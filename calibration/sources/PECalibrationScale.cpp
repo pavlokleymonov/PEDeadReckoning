@@ -12,7 +12,7 @@
  * See the License for more information.
  */
 
-#include "PECalibrationEx.h"
+#include "PECalibrationScale.h"
 #include "PETools.h"
 #include <math.h>
 
@@ -20,7 +20,7 @@
 using namespace PE;
 
 
-PE::calibration_ex::calibration_ex(PE::normalisation& norm, const TValue& accuracy_limit)
+PE::calibration_scale::calibration_scale(PE::normalisation& norm, const TValue& accuracy_limit)
 : m_norm(norm)
 , m_accuracy_limit(accuracy_limit)
 , m_last_ref_valid(false)
@@ -32,7 +32,7 @@ PE::calibration_ex::calibration_ex(PE::normalisation& norm, const TValue& accura
 }
 
 
-void PE::calibration_ex::add_reference(const TValue& value, const TValue& accuracy)
+void PE::calibration_scale::add_reference(const TValue& value, const TValue& accuracy)
 {
    if ( m_accuracy_limit > accuracy )
    {
@@ -59,7 +59,7 @@ void PE::calibration_ex::add_reference(const TValue& value, const TValue& accura
 }
 
 
-void PE::calibration_ex::add_sensor(const TValue& value)
+void PE::calibration_scale::add_sensor(const TValue& value)
 {
    m_last_sen_valid = true;
    if ( m_last_ref_valid )
@@ -69,19 +69,19 @@ void PE::calibration_ex::add_sensor(const TValue& value)
 }
 
 
-const TValue PE::calibration_ex::get_scale() const
+const TValue PE::calibration_scale::get_scale() const
 {
    return m_norm.get_mean();
 }
 
 
-const TValue PE::calibration_ex::get_accuracy() const
+const TValue PE::calibration_scale::get_accuracy() const
 {
    return m_norm.get_sigma()*3;
 }
 
 
-const TValue PE::calibration_ex::get_calibration() const
+const TValue PE::calibration_scale::get_calibration() const
 {
    return m_norm.get_reliable();
 }

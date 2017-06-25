@@ -29,22 +29,15 @@ add_library ( petools STATIC
    ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
 )
 
-#Test class PE::calibration
-add_executable(test_pe_calibration
-   ${REPOSITORY_ROOT}/calibration/sources/PECalibration.cpp
-   PECalibrationTest.cpp
-)
-target_link_libraries(test_pe_calibration petools gtest pthread )
-add_test(NAME test_pe_calibration COMMAND test_pe_calibration)
-
-#Test class PE::calibrationEx
-add_executable(test_pe_calibration_ex
-   ${REPOSITORY_ROOT}/calibration/sources/PECalibrationEx.cpp
+#Test class PE::calibration_scale
+add_executable(test_pe_calibration_scale
+   ${REPOSITORY_ROOT}/calibration/sources/PECalibrationScale.cpp
    ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
-   PECalibrationExTest.cpp
+   PECalibrationScaleTest.cpp
 )
-target_link_libraries(test_pe_calibration_ex petools gtest pthread )
-add_test(NAME test_pe_calibration_ex COMMAND test_pe_calibration_ex)
+
+target_link_libraries(test_pe_calibration_scale petools gtest pthread )
+add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
 
 #Test class PE::normalisation
 add_executable(test_pe_normalisation
