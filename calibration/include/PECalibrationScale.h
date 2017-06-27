@@ -81,6 +81,11 @@ private:
    TValue             m_ref_accumulated;
    TValue             m_sen_accumulated;
    TValue             m_sen_chunk;
+
+   /**
+    * Calculates scale factor
+    */
+   void calc_scale(const TValue& value);
 };
 
 

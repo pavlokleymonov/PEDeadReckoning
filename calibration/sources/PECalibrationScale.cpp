@@ -40,10 +40,7 @@ void PE::calibration_scale::add_reference(const TValue& value, const TValue& acc
       {
          if ( m_last_sen_valid )
          {
-            m_sen_accumulated += m_sen_chunk;
-            m_ref_accumulated += value;
-            m_norm.add_sensor( m_sen_accumulated / m_ref_accumulated );
-            m_sen_chunk = 0;
+            calc_scale(value);
          }
       }
       else
@@ -84,5 +81,14 @@ const TValue PE::calibration_scale::get_accuracy() const
 const TValue PE::calibration_scale::get_calibration() const
 {
    return m_norm.get_reliable();
+}
+
+
+void PE::calibration_scale::calc_scale(const TValue& value)
+{
+   m_sen_accumulated += m_sen_chunk;
+   m_ref_accumulated += value;
+   m_norm.add_sensor( m_sen_accumulated / m_ref_accumulated );
+   m_sen_chunk = 0;
 }
 
