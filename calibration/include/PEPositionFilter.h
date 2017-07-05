@@ -18,37 +18,67 @@
 namespace PE
 {
 /**
- * Filters out new position according to speed limit
+ * Basic class for position filters
  *
  */
-class position_filter
+class I_position_filter
 {
 public:
    /**
-    * Constructor of position_filter
+    * Constructor of interface position_filter
     *
-    * @param  speed_limit     speed limit below which new position will be ignored in m/s.
     */
-   position_filter(const TValue& speed_limit);
+   I_position_filter();
    /**
-    * Adds new position to the filter
+    * Empty virtual destructor
+    *
+    */
+   virtual ~I_position_filter();
+   /**
+    * Adds new position to the filter.
+    * Has to be overloaded in child classes
     *
     * @param  timestamp    timestamp of new position in seconds.
     * @param  position     new position
     */
-   void add_position(const TTimestamp& timestamp, const TPosition& position);
+   virtual void add_position(const TTimestamp& timestamp, const TPosition& position) = 0;
    /**
     * Returns timestamp of position
     *
     * @return    position timestamp in seconds.
     */
-   const TTimestamp& get_timestamp();
+   const TTimestamp& get_timestamp() const;
    /**
     * Returns filtered position
     *
     * @return    filtered position
     */
-   const TPosition& get_position();
+   const TPosition& get_position() const;
+protected:
+   TTimestamp   m_Timestamp;
+   TPosition    m_Position;
+};
+
+/**
+ * Filters out new position according to speed limit
+ *
+ */
+class position_filter_speed: public I_position_filter
+{
+public:
+   /**
+    * Constructor of position_filter_speed
+    *
+    * @param  speed_limit     speed limit below which new position will be ignored in m/s.
+    */
+   position_filter_speed(const TValue& speed_limit);
+   /**
+    * Adds new position to the filter. 
+    *
+    * @param  timestamp    timestamp of new position in seconds.
+    * @param  position     new position
+    */
+   virtual void add_position(const TTimestamp& timestamp, const TPosition& position);
    /**
     * Returns used speed limits
     *
@@ -57,36 +87,7 @@ public:
    const TValue& get_speed_limit();
 
 private:
-   TTimestamp   m_Timestamp;
-   TPosition    m_Position;
    TValue       m_Speed_limit;
-};
-
-
-class I_position_filter
-{
-public:
-   virtual ~I_position_filter() {};
-   virtual void add_position(const TTimestamp& timestamp, const TPosition& position) = 0;
-   virtual const TTimestamp& get_timestamp() const = 0;
-   virtual const TPosition& get_position() const = 0;
-};
-
-class position_filter_distancy: public I_position_filter
-{
-public:
-   void add_position(const TTimestamp& timestamp, const TPosition& position);
-   const TTimestamp& get_timestamp() const
-      {
-         return m_Timestamp;
-      }
-   const TPosition& get_position() const
-      {
-         return m_Position;
-      }
-private:
-   TTimestamp   m_Timestamp;
-   TPosition    m_Position;
 };
 
 } //namespace PE

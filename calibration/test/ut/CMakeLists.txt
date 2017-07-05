@@ -39,6 +39,16 @@ add_executable(test_pe_calibration_scale
 target_link_libraries(test_pe_calibration_scale petools gtest pthread )
 add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
 
+#Test class PE::calibration_base
+add_executable(test_pe_calibration_base
+   ${REPOSITORY_ROOT}/calibration/sources/PECalibrationBase.cpp
+   ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
+   PECalibrationBaseTest.cpp
+)
+
+target_link_libraries(test_pe_calibration_base petools gtest pthread )
+add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
+
 #Test class PE::normalisation
 add_executable(test_pe_normalisation
    ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp

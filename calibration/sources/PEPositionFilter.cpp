@@ -19,15 +19,34 @@
 
 using namespace PE;
 
-
-PE::position_filter::position_filter(const TValue& speed_limit)
+PE::I_position_filter::I_position_filter()
 : m_Timestamp(0)
 , m_Position()
+{
+}
+
+PE::I_position_filter::~I_position_filter()
+{
+}
+
+const TTimestamp& PE::I_position_filter::get_timestamp() const
+{
+   return m_Timestamp;
+}
+
+const TPosition& PE::I_position_filter::get_position() const
+{
+   return m_Position;
+}
+
+
+PE::position_filter_speed::position_filter_speed(const TValue& speed_limit)
+: I_position_filter()
 , m_Speed_limit(speed_limit)
 {
 }
 
-void PE::position_filter::add_position(const TTimestamp& timestamp, const TPosition& position)
+void PE::position_filter_speed::add_position(const TTimestamp& timestamp, const TPosition& position)
 {
    if ( 0 < m_Timestamp && m_Position.is_valid() ) //internal position is valid
    {
@@ -48,26 +67,9 @@ void PE::position_filter::add_position(const TTimestamp& timestamp, const TPosit
    }
 }
 
-const TTimestamp& PE::position_filter::get_timestamp()
-{
-   return m_Timestamp;
-}
-
-const TPosition& PE::position_filter::get_position()
-{
-   return m_Position;
-}
-
-const TValue& PE::position_filter::get_speed_limit()
+const TValue& PE::position_filter_speed::get_speed_limit()
 {
    return m_Speed_limit;
-}
-
-
-
-void PE::position_filter_distancy::add_position(const TTimestamp& timestamp, const TPosition& position)
-{
-   //TODO
 }
 
 

@@ -11,33 +11,33 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the License for more information.
  */
-#ifndef __PE_CallibrationScale_H__
-#define __PE_CallibrationScale_H__
+#ifndef __PE_CallibrationBase_H__
+#define __PE_CallibrationBase_H__
 
 #include "PETypes.h"
 #include "PENormalisation.h"
 namespace PE
 {
 /**
- * Makes calibartion of incoming sensor steps to the reference value
- * extended algorithm based on normalization.
+ * Calculates base of the sensor. 
+ * Makes sensor base calibartion according to zero reference value
+ * 
  * Preconditions:
  *  - all gaps in incoming values are filter outed
  *  - reference value is filtered
- *  - sensor value is adjusted to the base of zero
  *
  */
-class calibration_scale
+class calibration_base
 {
 public:
    /**
-    * Constructor of Scale calibration
+    * Constructor of base calibration
     *
     * @param  norm            instance of normalisation class
     * @param  accuracy_limit  accuracy for reference value, all values above this limit will be excluded from the calculation
     *
     */
-   calibration_scale(PE::normalisation& norm, const TValue& accuracy_limit);
+   calibration_base(PE::normalisation& norm, const TValue& accuracy_limit);
    /**
     * Adds new reference value to the calibration
     *
@@ -48,15 +48,15 @@ public:
    /**
     * Adds new sensor raw value to the calibration
     *
-    * @param  value     raw sensor value, zero offset has to be adjusted before
+    * @param  value     raw sensor value
     */
    void add_sensor(const TValue& value);
    /**
-    * Returns scale factor between sensors and reference value
+    * Returns base of the sensor
     *
-    * @return    scale factor
+    * @return    base factor
     */
-   const TValue get_scale() const;
+   const TValue get_base() const;
    /**
     * Returns sensor accuracy
     *
@@ -72,22 +72,14 @@ public:
 
 private:
    PE::normalisation& m_norm;
-
    const TValue       m_accuracy_limit;
 
-   bool               m_last_ref_valid;
+   bool               m_last_ref_zero;
    bool               m_last_sen_valid;
-
-   TValue             m_ref_accumulated;
-   TValue             m_sen_accumulated;
    TValue             m_sen_chunk;
-
-   /**
-    * Calculates scale factor
-    */
-   void calc_scale(const TValue& value);
+   TValue             m_sen_chunk_cnt;
 };
 
 
 } //namespace PE
-#endif //__PE_CallibrationScale_H__
+#endif //__PE_CallibrationBase_H__

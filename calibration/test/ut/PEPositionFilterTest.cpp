@@ -38,7 +38,7 @@ public:
  */
 TEST_F(PEPositionFilterTest, invalid_position_test)
 {
-   PE::position_filter filter(0);
+   PE::position_filter_speed filter(0);
 
    EXPECT_FALSE(filter.get_position().is_valid());
    EXPECT_EQ(0.0, filter.get_timestamp());
