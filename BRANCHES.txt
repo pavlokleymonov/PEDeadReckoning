@@ -1,0 +1,5 @@
+Development branch. Could be used for temporary commits.
+refs/heads/development
+
+Stable branch. All changes here has to be built and tested 
+refs/heads/master

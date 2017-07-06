@@ -74,7 +74,7 @@ const TValue PE::calibration_scale::get_scale() const
 
 const TValue PE::calibration_scale::get_accuracy() const
 {
-   return m_norm.get_sigma()*3;
+   return m_norm.get_mld();
 }
 
 

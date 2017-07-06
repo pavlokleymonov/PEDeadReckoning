@@ -40,22 +40,22 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_same_values_3)
 {
    PE::normalisation norm = PE::normalisation();
    EXPECT_EQ(0.0, norm.get_mean());
-   EXPECT_EQ(0.0, norm.get_sigma());
+   EXPECT_EQ(0.0, norm.get_mld());
    EXPECT_EQ(0.0, norm.get_reliable());
 
    norm.add_sensor(10.0);
    EXPECT_EQ(0.0, norm.get_mean());
-   EXPECT_EQ(0.0, norm.get_sigma());
+   EXPECT_EQ(0.0, norm.get_mld());
    EXPECT_EQ(0.0, norm.get_reliable());
 
    norm.add_sensor(10.0);
    EXPECT_EQ(10.0, norm.get_mean());
-   EXPECT_EQ(0.0, norm.get_sigma());
+   EXPECT_EQ(0.0, norm.get_mld());
    EXPECT_EQ(100.0, norm.get_reliable());
 
    norm.add_sensor(10.000000);
    EXPECT_EQ(10.0, norm.get_mean());
-   EXPECT_EQ(0.0, norm.get_sigma());
+   EXPECT_EQ(0.0, norm.get_mld());
    EXPECT_EQ(100.0, norm.get_reliable());
 }
 
@@ -69,7 +69,7 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
    norm.add_sensor(10.0016967);
    norm.add_sensor(10.017085);
    EXPECT_NEAR(10.009391, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.007694, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.007694, norm.get_mld(),   0.000001);
    EXPECT_NEAR( 0.000000, norm.get_reliable(),0.000001);
 
    norm.add_sensor(10.01674144);
@@ -83,16 +83,16 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
    norm.add_sensor(10.03785415);
    norm.add_sensor(10.02486409);
    EXPECT_NEAR(10.023518, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.011265, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.011265, norm.get_mld(),   0.000001);
    EXPECT_NEAR(70.181770, norm.get_reliable(),0.000001);
    EXPECT_NEAR(120.2822062, norm.get_accumulated_value(),   0.000001);
-   EXPECT_NEAR(0.123918864, norm.get_accumulated_sigma(),   0.000001);
+   EXPECT_NEAR(0.123918864, norm.get_accumulated_mld(),   0.000001);
    EXPECT_NEAR(771.9994714, norm.get_accumulated_reliable(),0.000001);
    EXPECT_NEAR(         12, norm.get_sample_count(),        0.000001);
 
    norm.add_sensor(10.02808851);
    EXPECT_NEAR(10.023869, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.010678, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.010678, norm.get_mld(),   0.000001);
    EXPECT_NEAR(72.392200, norm.get_reliable(),0.000001);
 
    norm.add_sensor(10.02160893);
@@ -109,7 +109,7 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
    norm.add_sensor(10.04565213);
    norm.add_sensor(10.02560543);
    EXPECT_NEAR(10.023579, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.012654, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.012654, norm.get_mld(),   0.000001);
    EXPECT_NEAR(83.290465, norm.get_reliable(),0.000001);
    
    norm.add_sensor(10.04907064);
@@ -127,7 +127,7 @@ TEST_F(PENormalisationTest, no_init_values_amount_of_values_40)
    norm.add_sensor(10.03582339);
    norm.add_sensor(10.04985731);
    EXPECT_NEAR(10.024251, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.012306, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.012306, norm.get_mld(),   0.000001);
    EXPECT_NEAR(88.241321, norm.get_reliable(),0.000001);
 }
 
@@ -141,7 +141,7 @@ TEST_F(PENormalisationTest, set_init_and_amount_of_values_28)
    PE::normalisation norm = PE::normalisation(120.2822062, 0.123918864, 771.9994714, 12);
    norm.add_sensor(10.02808851);
    EXPECT_NEAR(10.023869, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.010678, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.010678, norm.get_mld(),   0.000001);
    EXPECT_NEAR(72.392200, norm.get_reliable(),0.000001);
 
    norm.add_sensor(10.02160893);
@@ -158,7 +158,7 @@ TEST_F(PENormalisationTest, set_init_and_amount_of_values_28)
    norm.add_sensor(10.04565213);
    norm.add_sensor(10.02560543);
    EXPECT_NEAR(10.023579, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.012654, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.012654, norm.get_mld(),   0.000001);
    EXPECT_NEAR(83.290465, norm.get_reliable(),0.000001);
    
    norm.add_sensor(10.04907064);
@@ -176,7 +176,7 @@ TEST_F(PENormalisationTest, set_init_and_amount_of_values_28)
    norm.add_sensor(10.03582339);
    norm.add_sensor(10.04985731);
    EXPECT_NEAR(10.024251, norm.get_mean(),    0.000001);
-   EXPECT_NEAR( 0.012306, norm.get_sigma(),   0.000001);
+   EXPECT_NEAR( 0.012306, norm.get_mld(),   0.000001);
    EXPECT_NEAR(88.241321, norm.get_reliable(),0.000001);
 }
 

@@ -33,11 +33,11 @@ public:
     * Constructor of normalisation
     *
     * @param  accumulated_value    accumulated all values before
-    * @param  accumulated_sigma    accumulated all sigmas before
+    * @param  accumulated_mld      accumulated all mlds before
     * @param  accumulated_reliable accumulated all reliables before
     * @param  sample_count         sampels count before
     */
-   normalisation(const TValue& accumulated_value, const TValue& accumulated_sigma, const TValue& accumulated_reliable, const TValue& sample_count);
+   normalisation(const TValue& accumulated_value, const TValue& accumulated_mld, const TValue& accumulated_reliable, const TValue& sample_count);
    /**
     * Destructor of normalisation
     */
@@ -55,11 +55,11 @@ public:
     */
    const TValue& get_mean() const;
    /**
-    * Returns standart deviation of the sensor signal
+    * Returns mean linear deviation of the sensor signal
     *
-    * @return    sigma in unit of sensor value.
+    * @return    deviation in unit of sensor value.
     */
-   const TValue& get_sigma() const;
+   const TValue& get_mld() const;
    /**
     * Returns sensor reliable status
     *
@@ -71,9 +71,9 @@ public:
     */
    const TValue& get_accumulated_value() const;
    /**
-    * Returns accumulated sigmas
+    * Returns accumulated mlds
     */
-   const TValue& get_accumulated_sigma() const;
+   const TValue& get_accumulated_mld() const;
    /**
     * Returns accumulated reliable status
     */
@@ -85,11 +85,11 @@ public:
 
 protected:
    TValue    m_mean;
-   TValue    m_sigma;
+   TValue    m_mld;
    TValue    m_reliable;
 
    TValue    m_accumulated_value;
-   TValue    m_accumulated_sigma;
+   TValue    m_accumulated_mld;
    TValue    m_accumulated_reliable;
    TValue    m_sample_count;
 };

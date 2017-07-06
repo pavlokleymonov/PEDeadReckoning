@@ -70,7 +70,7 @@ const TValue PE::calibration_base::get_base() const
 
 const TValue PE::calibration_base::get_accuracy() const
 {
-   return m_norm.get_sigma()*3;
+   return m_norm.get_mld();
 }
 
 

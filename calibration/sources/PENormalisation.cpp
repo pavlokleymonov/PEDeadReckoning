@@ -20,21 +20,21 @@ using namespace PE;
 
 PE::normalisation::normalisation()
 : m_mean(0.0)
-, m_sigma(0.0)
+, m_mld(0.0)
 , m_reliable(0.0)
 , m_accumulated_value(0.0)
-, m_accumulated_sigma(0.0)
+, m_accumulated_mld(0.0)
 , m_accumulated_reliable(0.0)
 , m_sample_count(0)
 {
 }
 
-PE::normalisation::normalisation(const TValue& accumulated_value, const TValue& accumulated_sigma, const TValue& accumulated_reliable, const TValue& sample_count)
+PE::normalisation::normalisation(const TValue& accumulated_value, const TValue& accumulated_mld, const TValue& accumulated_reliable, const TValue& sample_count)
 : m_mean(0.0)
-, m_sigma(0.0)
+, m_mld(0.0)
 , m_reliable(0.0)
 , m_accumulated_value(accumulated_value)
-, m_accumulated_sigma(accumulated_sigma)
+, m_accumulated_mld(accumulated_mld)
 , m_accumulated_reliable(accumulated_reliable)
 , m_sample_count(sample_count)
 {
@@ -51,18 +51,18 @@ void PE::normalisation::add_sensor(const TValue& value)
       TValue old_mean = m_accumulated_value / m_sample_count;
       m_mean = (m_accumulated_value + value) / (m_sample_count + 1);
 
-      m_accumulated_sigma += fabs( m_mean - value );
-      m_sigma = m_accumulated_sigma / m_sample_count;
+      m_accumulated_mld += fabs( m_mean - value );
+      m_mld = m_accumulated_mld / m_sample_count;
 
       TValue delta_mean = fabs( old_mean - m_mean );
 
-      if ( 0.0 == m_sigma )
+      if ( 0.0 == m_mld )
       {
          m_accumulated_reliable += 100;
       }
-      else if ( delta_mean < m_sigma )
+      else if ( delta_mean < m_mld )
       {
-         m_accumulated_reliable += 100 - delta_mean / m_sigma * 100;
+         m_accumulated_reliable += 100 - delta_mean / m_mld * 100;
       }
 
       m_reliable = m_accumulated_reliable / m_sample_count;
@@ -76,9 +76,9 @@ const TValue& PE::normalisation::get_mean() const
    return m_mean;
 }
 
-const TValue& PE::normalisation::get_sigma() const
+const TValue& PE::normalisation::get_mld() const
 {
-   return m_sigma;
+   return m_mld;
 }
 
 const TValue& PE::normalisation::get_reliable() const
@@ -91,9 +91,9 @@ const TValue& PE::normalisation::get_accumulated_value() const
    return m_accumulated_value;
 }
 
-const TValue& PE::normalisation::get_accumulated_sigma() const
+const TValue& PE::normalisation::get_accumulated_mld() const
 {
-   return m_accumulated_sigma;
+   return m_accumulated_mld;
 }
 
 const TValue& PE::normalisation::get_accumulated_reliable() const

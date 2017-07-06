@@ -60,7 +60,7 @@ public:
    /**
     * Returns sensor accuracy
     *
-    * @return    accuracy of the sensors which is equal to three sigmas
+    * @return    accuracy of the sensors
     */
    const TValue get_accuracy() const;
    /**
