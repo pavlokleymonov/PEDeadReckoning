@@ -29,6 +29,13 @@ PE::I_position_filter::~I_position_filter()
 {
 }
 
+void PE::I_position_filter::add_position(const TTimestamp& timestamp, const TPosition& position)
+{
+   m_Timestamp = timestamp;
+   m_Position = position;
+}
+
+
 const TTimestamp& PE::I_position_filter::get_timestamp() const
 {
    return m_Timestamp;
@@ -53,11 +60,12 @@ void PE::position_filter_speed::add_position(const TTimestamp& timestamp, const 
       if ( m_Timestamp < timestamp && position.is_valid() ) //new position is valid
       {
          TValue speed = PE::TOOLS::to_distance(m_Position, position) / (timestamp - m_Timestamp); //speed in m/s
+         //printf("ts=%f oldts=%f speed=%.16f limit=%.16f\n",timestamp, m_Timestamp, speed, m_Speed_limit);
          if ( speed > m_Speed_limit ) //speed is above speed limit
          {
-            m_Timestamp = timestamp;
             m_Position = position;
          }
+         m_Timestamp = timestamp;
       }
    }
    else //incorrect internal position has to be updated

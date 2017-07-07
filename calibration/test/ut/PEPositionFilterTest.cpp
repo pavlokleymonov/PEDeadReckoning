@@ -33,13 +33,39 @@ public:
    virtual void TearDown() {
    }
 };
+namespace PE
+{
+bool operator==(const PE::TPosition& lhs, const PE::TPosition& rhs)
+{
+   return ( lhs.Latitude == rhs.Latitude &&
+            lhs.Longitude == rhs.Longitude &&
+            lhs.LatitudeAcc == rhs.LatitudeAcc &&
+            lhs.LongitudeAcc == rhs.LongitudeAcc );
+}
+}
+
+/**
+ * test interface class
+ */
+TEST_F(PEPositionFilterTest, test_interface_class_position)
+{
+   PE::I_position_filter i_pos;
+   const PE::TPosition POS_START = PE::TPosition(52.054313, 10.008143);
+   EXPECT_EQ(0, i_pos.get_timestamp());
+   EXPECT_FALSE(i_pos.get_position().is_valid());
+
+   i_pos.add_position(10.000, POS_START);
+   EXPECT_TRUE(i_pos.get_position().is_valid());
+   EXPECT_EQ(10.000, i_pos.get_timestamp());
+   EXPECT_EQ(POS_START, i_pos.get_position());
+}
 
 /**
  * tests move position one direction
  */
 TEST_F(PEPositionFilterTest, move_position_same_direction)
 {
-   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.0; //1 m/s
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
    const PE::TPosition           POS_START = PE::TPosition(52.054313, 10.008143);
@@ -51,14 +77,17 @@ TEST_F(PEPositionFilterTest, move_position_same_direction)
 
    filter.add_position(10.000, POS_START );
    EXPECT_TRUE(filter.get_position().is_valid());
+   EXPECT_EQ(10.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 1 meter per 1 second from original - no change
    filter.add_position(11.000, POS_START_PLUS_1M);
+   EXPECT_EQ(11.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 2 meter per 1 second from original - changed
    filter.add_position(12.000, POS_START_PLUS_2M);
+   EXPECT_EQ(12.000, filter.get_timestamp());
    EXPECT_EQ(POS_START_PLUS_2M, filter.get_position());
 }
 
@@ -67,7 +96,7 @@ TEST_F(PEPositionFilterTest, move_position_same_direction)
  */
 TEST_F(PEPositionFilterTest, move_position_around)
 {
-   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.0; //1 m/s
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
    const PE::TPosition           POS_START = PE::TPosition(52.054313, 10.008143);
@@ -79,38 +108,45 @@ TEST_F(PEPositionFilterTest, move_position_around)
    
    PE::position_filter_speed filter(SPEED_LIMIT_1M_PER_SEC);
    EXPECT_FALSE(filter.get_position().is_valid());
+   EXPECT_EQ(SPEED_LIMIT_1M_PER_SEC, filter.get_speed_limit());
 
    filter.add_position(10.000, POS_START );
    EXPECT_TRUE(filter.get_position().is_valid());
+   EXPECT_EQ(10.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 1 meter per 1 second from original - no change
    filter.add_position(11.000, POS_START_PLUS_1M_UP);
+   EXPECT_EQ(11.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 1 meter per 1 second from original - no change
    filter.add_position(12.000, POS_START_PLUS_1M_DOWN);
+   EXPECT_EQ(12.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 1 meter per 1 second from original - no change
    filter.add_position(13.000, POS_START_PLUS_1M_RIGHT);
+   EXPECT_EQ(13.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 1 meter per 1 second from original - no change
    filter.add_position(14.000, POS_START_PLUS_1M_LEFT);
+   EXPECT_EQ(14.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 2 meter per 1 second from original - changed
    filter.add_position(15.000, POS_START_PLUS_2M_UP);
+   EXPECT_EQ(15.000, filter.get_timestamp());
    EXPECT_EQ(POS_START_PLUS_2M_UP, filter.get_position());
 }
 
 /**
  * tests move position always above limit
  */
-TEST_F(PEPositionFilterTest, move_position_around)
+TEST_F(PEPositionFilterTest, move_position_always_above_limit)
 {
-   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.0; //1 m/s
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
    const PE::TPosition           POS_START = PE::TPosition(52.054313, 10.008143);
@@ -125,26 +161,32 @@ TEST_F(PEPositionFilterTest, move_position_around)
 
    filter.add_position(10.000, POS_START );
    EXPECT_TRUE(filter.get_position().is_valid());
+   EXPECT_EQ(10.000, filter.get_timestamp());
    EXPECT_EQ(POS_START, filter.get_position());
 
    //distance 2 meter per 1 second from original - change
    filter.add_position(11.000, POS_1);
+   EXPECT_EQ(11.000, filter.get_timestamp());
    EXPECT_EQ(POS_1, filter.get_position());
 
    //distance 2 meter per 1 second from original - change
    filter.add_position(12.000, POS_2);
+   EXPECT_EQ(12.000, filter.get_timestamp());
    EXPECT_EQ(POS_2, filter.get_position());
 
    //distance 2 meter per 1 second from original - change
    filter.add_position(13.000, POS_3);
+   EXPECT_EQ(13.000, filter.get_timestamp());
    EXPECT_EQ(POS_3, filter.get_position());
 
    //distance 2 meter per 1 second from original - change
    filter.add_position(14.000, POS_4);
+   EXPECT_EQ(14.000, filter.get_timestamp());
    EXPECT_EQ(POS_4, filter.get_position());
 
    //distance 2 meter per 1 second from original - change
    filter.add_position(15.000, POS_5);
+   EXPECT_EQ(15.000, filter.get_timestamp());
    EXPECT_EQ(POS_5, filter.get_position());
 }
 

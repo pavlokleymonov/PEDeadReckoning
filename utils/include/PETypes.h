@@ -92,14 +92,6 @@ namespace PE
                      ABS_MAX_LONGITUDE >= Longitude &&
                     -ABS_MAX_LONGITUDE <= Longitude );
          };
-
-      bool operator==(const TPosition& pos)
-         {
-            return ( Latitude == pos.Latitude &&
-                     Longitude == pos.Longitude &&
-                     LatitudeAcc == pos.LatitudeAcc &&
-                     LongitudeAcc == pos.LongitudeAcc );
-         };
    };
 
 } //namespace PE

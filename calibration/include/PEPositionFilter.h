@@ -41,7 +41,7 @@ public:
     * @param  timestamp    timestamp of new position in seconds.
     * @param  position     new position
     */
-   virtual void add_position(const TTimestamp& timestamp, const TPosition& position) = 0;
+   virtual void add_position(const TTimestamp& timestamp, const TPosition& position);
    /**
     * Returns timestamp of position
     *
