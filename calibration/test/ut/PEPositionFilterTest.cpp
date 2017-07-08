@@ -50,7 +50,7 @@ bool operator==(const PE::TPosition& lhs, const PE::TPosition& rhs)
 TEST_F(PEPositionFilterTest, test_interface_class_position)
 {
    PE::I_position_filter i_pos;
-   const PE::TPosition POS_START = PE::TPosition(52.054313, 10.008143);
+   const PE::TPosition POS_START = PE::TPosition(52.0, 10.0);
    EXPECT_EQ(0, i_pos.get_timestamp());
    EXPECT_FALSE(i_pos.get_position().is_valid());
 
@@ -61,14 +61,118 @@ TEST_F(PEPositionFilterTest, test_interface_class_position)
 }
 
 /**
+ * tests invalid timestamp 0
+ */
+TEST_F(PEPositionFilterTest, test_invalid_timestamp_zero)
+{
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
+   PE::position_filter_speed filter(SPEED_LIMIT_1M_PER_SEC);
+
+   //TS = 0
+   filter.add_position(0.000, POS_START );
+   EXPECT_FALSE(filter.get_position().is_valid());
+
+   //TS >0
+   filter.add_position(0.001, POS_START );
+   EXPECT_EQ(0.001, filter.get_timestamp());
+   EXPECT_TRUE(filter.get_position().is_valid());
+}
+
+/**
+ * tests invalid negative timestamp
+ */
+TEST_F(PEPositionFilterTest, test_invalid_negative_timestamp )
+{
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
+   PE::position_filter_speed filter(SPEED_LIMIT_1M_PER_SEC);
+
+   //TS < 0
+   filter.add_position(-1.000, POS_START );
+   EXPECT_FALSE(filter.get_position().is_valid());
+
+   //TS >0
+   filter.add_position(0.001, POS_START );
+   EXPECT_EQ(0.001, filter.get_timestamp());
+   EXPECT_TRUE(filter.get_position().is_valid());
+}
+
+/**
+ * tests ignore invalid position
+ */
+TEST_F(PEPositionFilterTest, tests_ignore_invalid_position )
+{
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
+   const PE::TPosition         POS_INVALID = PE::TPosition(90.0001, 10.0); //invalid latitude
+   const PE::TPosition           POS_VALID = PE::TPosition(90.0, 10.0);
+   PE::position_filter_speed filter(SPEED_LIMIT_1M_PER_SEC);
+
+   filter.add_position(1.000, POS_START );
+   EXPECT_EQ(POS_START, filter.get_position());
+
+   //invalid position
+   filter.add_position(2.000, POS_INVALID );
+   EXPECT_EQ(1.000, filter.get_timestamp()); //still old timestamp
+   EXPECT_EQ(POS_START, filter.get_position()); //still old position
+
+   //valid position
+   filter.add_position(3.000, POS_VALID );
+   EXPECT_EQ(3.000, filter.get_timestamp()); //new timestamp
+   EXPECT_EQ(POS_VALID, filter.get_position()); //new position
+   
+}
+
+/**
+ * tests ignore outdated position
+ */
+TEST_F(PEPositionFilterTest, tests_ignore_outdated_position )
+{
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
+   const PE::TPosition           POS_VALID = PE::TPosition(90.0, 10.0);
+   PE::position_filter_speed filter(SPEED_LIMIT_1M_PER_SEC);
+
+   filter.add_position(1.000, POS_START );
+   EXPECT_EQ(POS_START, filter.get_position());
+
+   filter.add_position(0.999, POS_VALID );
+   EXPECT_EQ(1.000, filter.get_timestamp()); //still old timestamp
+   EXPECT_EQ(POS_START, filter.get_position()); //still old position
+
+   filter.add_position(3.000, POS_VALID );
+   EXPECT_EQ(3.000, filter.get_timestamp()); //new timestamp
+   EXPECT_EQ(POS_VALID, filter.get_position()); //new position
+}
+
+/**
+ * tests ignore position with same timestamp
+ */
+TEST_F(PEPositionFilterTest, tests_ignore_position_same_timestamp )
+{
+   const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
+   const PE::TPosition           POS_VALID = PE::TPosition(90.0, 10.0);
+   PE::position_filter_speed filter(SPEED_LIMIT_1M_PER_SEC);
+
+   filter.add_position(1.000, POS_START );
+   EXPECT_EQ(POS_START, filter.get_position());
+
+   filter.add_position(1.000, POS_VALID );
+   EXPECT_EQ(1.000, filter.get_timestamp()); //still old timestamp
+   EXPECT_EQ(POS_START, filter.get_position()); //still old position
+}
+
+/**
  * tests move position one direction
  */
-TEST_F(PEPositionFilterTest, move_position_same_direction)
+TEST_F(PEPositionFilterTest, move_position_one_direction)
 {
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
-   const PE::TPosition           POS_START = PE::TPosition(52.054313, 10.008143);
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
    const PE::TPosition   POS_START_PLUS_1M = PE::TOOLS::to_position(POS_START,DISTANCE_1M,0);
    const PE::TPosition   POS_START_PLUS_2M = PE::TOOLS::to_position(POS_START,DISTANCE_2M,0);
    
@@ -99,7 +203,7 @@ TEST_F(PEPositionFilterTest, move_position_around)
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
-   const PE::TPosition           POS_START = PE::TPosition(52.054313, 10.008143);
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
    const PE::TPosition   POS_START_PLUS_1M_UP    = PE::TOOLS::to_position(POS_START,DISTANCE_1M,0);
    const PE::TPosition   POS_START_PLUS_1M_LEFT  = PE::TOOLS::to_position(POS_START,DISTANCE_1M,270);
    const PE::TPosition   POS_START_PLUS_1M_RIGHT = PE::TOOLS::to_position(POS_START,DISTANCE_1M,90);
@@ -149,7 +253,7 @@ TEST_F(PEPositionFilterTest, move_position_always_above_limit)
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
-   const PE::TPosition           POS_START = PE::TPosition(52.054313, 10.008143);
+   const PE::TPosition           POS_START = PE::TPosition(52.0, 10.0);
    const PE::TPosition               POS_1 = PE::TOOLS::to_position(POS_START,DISTANCE_2M,0);
    const PE::TPosition               POS_2 = PE::TOOLS::to_position(POS_1,DISTANCE_2M,90);
    const PE::TPosition               POS_3 = PE::TOOLS::to_position(POS_2,DISTANCE_2M,180);

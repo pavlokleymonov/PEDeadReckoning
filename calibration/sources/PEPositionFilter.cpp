@@ -68,7 +68,8 @@ void PE::position_filter_speed::add_position(const TTimestamp& timestamp, const 
          m_Timestamp = timestamp;
       }
    }
-   else //incorrect internal position has to be updated
+   //incorrect internal position has to be updated
+   else if ( 0 < timestamp && position.is_valid() )
    {
       m_Timestamp = timestamp;
       m_Position = position;
