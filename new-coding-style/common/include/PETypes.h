@@ -21,7 +21,6 @@
 #include <string>
 
 namespace PE {
-namespace TYPES {
    typedef double TTimestamp;
 
    typedef double TValue;
@@ -42,7 +41,6 @@ namespace TYPES {
 
    static const TAccuracy MAX_ACCURACY = std::numeric_limits<TAccuracy>::max();
 
-} // namespace TYPES
 } // namespace PE
 
 #endif //__PE_Types_H__

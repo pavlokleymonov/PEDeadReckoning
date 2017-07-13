@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project (common)
+project (calibration)
 
 #Set component version
 set(PROJECT_MAJOR_VERSION 0)
@@ -15,18 +15,18 @@ file(GLOB HDR include/*.h)
 file(GLOB SRC sources/*.cpp)
 
 # We're building a static library with source
-add_library ( common STATIC 
+add_library ( calibration STATIC 
               ${SRC}
               ${HDR}
 )
 
 # prefer using the target_include_directories instead of include_directories as it allows per target asssignment
-target_include_directories( common PUBLIC 
+target_include_directories( calibration PUBLIC 
                             ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # Assign target PUBLIC_HEADERs for ease of use by parent
-set_target_properties ( common PROPERTIES
+set_target_properties ( calibration PROPERTIES
     PUBLIC_HEADER "${HDR}"
 )
 

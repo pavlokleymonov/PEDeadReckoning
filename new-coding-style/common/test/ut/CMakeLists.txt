@@ -14,7 +14,7 @@ enable_testing()
 include_directories(
    ${GTEST_GMOCK_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}
-   ${REPOSITORY_ROOT}/utils/include
+   ${REPOSITORY_ROOT}/common/include
 )
 
 #build gtest static library
@@ -22,17 +22,20 @@ add_library ( gtest STATIC
    ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
 )
 
+#Test struct PE::SPosition
+add_executable(test_pe_sposition
+   ${REPOSITORY_ROOT}/common/sources/PESPosition.cpp
+   PESPositionTest.cpp
+)
+target_link_libraries(test_pe_sposition gtest pthread)
+add_test(NAME test_pe_sposition COMMAND test_pe_sposition)
+
+
 #Test tools PE::TOOLS
 add_executable(test_pe_tools
-   ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
+   ${REPOSITORY_ROOT}/common/sources/PESPosition.cpp
+   ${REPOSITORY_ROOT}/common/sources/PETools.cpp
    PEToolsTest.cpp
 )
 target_link_libraries(test_pe_tools gtest pthread)
 add_test(NAME test_pe_tools COMMAND test_pe_tools)
-
-#Test types PE::Types
-add_executable(test_pe_types
-   PETypesTest.cpp
-)
-target_link_libraries(test_pe_types gtest pthread)
-add_test(NAME test_pe_types COMMAND test_pe_types)

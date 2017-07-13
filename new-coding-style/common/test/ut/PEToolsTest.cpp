@@ -68,48 +68,48 @@ TEST_F(PEToolsTest, radian_degrees_conversions_test)
 TEST_F(PEToolsTest, distance_from_coordinates_test)
 {
    //small distance 22.681 meter
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(PE::TPosition(52.054274,10.008114),PE::TPosition(52.054447,10.008288)),0.001);
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistancePrecise(PE::TPosition(52.054447,10.008288),PE::TPosition(52.054274,10.008114)),0.001);
+   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.054447,10.008288)),0.001);
+   EXPECT_NEAR(22.618,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054447,10.008288),PE::SPosition(52.054274,10.008114)),0.001);
 
    //same distance but oposite dirrection
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(PE::TPosition(52.054447,10.008288),PE::TPosition(52.054274,10.008114)),0.001);
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistancePrecise(PE::TPosition(52.054447,10.008288),PE::TPosition(52.054274,10.008114)),0.001);
+   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(PE::SPosition(52.054447,10.008288),PE::SPosition(52.054274,10.008114)),0.001);
+   EXPECT_NEAR(22.618,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054447,10.008288),PE::SPosition(52.054274,10.008114)),0.001);
    
    //middle distance ~6km 
-   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistance(PE::TPosition(52.054274,10.008114),PE::TPosition(52.097195,10.067757)),0.001);
-   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistancePrecise(PE::TPosition(52.054274,10.008114),PE::TPosition(52.097195,10.067757)),0.001);
+   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.097195,10.067757)),0.001);
+   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054274,10.008114),PE::SPosition(52.097195,10.067757)),0.001);
 
    //middle distance ~10km 
-   EXPECT_NEAR(10403.661,PE::TOOLS::ToDistance(PE::TPosition(52.054274,10.008114),PE::TPosition(52.109193,10.131375)),0.001);
-   EXPECT_NEAR(10403.659,PE::TOOLS::ToDistancePrecise(PE::TPosition(52.054274,10.008114),PE::TPosition(52.109193,10.131375)),0.001);
+   EXPECT_NEAR(10403.661,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.109193,10.131375)),0.001);
+   EXPECT_NEAR(10403.659,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054274,10.008114),PE::SPosition(52.109193,10.131375)),0.001);
 
    //big distance ~225km 
-   EXPECT_NEAR(224941.284,PE::TOOLS::ToDistance(PE::TPosition(52.054274,10.008114),PE::TPosition(52.671695,13.162785)),0.001);
-   EXPECT_NEAR(224919.158,PE::TOOLS::ToDistancePrecise(PE::TPosition(52.054274,10.008114),PE::TPosition(52.671695,13.162785)),0.001);
+   EXPECT_NEAR(224941.284,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.671695,13.162785)),0.001);
+   EXPECT_NEAR(224919.158,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054274,10.008114),PE::SPosition(52.671695,13.162785)),0.001);
 
    //SOUTH-WEST coordinates
    //small distance
-   EXPECT_NEAR(60.704,PE::TOOLS::ToDistance(PE::TPosition(-16.499917,-68.150214),PE::TPosition(-16.500336,-68.149849)),0.001);
-   EXPECT_NEAR(60.704,PE::TOOLS::ToDistancePrecise(PE::TPosition(-16.499917,-68.150214),PE::TPosition(-16.500336,-68.149849)),0.001);
+   EXPECT_NEAR(60.704,PE::TOOLS::ToDistance(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.001);
+   EXPECT_NEAR(60.704,PE::TOOLS::ToDistancePrecise(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.001);
 }
 
 //Test heading calc between two coordinates
 TEST_F(PEToolsTest, heading_from_coordinates_test)
 {
    //North 0.0
-   EXPECT_NEAR(0.0,PE::TOOLS::ToHeading(PE::TPosition( 52.0524,   10.0548 ),PE::TPosition(  52.0596  ,    10.0548)),0.01);
+   EXPECT_NEAR(0.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0524,   10.0548 ),PE::SPosition(  52.0596  ,    10.0548)),0.01);
    //East 90.0
-   EXPECT_NEAR(90.0,PE::TOOLS::ToHeading(PE::TPosition( 52.0524,   10.0548 ),PE::TPosition(  52.0524  ,    10.0620)),0.01);
+   EXPECT_NEAR(90.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0524,   10.0548 ),PE::SPosition(  52.0524  ,    10.0620)),0.01);
    //South 180.0
-   EXPECT_NEAR(180.0,PE::TOOLS::ToHeading(PE::TPosition( 52.0596,   10.0548 ),PE::TPosition(  52.0524  ,    10.0548)),0.01);
+   EXPECT_NEAR(180.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0596,   10.0548 ),PE::SPosition(  52.0524  ,    10.0548)),0.01);
    //West 270.0
-   EXPECT_NEAR(270.0,PE::TOOLS::ToHeading(PE::TPosition( 52.0524,   10.0620 ),PE::TPosition(  52.0524  ,    10.0548)),0.01);
+   EXPECT_NEAR(270.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0524,   10.0620 ),PE::SPosition(  52.0524  ,    10.0548)),0.01);
    //PointLU 307.60
-   EXPECT_NEAR(307.60,PE::TOOLS::ToHeading(PE::TPosition( 52.045690, 10.002842 ),PE::TPosition( 52.045753 , 10.002709)),0.01);
+   EXPECT_NEAR(307.60,PE::TOOLS::ToHeading(PE::SPosition( 52.045690, 10.002842 ),PE::SPosition( 52.045753 , 10.002709)),0.01);
    //PointRD 138.96
-   EXPECT_NEAR(138.96,PE::TOOLS::ToHeading(PE::TPosition( 52.045690, 10.002842 ),PE::TPosition( 52.045596 , 10.002975)),0.01);
+   EXPECT_NEAR(138.96,PE::TOOLS::ToHeading(PE::SPosition( 52.045690, 10.002842 ),PE::SPosition( 52.045596 , 10.002975)),0.01);
    //SOUTH-WEST coordinates: 140.13
-   EXPECT_NEAR(140.13,PE::TOOLS::ToHeading(PE::TPosition(-16.499917,-68.150214),PE::TPosition(-16.500336,-68.149849)),0.01);
+   EXPECT_NEAR(140.13,PE::TOOLS::ToHeading(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.01);
 }
 
 
@@ -117,7 +117,7 @@ TEST_F(PEToolsTest, heading_from_coordinates_test)
 TEST_F(PEToolsTest, next_coordinates_SW_test)
 {
    //SOUTH-WEST coordinates:
-   PE::TPosition pos = PE::TOOLS::ToPosition(PE::TPosition( -16.499917,-68.150214),60.704,140.13);
+   PE::SPosition pos = PE::TOOLS::ToPosition(PE::SPosition( -16.499917,-68.150214),60.704,140.13);
    
    EXPECT_NEAR(-16.500336, pos.Latitude , 0.000001);
    EXPECT_NEAR(-68.149849, pos.Longitude, 0.000001);
@@ -127,7 +127,7 @@ TEST_F(PEToolsTest, next_coordinates_SW_test)
 TEST_F(PEToolsTest, next_coordinates_NE_test)
 {
    //NORTH-EAST coordinates:
-   PE::TPosition pos = PE::TOOLS::ToPosition(PE::TPosition( 52.054274,10.008114),10428.22,54.01);
+   PE::SPosition pos = PE::TOOLS::ToPosition(PE::SPosition( 52.054274,10.008114),10428.22,54.01);
    EXPECT_NEAR( 52.109320, pos.Latitude , 0.000001);
    EXPECT_NEAR( 10.131668, pos.Longitude, 0.000001);
 }
@@ -136,12 +136,12 @@ TEST_F(PEToolsTest, next_coordinates_NE_test)
 TEST_F(PEToolsTest, next_coordinates_crossing_grinvich_test)
 {
    //cross E->W
-   PE::TPosition pos1 = PE::TOOLS::ToPosition(PE::TPosition( 52.123456,0.000123),100,270.0);
+   PE::SPosition pos1 = PE::TOOLS::ToPosition(PE::SPosition( 52.123456,0.000123),100,270.0);
    EXPECT_NEAR( 52.123456, pos1.Latitude , 0.000001);
    EXPECT_NEAR( -0.001341, pos1.Longitude, 0.000001);
 
    //cross W->E
-   PE::TPosition pos2 = PE::TOOLS::ToPosition(PE::TPosition( 52.123456,-0.001341),100,90.0);
+   PE::SPosition pos2 = PE::TOOLS::ToPosition(PE::SPosition( 52.123456,-0.001341),100,90.0);
    EXPECT_NEAR( 52.123456, pos2.Latitude , 0.000001);
    EXPECT_NEAR(  0.000123, pos2.Longitude, 0.000001);
 }
@@ -150,27 +150,27 @@ TEST_F(PEToolsTest, next_coordinates_crossing_grinvich_test)
 TEST_F(PEToolsTest, next_coordinates_crossing_ecvator_test)
 {
    //cross N->S
-   PE::TPosition pos1 = PE::TOOLS::ToPosition(PE::TPosition( 0.000123,10.123456),100,180.0);
+   PE::SPosition pos1 = PE::TOOLS::ToPosition(PE::SPosition( 0.000123,10.123456),100,180.0);
    EXPECT_NEAR( -0.000776, pos1.Latitude , 0.000001);
    EXPECT_NEAR( 10.123456, pos1.Longitude, 0.000001);
    //cross S->N
-   PE::TPosition pos2 = PE::TOOLS::ToPosition(PE::TPosition( -0.000776,10.123456),100,0.0);
+   PE::SPosition pos2 = PE::TOOLS::ToPosition(PE::SPosition( -0.000776,10.123456),100,0.0);
    EXPECT_NEAR(  0.000123, pos2.Latitude , 0.000001);
    EXPECT_NEAR( 10.123456, pos2.Longitude, 0.000001);
 }
 
 TEST_F(PEToolsTest, complex_test)
 {
-   PE::TValue distance1 = PE::TOOLS::ToDistance(PE::TPosition(50.12345,10.12345),PE::TPosition(50.65432,10.65432));
-   PE::TValue heading1  = PE::TOOLS::ToHeading(PE::TPosition(50.12345,10.12345),PE::TPosition(50.65432,10.65432));
+   PE::TValue distance1 = PE::TOOLS::ToDistance(PE::SPosition(50.12345,10.12345),PE::SPosition(50.65432,10.65432));
+   PE::TValue heading1  = PE::TOOLS::ToHeading(PE::SPosition(50.12345,10.12345),PE::SPosition(50.65432,10.65432));
    
-   PE::TPosition pos1 = PE::TOOLS::ToPosition(PE::TPosition( 50.12345,10.12345),distance1,heading1);
+   PE::SPosition pos1 = PE::TOOLS::ToPosition(PE::SPosition( 50.12345,10.12345),distance1,heading1);
    EXPECT_NEAR( 50.65432, pos1.Latitude , 0.00001);
    EXPECT_NEAR( 10.65432, pos1.Longitude, 0.00001);
    
-   PE::TValue distance2 = PE::TOOLS::ToDistancePrecise(PE::TPosition(50.1234567,5.1234567),PE::TPosition(50.7654321,-5.1234567));
-   PE::TValue heading2  = PE::TOOLS::ToHeading(PE::TPosition(50.1234567,5.1234567),PE::TPosition(50.7654321,-5.1234567));
-   PE::TPosition pos2 = PE::TOOLS::ToPosition(PE::TPosition( 50.1234567,5.1234567),distance2,heading2);
+   PE::TValue distance2 = PE::TOOLS::ToDistancePrecise(PE::SPosition(50.1234567,5.1234567),PE::SPosition(50.7654321,-5.1234567));
+   PE::TValue heading2  = PE::TOOLS::ToHeading(PE::SPosition(50.1234567,5.1234567),PE::SPosition(50.7654321,-5.1234567));
+   PE::SPosition pos2 = PE::TOOLS::ToPosition(PE::SPosition( 50.1234567,5.1234567),distance2,heading2);
    EXPECT_NEAR( 50.7654321, pos2.Latitude , 0.0000001);
    EXPECT_NEAR( -5.1234567, pos2.Longitude, 0.0000001);
 }

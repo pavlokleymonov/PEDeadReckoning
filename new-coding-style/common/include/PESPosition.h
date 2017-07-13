@@ -57,7 +57,7 @@ namespace PE {
       /**
        * Is position valid. All values have to be valid
        */
-      bool is_valid() const;
+      bool IsValid() const;
   };
 
 } // namespace PE

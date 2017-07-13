@@ -1,0 +1,33 @@
+1. All type/function names have to be written in CamelCase
+
+2. Name space name has to be in UPPERCASE
+
+3. Type simple defenitions should start from "T"
+
+4. Interface names should start form "I"
+
+5. Class name starts from "C" 
+
+6. Struct name starts from "S"
+
+6. One class/interface definition per one file with same name with prefix "PE"
+
+7. Folder names has to be written in lowcase
+
+8. Header files have to be put into "include"
+
+9. Source code files have to be put into "sources"
+
+10. All tests have to be put under folder "test"
+
+11. Unittests have to be under folder "test/ut"
+
+12. Name of unittest for each class/type/struct has to be named with the same name + "Test" 
+    "CExampleTest.cpp"
+
+13. Third party sources are not a part of this coding convention
+
+14. All new definitions have to be defined under root name space PE::
+
+15. Script names has to be written ... TODO
+TODO...

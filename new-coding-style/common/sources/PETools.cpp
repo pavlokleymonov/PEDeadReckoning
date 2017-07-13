@@ -31,7 +31,7 @@ TValue PE::TOOLS::ToDegrees(const TValue& radians)
 }
 
 
-TValue PE::TOOLS::ToDistance(const TPosition& first, const TPosition& second)
+TValue PE::TOOLS::ToDistance(const SPosition& first, const SPosition& second)
 {
    TValue rLat1 = PE::TOOLS::ToRadians(first.Latitude);
    TValue rLat2 = PE::TOOLS::ToRadians(second.Latitude);
@@ -42,7 +42,7 @@ TValue PE::TOOLS::ToDistance(const TPosition& first, const TPosition& second)
    return sqrt(x*x+y*y) * EARTH_RADIUS_M;
 }
 
-TValue PE::TOOLS::ToDistancePrecise(const TPosition& first, const TPosition& second)
+TValue PE::TOOLS::ToDistancePrecise(const SPosition& first, const SPosition& second)
 {
    TValue rLat1 = PE::TOOLS::ToRadians(first.Latitude);
    TValue rLat2 = PE::TOOLS::ToRadians(second.Latitude);
@@ -55,7 +55,7 @@ TValue PE::TOOLS::ToDistancePrecise(const TPosition& first, const TPosition& sec
    return c * EARTH_RADIUS_M;
 }
 
-TValue PE::TOOLS::ToHeading(const TPosition& first, const TPosition& second)
+TValue PE::TOOLS::ToHeading(const SPosition& first, const SPosition& second)
 {
    TValue rLat1 = PE::TOOLS::ToRadians(first.Latitude);
    TValue rLat2 = PE::TOOLS::ToRadians(second.Latitude);
@@ -66,7 +66,7 @@ TValue PE::TOOLS::ToHeading(const TPosition& first, const TPosition& second)
    return fmod(PE::TOOLS::ToDegrees(rBearing) + 360, 360.0);
 }
 
-TPosition PE::TOOLS::ToPosition(const TPosition& start, const TValue& distance, const TValue& heading)
+SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, const TValue& heading)
 {
    TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
    TValue rLon1 = PE::TOOLS::ToRadians(start.Longitude);
@@ -75,10 +75,10 @@ TPosition PE::TOOLS::ToPosition(const TPosition& start, const TValue& distance, 
 
    TValue rLat2 = asin(sin(rLat1)*cos(b) + cos(rLat1)*sin(b)*cos(Q));
    TValue rLon2 = rLon1 + atan2(sin(Q)*sin(b)*cos(rLat1), cos(b) - sin(rLat1)*sin(rLat2));
-//    TPosition new_position()
+//    SPosition new_position()
 //    lat2 = PE::TOOLS::ToDegrees(rLat2);
 //    lon2 = fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0;
-   return TPosition( PE::TOOLS::ToDegrees(rLat2),
+   return SPosition( PE::TOOLS::ToDegrees(rLat2),
                      fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0 );
 }
 
