@@ -66,6 +66,11 @@ TValue PE::TOOLS::ToHeading(const SPosition& first, const SPosition& second)
    return fmod(PE::TOOLS::ToDegrees(rBearing) + 360, 360.0);
 }
 
+TValue PE::TOOLS::ToHeading(const TValue& startHeading, const TTimestamp& deltaTime, const TValue& angularSpeed)
+{
+   return fmod(startHeading + (-angularSpeed * deltaTime) +360, 360.0);
+}
+
 SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, const TValue& heading)
 {
    TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
@@ -81,5 +86,3 @@ SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, 
    return SPosition( PE::TOOLS::ToDegrees(rLat2),
                      fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0 );
 }
-
-

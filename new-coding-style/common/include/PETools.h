@@ -70,15 +70,24 @@ TValue ToDistancePrecise(const SPosition& first, const SPosition& second);
 TValue ToHeading(const SPosition& first, const SPosition& second);
 
 /**
+ * Calculates heading based on original heading plus provided angular velocity.
+ *
+ * @param startHeading    start headingn in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+ * @param deltaTime       delta time to new heading in second
+ * @param angularSpeed    angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
+ * @return                heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+ */
+TValue ToHeading(const TValue& startHeading, const TTimestamp& deltaTime, const TValue& angularSpeed);
+
+/**
  * Calculates new coordinates based on distance, heading and first coordinates.
  *
- * @param position   start position
+ * @param start      start position
  * @param distnce    distance in meters
  * @param heading    heading in degrees
  * @return           new calculated position
  */
 SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
-
 
 } // namespace TOOLS
 } // namespace PE

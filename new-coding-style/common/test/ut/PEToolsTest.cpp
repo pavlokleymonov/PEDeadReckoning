@@ -14,7 +14,7 @@
 
 
 /**
- * Unit test of the PEToolsTest class.
+ * Unit test of the PE::TOOLS namespace.
  *
  * Code under test:
  *
@@ -112,6 +112,28 @@ TEST_F(PEToolsTest, heading_from_coordinates_test)
    EXPECT_NEAR(140.13,PE::TOOLS::ToHeading(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.01);
 }
 
+//Test heading calc based on original heading plus provided angular velocity.
+TEST_F(PEToolsTest, heading_from_angular_velocit_test)
+{
+   const PE::TValue North = 0.0;
+   const PE::TValue East  = 90.0;
+   const PE::TValue South = 180.0;
+   const PE::TValue West  = 270.0;
+   //test zero angular velosity
+   EXPECT_NEAR(North,PE::TOOLS::ToHeading(North, 1.0, 0.0),0.01);
+   //test zero delta time turn left +90.0 deg/s
+   EXPECT_NEAR(North,PE::TOOLS::ToHeading(North, 0.0, 90.0),0.01);
+   //test left turn +3.0 deg/s jumps over 360 -> 357
+   EXPECT_NEAR(357.0,PE::TOOLS::ToHeading(North, 1.0, +3.0),0.01);
+   //test jump left from East to West for 2 seconds +90.0 deg/s
+   EXPECT_NEAR(West,PE::TOOLS::ToHeading(East, 2.0, +90.0),0.01);
+   //test turn right over 360 from North to 3.0
+   EXPECT_NEAR(3.0,PE::TOOLS::ToHeading(North, 1.0, -3.0),0.01);
+   //test got from South to North by left turn +380.0 for half second
+   EXPECT_NEAR(North,PE::TOOLS::ToHeading(South, 0.5, +360.0),0.01);
+   //test got from South to North by rigth turn -90.0 for two seconds
+   EXPECT_NEAR(North,PE::TOOLS::ToHeading(South, 2.0, -90.0),0.01);
+}
 
 //Test calc new coordinates based on distance, heading and start coordinates in SOUTH-WEST
 TEST_F(PEToolsTest, next_coordinates_SW_test)
