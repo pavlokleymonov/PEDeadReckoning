@@ -1,6 +1,7 @@
 = Position Engine Release History and Change Log =
 
 TODO:
+- move UT to central point
 - add normalization of null value for sensors
       - normalisation of angular velocity sensors
       - normalisation of linear acceleration 

@@ -22,6 +22,6 @@ OPTION(BUILD_TESTS "Build test programs" ON)
 
 #implementation of all stuff
 if(BUILD_APP)
-   add_subdirectory(utils)
+   add_subdirectory(common)
    add_subdirectory(calibration)
 endif()

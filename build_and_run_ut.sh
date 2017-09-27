@@ -36,7 +36,7 @@ function run_unit_test {
 	popd > /dev/null
 }
 
-for COMPONENT in utils calibration ; do
+for COMPONENT in common calibration filter ; do
 	if [ -d $(pwd)/$COMPONENT/test/ut ]; then
 		echo "*** Running unit tests for $COMPONENT"
 		run_unit_test $(pwd)/$COMPONENT/test/ut

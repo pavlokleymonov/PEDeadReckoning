@@ -14,9 +14,9 @@ enable_testing()
 include_directories(
    ${GTEST_GMOCK_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}
-   ${CMAKE_CURRENT_SOURCE_DIR}/mocks
+   ${CMAKE_CURRENT_SOURCE_DIR}/mock
    ${REPOSITORY_ROOT}/calibration/include
-   ${REPOSITORY_ROOT}/utils/include
+   ${REPOSITORY_ROOT}/common/include
 )
 
 #build gtest static library
@@ -24,43 +24,36 @@ add_library ( gtest STATIC
    ${GTEST_GMOCK_DIR}/gmock-gtest-all.cc
 )
 
-#build petools static library
-add_library ( petools STATIC 
-   ${REPOSITORY_ROOT}/utils/sources/PETools.cpp
+#build pe_common static library
+add_library ( pe_common STATIC 
+   ${REPOSITORY_ROOT}/common/source/PESPosition.cpp
+   ${REPOSITORY_ROOT}/common/source/PETools.cpp
 )
 
-#Test class PE::calibration_scale
+#Test class PE::CCalibrationScale
 add_executable(test_pe_calibration_scale
-   ${REPOSITORY_ROOT}/calibration/sources/PECalibrationScale.cpp
-   ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
-   PECalibrationScaleTest.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp
+   PECCalibrationScaleTest.cpp
 )
 
-target_link_libraries(test_pe_calibration_scale petools gtest pthread )
+target_link_libraries(test_pe_calibration_scale pe_common gtest pthread )
 add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
 
-#Test class PE::calibration_base
+#Test class PE::CCalibrationBase
 add_executable(test_pe_calibration_base
-   ${REPOSITORY_ROOT}/calibration/sources/PECalibrationBase.cpp
-   ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
-   PECalibrationBaseTest.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp
+   PECCalibrationBaseTest.cpp
 )
 
-target_link_libraries(test_pe_calibration_base petools gtest pthread )
+target_link_libraries(test_pe_calibration_base pe_common gtest pthread )
 add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
 
-#Test class PE::normalisation
+#Test class PE::CNormalisation
 add_executable(test_pe_normalisation
-   ${REPOSITORY_ROOT}/calibration/sources/PENormalisation.cpp
-   PENormalisationTest.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp
+   PECNormalisationTest.cpp
 )
-target_link_libraries(test_pe_normalisation petools gtest pthread )
+target_link_libraries(test_pe_normalisation pe_common gtest pthread )
 add_test(NAME test_pe_normalisation COMMAND test_pe_normalisation)
-
-#Test class PE::position_filter
-add_executable(test_pe_position_filter
-   ${REPOSITORY_ROOT}/calibration/sources/PEPositionFilter.cpp
-   PEPositionFilterTest.cpp
-)
-target_link_libraries(test_pe_position_filter petools gtest pthread )
-add_test(NAME test_pe_position_filter COMMAND test_pe_position_filter)
