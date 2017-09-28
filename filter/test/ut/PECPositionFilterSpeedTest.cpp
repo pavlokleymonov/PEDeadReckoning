@@ -39,8 +39,7 @@ bool operator==(const PE::SPosition& lhs, const PE::SPosition& rhs)
 {
    return ( lhs.Latitude == rhs.Latitude &&
             lhs.Longitude == rhs.Longitude &&
-            lhs.LatitudeAcc == rhs.LatitudeAcc &&
-            lhs.LongitudeAcc == rhs.LongitudeAcc );
+            lhs.HorizontalAcc == rhs.HorizontalAcc );
 }
 }
 

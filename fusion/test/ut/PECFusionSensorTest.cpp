@@ -38,14 +38,13 @@ public:
  */
 TEST_F(PECFusionSensorTest, test_create )
 {
-   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(50.0,10.0,0.1,0.2), PE::SBasicSensor(90.0,5.0));
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(50.0,10.0,0.1), PE::SBasicSensor(90.0,5.0));
    EXPECT_EQ(1000.0, fusion.GetTimestamp());
 
    EXPECT_TRUE(fusion.GetPosition().IsValid());
    EXPECT_EQ(50.0, fusion.GetPosition().Latitude);
    EXPECT_EQ(10.0, fusion.GetPosition().Longitude);
-   EXPECT_EQ(0.1, fusion.GetPosition().LatitudeAcc);
-   EXPECT_EQ(0.2, fusion.GetPosition().LongitudeAcc);
+   EXPECT_EQ(0.1, fusion.GetPosition().HorizontalAcc);
 
    EXPECT_EQ(90.0, fusion.GetHeading().Value);
    EXPECT_EQ(5.0, fusion.GetHeading().Accuracy);

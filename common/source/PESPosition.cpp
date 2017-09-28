@@ -21,22 +21,19 @@ using namespace PE;
 PE::SPosition::SPosition()
 : Latitude(ABS_MAX_LATITUDE+1)
 , Longitude(ABS_MAX_LONGITUDE+1)
-, LatitudeAcc(MAX_ACCURACY)
-, LongitudeAcc(MAX_ACCURACY)
+, HorizontalAcc(MAX_ACCURACY)
 {};
 
 PE::SPosition::SPosition(const TValue& lat, const TValue& lon)
 : Latitude(lat)
 , Longitude(lon)
-, LatitudeAcc(MAX_ACCURACY)
-, LongitudeAcc(MAX_ACCURACY)
+, HorizontalAcc(MAX_ACCURACY)
 {};
 
-PE::SPosition::SPosition(const TValue& lat, const TValue& lon, const TAccuracy& latAcc, const TAccuracy& lonAcc)
+PE::SPosition::SPosition(const TValue& lat, const TValue& lon, const TAccuracy& hAcc)
 : Latitude(lat)
 , Longitude(lon)
-, LatitudeAcc(latAcc)
-, LongitudeAcc(lonAcc)
+, HorizontalAcc(hAcc)
 {};
 
 bool PE::SPosition::IsValid() const

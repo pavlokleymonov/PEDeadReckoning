@@ -56,11 +56,10 @@ SBasicSensor PE::CFusionSensor::GetHeading(const TTimestamp& deltaTime) const
 
 SPosition PE::CFusionSensor::GetPosition(const TTimestamp& deltaTime, const SBasicSensor& heading) const
 {
-   TValue     distance   = m_Speed.Value * deltaTime;
-   TValue     head       = heading.Value;
-   SPosition  position   = TOOLS::ToPosition(m_Position, distance, heading);
-   position.LatitudeAcc  = m_Position.LatitudeAcc  + m_Speed.Accuracy * deltaTime;
-   position.LongitudeAcc = m_Position.LongitudeAcc + m_Speed.Accuracy * deltaTime;
+   TValue     distance    = m_Speed.Value * deltaTime;
+   TValue     head        = heading.Value;
+   SPosition  position    = TOOLS::ToPosition(m_Position, distance, heading);
+   position.HorizontalAcc = m_Position.HorizontalAcc  + m_Speed.Accuracy * deltaTime;
    return position;
 }
 

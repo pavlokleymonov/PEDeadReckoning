@@ -37,7 +37,7 @@ namespace PE {
       /**
        * Full size constructor
        */
-      SPosition(const TValue& lat, const TValue& lon, const TAccuracy& latAcc, const TAccuracy& lonAcc);
+      SPosition(const TValue& lat, const TValue& lon, const TAccuracy& hAcc);
       /**
        * The latitude in decimal degrees (-90..+90)
        */
@@ -47,13 +47,9 @@ namespace PE {
        */
       TValue Longitude;
       /**
-       * The latitude accuracy in decimal degrees
+       * The horizontal accuracy in meter
        */
-      TAccuracy LatitudeAcc;
-      /**
-       * The longitude accuracy in decimal degrees
-       */
-      TAccuracy LongitudeAcc;
+      TAccuracy HorizontalAcc;
       /**
        * Is position valid. All values have to be valid
        */
