@@ -18,48 +18,73 @@
 
 using namespace PE;
 
-PE::CFusionSensor::CFusionSensor(const SPosition& position, const SBasicSensor& heading)
-: m_Timestamp(PE::MAX_TIMESTAMP)
+PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading)
+: m_Timestamp(timestamp)
 , m_Position(position)
 , m_Heading(heading)
-, m_AngSpeed()
-, m_Speed()
+, m_AngSpeed() //invalid 
+, m_Speed() //invalid
 {
 }
 
-PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading)
+
+PE::CFusionSensor::~CFusionSensor()
 {
-   if ( PE::MAX_TIMESTAMP != timestamp )
-   {
-      if ( position.IsValid() )
-      {
-         if ( m_Position.IsValid() )
-         {
-            SPosition newPos = GetPosition()
-         }
-         m_Position = FusionPosition()
-      }
-   }
 }
 
-TTimestamp PE::CFusionSensor::GetDeltaTime(const TTimestamp& timestamp) const
+
+void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading)
 {
-   return timestamp > m_Timestamp ? timestamp-m_Timestamp : 0;
+   SPosition     newPos = MergePosition(
+                             PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed,m_AngSpeed),
+                             position
+                          );
+   SBasicSensor newHead = MergeHeading(
+                             PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed),
+                             heading
+                          );
+
+   m_Speed     = PredictSpeed(m_Timestamp, m_Position, timestamp, newPos);
+   m_AngSpeed  = PredictAngSpeed(m_Timestamp, m_Heading, timestamp, newHead);
+   m_Heading   = newHead;
+   m_Position  = newPos;
+   m_Timestamp = timestamp;
 }
 
-SBasicSensor PE::CFusionSensor::GetHeading(const TTimestamp& deltaTime) const
+
+void PE::CFusionSensor::AddVelocity(const TTimestamp& timestamp, const SBasicSensor& speed)
 {
-   return SBasicSensor( 
-      TOOLS::ToHeading(m_Heading.Value, deltaTime, m_AngSpeed.Value),
-      m_Heading.Accuracy + m_AngSpeed.Accuracy * deltaTime);
+   AddPosition(
+      timestamp,
+      PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp,speed,m_AngSpeed),
+      PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed)
+   );
 }
 
-SPosition PE::CFusionSensor::GetPosition(const TTimestamp& deltaTime, const SBasicSensor& heading) const
+
+void PE::CFusionSensor::AddAngularVelocity(const TTimestamp& timestamp, const SBasicSensor& angSpeed)
 {
-   TValue     distance    = m_Speed.Value * deltaTime;
-   TValue     head        = heading.Value;
-   SPosition  position    = TOOLS::ToPosition(m_Position, distance, heading);
-   position.HorizontalAcc = m_Position.HorizontalAcc  + m_Speed.Accuracy * deltaTime;
-   return position;
+   AddPosition(
+      timestamp,
+      PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp,m_Speed,angSpeed),
+      PredictHeading(m_Timestamp, m_Heading, timestamp, angSpeed)
+   );
 }
 
+
+const TTimestamp& PE::CFusionSensor::GetTimestamp() const
+{
+   return m_Timestamp;
+}
+
+
+const SBasicSensor& PE::CFusionSensor::GetHeading() const
+{
+   return m_Heading;
+}
+
+
+const SPosition& PE::CFusionSensor::GetPosition() const
+{
+   return m_Position;
+}

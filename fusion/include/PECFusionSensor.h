@@ -28,14 +28,18 @@ namespace PE
  */
 class CFusionSensor
 {
+
+friend class PECFusionSensorTest;
+
 public:
    /**
     * Constructor 
     *
+    * @param timestamp    timestamp in seconds. HINT: for first initialisation please provide stored position and latest timestamp
     * @param position     based position
     * @param heading      heading of based position in degree (0 - Nord, 90 - East, 180 - South, 270 - West)
     */
-   CFusionSensor(const SPosition& position, const SBasicSensor& heading);
+   CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading);
    /**
     * Destructor 
     */
@@ -52,16 +56,16 @@ public:
     * Adds new linear velocity
     *
     * @param timestamp    timestamp in seconds
-    * @param sensor       linear velocity in meter/seconds
+    * @param speed        linear velocity in meter/seconds
     */
-   void AddVelocity(const TTimestamp& timestamp, const SBasicSensor& sensor);
+   void AddVelocity(const TTimestamp& timestamp, const SBasicSensor& speed);
    /**
     * Adds new angularr velocity
     *
     * @param timestamp    timestamp in seconds
-    * @param sensor       angular velocity in degree/seconds
+    * @param angSpeed     angular velocity in degree/seconds
     */
-   void AddAngularVelocity(const TTimestamp& timestamp, const SBasicSensor& sensor);
+   void AddAngularVelocity(const TTimestamp& timestamp, const SBasicSensor& angSpeed);
    /**
     * Returns timestamp of latest fusioned position.
     *
@@ -92,12 +96,6 @@ private:
    SBasicSensor m_AngSpeed;
 
    SBasicSensor m_Speed;
-
-   TTimestamp   GetDeltaTime(const TTimestamp& timestamp) const;
-
-   SBasicSensor GetHeading(const TTimestamp& deltaTime) const;
-
-   SPosition    GetPosition(const TTimestamp& deltaTime, const SBasicSensor& heading) const;
 
 };
 
