@@ -18,6 +18,8 @@
 #include "PESPosition.h"
 #include "PESBasicSensor.h"
 
+class PECFusionSensorTest; //to get possibility for test class
+
 namespace PE
 {
 /**
@@ -29,7 +31,7 @@ namespace PE
 class CFusionSensor
 {
 
-friend class PECFusionSensorTest;
+friend class ::PECFusionSensorTest;
 
 public:
    /**
@@ -63,7 +65,7 @@ public:
     * Adds new angularr velocity
     *
     * @param timestamp    timestamp in seconds
-    * @param angSpeed     angular velocity in degree/seconds
+    * @param angSpeed     angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
     */
    void AddAngularVelocity(const TTimestamp& timestamp, const SBasicSensor& angSpeed);
    /**
@@ -85,6 +87,14 @@ public:
     */
    const SPosition& GetPosition() const;
 
+   SBasicSensor PredictSensorAccuracy(const TTimestamp& timestampFirst, const SBasicSensor& sensor, const TTimestamp& timestampLast);
+   SBasicSensor PredictHeading(const TTimestamp& timestampFirst, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& angSpeed);
+   SPosition PredictPosition(const TTimestamp& timestampFirst, const SPosition& position, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& speed);
+   SBasicSensor PredictSpeed(const TTimestamp& timestampFirst, const SPosition& positionFirst, const TTimestamp& timestampLast, const SPosition& positionLast);
+   SBasicSensor PredictAngSpeed(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast);
+
+   SBasicSensor MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2);
+   SPosition MergePosition(const SPosition& pos1, const SPosition& pos2);
 private:
 
    TTimestamp m_Timestamp;

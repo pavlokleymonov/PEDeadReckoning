@@ -36,4 +36,4 @@ add_executable(test_pe_fusion_sensor
 )
 
 target_link_libraries(test_pe_fusion_sensor pe_common gtest pthread )
-add_test(NAME test_pe_fusion_sensor COMMAND test_pe_basic_sensor)
+add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)

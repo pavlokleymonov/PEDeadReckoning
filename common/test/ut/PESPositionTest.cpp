@@ -47,18 +47,22 @@ TEST_F(PESPositionTest, default_constructor_test)
 //Test simple constructor
 TEST_F(PESPositionTest, simple_constructor_test)
 {
-   PE::SPosition pos_valid = PE::SPosition(50,120);
+   PE::SPosition pos_valid = PE::SPosition(50,120,1);
 
    EXPECT_TRUE(pos_valid.IsValid());
    EXPECT_EQ(50, pos_valid.Latitude);
    EXPECT_EQ(120, pos_valid.Longitude);
-   EXPECT_LE(PE::MAX_ACCURACY, pos_valid.HorizontalAcc);
+   EXPECT_EQ(1, pos_valid.HorizontalAcc);
 
-   PE::SPosition pos_invalid_1 = PE::SPosition(91,120);
+   //lat invalid
+   PE::SPosition pos_invalid_1 = PE::SPosition(91,120,1);
    EXPECT_FALSE(pos_invalid_1.IsValid());
-
-   PE::SPosition pos_invalid_2 = PE::SPosition(50,181);
+   //lon invalid
+   PE::SPosition pos_invalid_2 = PE::SPosition(50,181,1);
    EXPECT_FALSE(pos_invalid_2.IsValid());
+   //accuracyn invalid
+   PE::SPosition pos_invalid_3 = PE::SPosition(50,180);
+   EXPECT_FALSE(pos_invalid_3.IsValid());
 }
 
 //Test full constructor

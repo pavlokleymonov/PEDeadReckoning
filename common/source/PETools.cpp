@@ -73,6 +73,9 @@ TValue PE::TOOLS::ToHeading(const TValue& startHeading, const TTimestamp& deltaT
 
 SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, const TValue& heading)
 {
+   if (0 == distance)
+      return SPosition(start);
+
    TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
    TValue rLon1 = PE::TOOLS::ToRadians(start.Longitude);
    TValue Q = PE::TOOLS::ToRadians(heading);
@@ -80,9 +83,7 @@ SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, 
 
    TValue rLat2 = asin(sin(rLat1)*cos(b) + cos(rLat1)*sin(b)*cos(Q));
    TValue rLon2 = rLon1 + atan2(sin(Q)*sin(b)*cos(rLat1), cos(b) - sin(rLat1)*sin(rLat2));
-//    SPosition new_position()
-//    lat2 = PE::TOOLS::ToDegrees(rLat2);
-//    lon2 = fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0;
    return SPosition( PE::TOOLS::ToDegrees(rLat2),
-                     fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0 );
+                     fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0,
+                     start.HorizontalAcc );
 }

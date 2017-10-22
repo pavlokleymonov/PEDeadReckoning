@@ -49,7 +49,7 @@ bool operator==(const PE::SPosition& lhs, const PE::SPosition& rhs)
 TEST_F(PECPositionFilterSpeedTest, test_invalid_timestamp_zero)
 {
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
    PE::CPositionFilterSpeed filter(SPEED_LIMIT_1M_PER_SEC);
 
    //TS = 0
@@ -68,7 +68,7 @@ TEST_F(PECPositionFilterSpeedTest, test_invalid_timestamp_zero)
 TEST_F(PECPositionFilterSpeedTest, test_invalid_negative_timestamp )
 {
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
    PE::CPositionFilterSpeed filter(SPEED_LIMIT_1M_PER_SEC);
 
    //TS < 0
@@ -87,9 +87,9 @@ TEST_F(PECPositionFilterSpeedTest, test_invalid_negative_timestamp )
 TEST_F(PECPositionFilterSpeedTest, tests_ignore_invalid_position )
 {
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
-   const PE::SPosition         POS_INVALID = PE::SPosition(90.0001, 10.0); //invalid latitude
-   const PE::SPosition           POS_VALID = PE::SPosition(90.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
+   const PE::SPosition         POS_INVALID = PE::SPosition(90.0001, 10.0, 1); //invalid latitude
+   const PE::SPosition           POS_VALID = PE::SPosition(90.0, 10.0, 1);
    PE::CPositionFilterSpeed filter(SPEED_LIMIT_1M_PER_SEC);
 
    filter.AddPosition(1.000, POS_START );
@@ -113,8 +113,8 @@ TEST_F(PECPositionFilterSpeedTest, tests_ignore_invalid_position )
 TEST_F(PECPositionFilterSpeedTest, tests_ignore_outdated_position )
 {
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
-   const PE::SPosition           POS_VALID = PE::SPosition(90.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
+   const PE::SPosition           POS_VALID = PE::SPosition(90.0, 10.0, 1);
    PE::CPositionFilterSpeed filter(SPEED_LIMIT_1M_PER_SEC);
 
    filter.AddPosition(1.000, POS_START );
@@ -135,8 +135,8 @@ TEST_F(PECPositionFilterSpeedTest, tests_ignore_outdated_position )
 TEST_F(PECPositionFilterSpeedTest, tests_ignore_position_same_timestamp )
 {
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
-   const PE::SPosition           POS_VALID = PE::SPosition(90.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
+   const PE::SPosition           POS_VALID = PE::SPosition(90.0, 10.0, 1);
    PE::CPositionFilterSpeed filter(SPEED_LIMIT_1M_PER_SEC);
 
    filter.AddPosition(1.000, POS_START );
@@ -155,7 +155,7 @@ TEST_F(PECPositionFilterSpeedTest, move_position_one_direction)
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
    const PE::SPosition   POS_START_PLUS_1M = PE::TOOLS::ToPosition(POS_START,DISTANCE_1M,0);
    const PE::SPosition   POS_START_PLUS_2M = PE::TOOLS::ToPosition(POS_START,DISTANCE_2M,0);
    
@@ -186,7 +186,7 @@ TEST_F(PECPositionFilterSpeedTest, move_position_around)
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
    const PE::SPosition   POS_START_PLUS_1M_UP    = PE::TOOLS::ToPosition(POS_START,DISTANCE_1M,0);
    const PE::SPosition   POS_START_PLUS_1M_LEFT  = PE::TOOLS::ToPosition(POS_START,DISTANCE_1M,270);
    const PE::SPosition   POS_START_PLUS_1M_RIGHT = PE::TOOLS::ToPosition(POS_START,DISTANCE_1M,90);
@@ -236,7 +236,7 @@ TEST_F(PECPositionFilterSpeedTest, move_position_always_above_limit)
    const PE::TValue SPEED_LIMIT_1M_PER_SEC = 1.00000001; //1 m/s - alhorithm makes and error with 7 number after decimal point
    const PE::TValue            DISTANCE_1M = 1.0; //1 meter
    const PE::TValue            DISTANCE_2M = 2.0; //2 meter
-   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0);
+   const PE::SPosition           POS_START = PE::SPosition(52.0, 10.0, 1);
    const PE::SPosition               POS_1 = PE::TOOLS::ToPosition(POS_START,DISTANCE_2M,0);
    const PE::SPosition               POS_2 = PE::TOOLS::ToPosition(POS_1,DISTANCE_2M,90);
    const PE::SPosition               POS_3 = PE::TOOLS::ToPosition(POS_2,DISTANCE_2M,180);

@@ -41,6 +41,7 @@ bool PE::SPosition::IsValid() const
    return ( ABS_MAX_LATITUDE >= Latitude && 
            -ABS_MAX_LATITUDE <= Latitude && 
             ABS_MAX_LONGITUDE >= Longitude &&
-           -ABS_MAX_LONGITUDE <= Longitude );
+           -ABS_MAX_LONGITUDE <= Longitude &&
+            MAX_ACCURACY != HorizontalAcc);
 };
 
