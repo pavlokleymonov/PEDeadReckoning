@@ -45,7 +45,7 @@ TEST_F(PESPositionTest, default_constructor_test)
 }
 
 //Test simple constructor
-TEST_F(PESPositionTest, simple_constructor_test)
+TEST_F(PESPositionTest, constructor_test)
 {
    PE::SPosition pos_valid = PE::SPosition(50,120,1);
 
@@ -54,32 +54,54 @@ TEST_F(PESPositionTest, simple_constructor_test)
    EXPECT_EQ(120, pos_valid.Longitude);
    EXPECT_EQ(1, pos_valid.HorizontalAcc);
 
-   //lat invalid
-   PE::SPosition pos_invalid_1 = PE::SPosition(91,120,1);
-   EXPECT_FALSE(pos_invalid_1.IsValid());
-   //lon invalid
-   PE::SPosition pos_invalid_2 = PE::SPosition(50,181,1);
-   EXPECT_FALSE(pos_invalid_2.IsValid());
-   //accuracyn invalid
-   PE::SPosition pos_invalid_3 = PE::SPosition(50,180);
-   EXPECT_FALSE(pos_invalid_3.IsValid());
+   //lat invalid positive
+   EXPECT_FALSE(PE::SPosition(91,120,1).IsValid());
+   //lat invalid negative
+   EXPECT_FALSE(PE::SPosition(-91,120,1).IsValid());
+   //lon invalid positive
+   EXPECT_FALSE(PE::SPosition(50,181,1).IsValid());
+   //lon invalid negative
+   EXPECT_FALSE(PE::SPosition(50,-181,1).IsValid());
+   //max valid positive
+   EXPECT_TRUE(PE::SPosition(90,180,1).IsValid());
+   //max valid negative
+   EXPECT_TRUE(PE::SPosition(-90,-180,1).IsValid());
+   //accuracy invalid
+   EXPECT_FALSE(PE::SPosition(90,180).IsValid());
+   //accuracy invalid
+   EXPECT_FALSE(PE::SPosition(-90,-180).IsValid());
+   //accuracy invalid
+   EXPECT_FALSE(PE::SPosition(10,20).IsValid());
 }
 
-//Test full constructor
-TEST_F(PESPositionTest, full_constructor_test)
+//Test operator==
+TEST_F(PESPositionTest, operator_eq_test)
 {
-   PE::SPosition pos_valid = PE::SPosition(50,120, 10);
+   PE::SPosition pos1;
+   PE::SPosition pos2;
+   PE::SPosition pos3(10.0,0.2);
+   PE::SPosition pos4(10.0,0.2);
+   PE::SPosition pos5(20.0,0.4);
+   PE::SPosition pos6(20.0,0.4);
 
-   EXPECT_TRUE(pos_valid.IsValid());
-   EXPECT_EQ(50, pos_valid.Latitude);
-   EXPECT_EQ(120, pos_valid.Longitude);
-   EXPECT_EQ(10, pos_valid.HorizontalAcc);
+   EXPECT_EQ(pos1,pos2);
+   EXPECT_EQ(pos3,pos4);
+   EXPECT_EQ(pos5,pos6);
 
-   PE::SPosition pos_invalid_1 = PE::SPosition(91,120,1);
-   EXPECT_FALSE(pos_invalid_1.IsValid());
+   EXPECT_FALSE(pos1 == pos3);
+   EXPECT_FALSE(pos1 == pos5);
+   EXPECT_FALSE(pos2 == pos4);
+   EXPECT_FALSE(pos2 == pos6);
+   EXPECT_FALSE(pos3 == pos5);
+   EXPECT_FALSE(pos4 == pos6);
 
-   PE::SPosition pos_invalid_2 = PE::SPosition(50,181,1);
-   EXPECT_FALSE(pos_invalid_2.IsValid());
+   EXPECT_FALSE(PE::SPosition(10,20) == PE::SPosition(0,20));
+   EXPECT_FALSE(PE::SPosition(10,20) == PE::SPosition(10,0));
+
+   EXPECT_FALSE(PE::SPosition(10,20,30) == PE::SPosition(0,20,30));
+   EXPECT_FALSE(PE::SPosition(10,20,30) == PE::SPosition(10,0,30));
+   EXPECT_FALSE(PE::SPosition(10,20,30) == PE::SPosition(10,20,0));
+
 }
 
 int main(int argc, char *argv[])

@@ -94,6 +94,7 @@ public:
    SBasicSensor PredictAngSpeed(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast);
 
    SBasicSensor MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2);
+   SBasicSensor MergeHeading(const SBasicSensor& head1, const SBasicSensor& head2);
    SPosition MergePosition(const SPosition& pos1, const SPosition& pos2);
 private:
 

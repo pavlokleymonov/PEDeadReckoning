@@ -26,6 +26,7 @@ add_library ( gtest STATIC
 #build pe_common static library
 add_library ( pe_common STATIC 
    ${REPOSITORY_ROOT}/common/source/PESPosition.cpp
+   ${REPOSITORY_ROOT}/common/source/PESBasicSensor.cpp
    ${REPOSITORY_ROOT}/common/source/PETools.cpp
 )
 

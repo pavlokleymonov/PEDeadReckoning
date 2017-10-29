@@ -56,6 +56,8 @@ namespace PE {
       bool IsValid() const;
    };
 
+   bool operator==(const PE::SPosition& lhs, const PE::SPosition& rhs);
+
 } // namespace PE
 
 #endif //__PE_SPosition_H__

@@ -30,6 +30,13 @@ add_executable(test_pe_sposition
 target_link_libraries(test_pe_sposition gtest pthread)
 add_test(NAME test_pe_sposition COMMAND test_pe_sposition)
 
+#Test struct PE::SBasicSensor
+add_executable(test_pe_sbasic_sensor
+   ${REPOSITORY_ROOT}/common/source/PESBasicSensor.cpp
+   PESBasicSensorTest.cpp
+)
+target_link_libraries(test_pe_sbasic_sensor gtest pthread)
+add_test(NAME test_pe_sbasic_sensor COMMAND test_pe_sbasic_sensor)
 
 #Test tools PE::TOOLS
 add_executable(test_pe_tools

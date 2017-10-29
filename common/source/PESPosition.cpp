@@ -45,3 +45,11 @@ bool PE::SPosition::IsValid() const
             MAX_ACCURACY != HorizontalAcc);
 };
 
+bool PE::operator==(const PE::SPosition& lhs, const PE::SPosition& rhs)
+{
+   return ( lhs.Latitude == rhs.Latitude &&
+            lhs.Longitude == rhs.Longitude &&
+            lhs.HorizontalAcc == rhs.HorizontalAcc );
+};
+
+

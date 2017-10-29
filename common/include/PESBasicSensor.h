@@ -27,17 +27,11 @@ namespace PE
       /**
        * Constructor
        */
-      SBasicSensor()
-         : Value(PE::MAX_VALUE)
-         , Accuracy(PE::MAX_ACCURACY)
-         {}
+      SBasicSensor();
       /**
        * Constructor
        */
-      SBasicSensor(const TValue& value, const TAccuracy& accuracy)
-         : Value(value)
-         , Accuracy(accuracy)
-         {}
+      SBasicSensor(const TValue& value, const TAccuracy& accuracy);
       /**
        * The sensor value. Unit is related to data meaning. Prefereable in system SI
        */
@@ -49,12 +43,10 @@ namespace PE
       /**
        * Is sensor valid. The value and accuracy have to be valid
        */
-      bool IsValid() const
-         {
-            return ( PE::MAX_VALUE != Value && 
-                     PE::MAX_ACCURACY != Accuracy );
-         }
+      bool IsValid() const;
    };
+
+   bool operator==(const PE::SBasicSensor& lhs, const PE::SBasicSensor& rhs);
 
 } //namespace PE
 #endif //__PE_SBasicSensor_H__

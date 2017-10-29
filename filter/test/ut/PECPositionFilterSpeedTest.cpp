@@ -33,15 +33,6 @@ public:
    virtual void TearDown() {
    }
 };
-namespace PE
-{
-bool operator==(const PE::SPosition& lhs, const PE::SPosition& rhs)
-{
-   return ( lhs.Latitude == rhs.Latitude &&
-            lhs.Longitude == rhs.Longitude &&
-            lhs.HorizontalAcc == rhs.HorizontalAcc );
-}
-}
 
 /**
  * tests invalid timestamp 0

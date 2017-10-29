@@ -45,11 +45,14 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
                     PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp),
                     PredictAngSpeed(m_Timestamp, m_Heading, timestamp, heading)
                  );
+   printf("m_Position: %0.2f %0.2f %02.2f %s\n", m_Position.Latitude, m_Position.Longitude, m_Position.HorizontalAcc, (m_Position.IsValid()?"VALID":"INVALID"));
+   printf("position  : %0.2f %0.2f %02.2f %s\n", position.Latitude, position.Longitude, position.HorizontalAcc, (position.IsValid()?"VALID":"INVALID"));
    m_Position  = MergePosition(
                     PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed),
                     position
                  );
-   m_Heading   = MergeSensor(
+   printf("m_Position: %0.2f %0.2f %02.2f %s\n", m_Position.Latitude, m_Position.Longitude, m_Position.HorizontalAcc, (m_Position.IsValid()?"VALID":"INVALID"));
+   m_Heading   = MergeHeading(
                     PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed),
                     heading
                  );
@@ -160,6 +163,40 @@ SBasicSensor PE::CFusionSensor::PredictSpeed(const TTimestamp& timestampFirst, c
    }
    return resutlSpeed;
 }
+/*
+PE::TValue ToAngDistance(const PE::TValue& firstHeading, const PE::TValue& secondHeading)
+{
+   if      ( firstHeading > 270 && 
+             secondHeading < 90 )
+   {
+      return firstHeading - 360 - secondHeading;
+   }
+   else if ( secondHeading > 270 && 
+             firstHeading  < 90 )
+   {
+      return firstHeading + 360 - secondHeading;
+   }
+   else
+   {
+      return firstHeading - secondHeading;
+   }
+}
+*/
+PE::TValue ToAngDistance(const PE::TValue& firstHeading, const PE::TValue& secondHeading)
+{
+   if   ( 180 < (firstHeading - secondHeading))
+   {
+      return firstHeading - (secondHeading+360.0);
+   }
+   else if ( -180 > (firstHeading - secondHeading))
+   {
+      return firstHeading+360.0 - secondHeading;
+   }
+   else
+   {
+      return firstHeading - secondHeading;
+   }
+}
 
 
 SBasicSensor PE::CFusionSensor::PredictAngSpeed(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast)
@@ -170,8 +207,7 @@ SBasicSensor PE::CFusionSensor::PredictAngSpeed(const TTimestamp& timestampFirst
         headingLast.IsValid())
    {
       TValue deltaTS          = timestampLast - timestampFirst;
-      //=IF(AND(O11>270;O12<90);O11-360-O12;O11-O12)
-      TValue deltaAng = (270 < headingFirst.Value && 90 > headingLast.Value) ? headingFirst.Value - 360 - headingLast.Value : headingFirst.Value - headingLast.Value;
+      TValue deltaAng         = ToAngDistance(headingFirst.Value, headingLast.Value);
       resultAngSpeed.Value    = deltaAng / deltaTS;
       resultAngSpeed.Accuracy = (headingFirst.Accuracy + headingLast.Accuracy) / deltaTS;
    }
@@ -191,6 +227,23 @@ SBasicSensor PE::CFusionSensor::MergeSensor(const SBasicSensor& sen1, const SBas
    return SBasicSensor(val,acc);
 }
 
+
+SBasicSensor PE::CFusionSensor::MergeHeading(const SBasicSensor& head1, const SBasicSensor& head2)
+{
+   SBasicSensor headExt1 = head1;
+   SBasicSensor headExt2 = head2;
+
+   if      ( 180 < (head1.Value - head2.Value) )
+      headExt2.Value += 360.0;
+   else if ( -180 > (head1.Value - head2.Value) )
+      headExt1.Value += 360.0;
+
+   SBasicSensor result = MergeSensor(headExt1, headExt2);
+   if ( 360.0 <= result.Value )
+      result.Value -= 360.0;
+   return result;
+}
+
 SPosition PE::CFusionSensor::MergePosition(const SPosition& pos1, const SPosition& pos2)
 {
    if ( false == pos1.IsValid() )
@@ -203,6 +256,5 @@ SPosition PE::CFusionSensor::MergePosition(const SPosition& pos1, const SPositio
    TAccuracy horizontalAcc = (pos1.HorizontalAcc * ( K - pos1.HorizontalAcc ) + pos2.HorizontalAcc * ( K - pos2.HorizontalAcc )) / K;
    return SPosition(lat,lon,horizontalAcc);
 }
-
 
 
