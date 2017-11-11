@@ -53,21 +53,21 @@ public:
     * @param position     position information
     * @param heading      heading of based position in degree (0 - Nord, 90 - East, 180 - South, 270 - West)
     */
-   void AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading);
+   void AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed);
    /**
     * Adds new linear velocity
     *
     * @param timestamp    timestamp in seconds
     * @param speed        linear velocity in meter/seconds
     */
-   void AddVelocity(const TTimestamp& timestamp, const SBasicSensor& speed);
+   void AddSpeed(const TTimestamp& timestamp, const SBasicSensor& speed);
    /**
     * Adds new angularr velocity
     *
     * @param timestamp    timestamp in seconds
     * @param angSpeed     angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
     */
-   void AddAngularVelocity(const TTimestamp& timestamp, const SBasicSensor& angSpeed);
+   void AddAngSpeed(const TTimestamp& timestamp, const SBasicSensor& angSpeed);
    /**
     * Returns timestamp of latest fusioned position.
     *
@@ -89,13 +89,15 @@ public:
 
    SBasicSensor PredictSensorAccuracy(const TTimestamp& timestampFirst, const SBasicSensor& sensor, const TTimestamp& timestampLast);
    SBasicSensor PredictHeading(const TTimestamp& timestampFirst, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& angSpeed);
-   SPosition PredictPosition(const TTimestamp& timestampFirst, const SPosition& position, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& speed);
+   SBasicSensor PredictHeading(const SPosition& positionFirst, const SPosition& positionLast);
+   SPosition    PredictPosition(const TTimestamp& timestampFirst, const SPosition& position, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& speed);
+   SPosition    PredictPosition(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast, const SPosition& position, const SBasicSensor& speed);
    SBasicSensor PredictSpeed(const TTimestamp& timestampFirst, const SPosition& positionFirst, const TTimestamp& timestampLast, const SPosition& positionLast);
    SBasicSensor PredictAngSpeed(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast);
 
    SBasicSensor MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2);
    SBasicSensor MergeHeading(const SBasicSensor& head1, const SBasicSensor& head2);
-   SPosition MergePosition(const SPosition& pos1, const SPosition& pos2);
+   SPosition    MergePosition(const SPosition& pos1, const SPosition& pos2);
 private:
 
    TTimestamp m_Timestamp;

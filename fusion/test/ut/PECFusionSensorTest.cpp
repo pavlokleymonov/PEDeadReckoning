@@ -22,6 +22,8 @@
 
 #include <gtest/gtest.h>
 #include "PECFusionSensor.h"
+#include "PETools.h"
+
 
 class PECFusionSensorTest : public ::testing::Test
 {
@@ -93,9 +95,9 @@ TEST_F(PECFusionSensorTest, test_PredictSensorAccuracy )
 }
 
 /**
- * PredictHeading test
+ * PredictHeading test by angular speeds
  */
-TEST_F(PECFusionSensorTest, test_PredictHeading )
+TEST_F(PECFusionSensorTest, test_PredictHeading_by_angular_speed )
 {
    PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(), PE::SBasicSensor());
    PE::SBasicSensor heading (90.0,0.1); //Heading 90 [deg] accuracy +/- 0.1[deg]
@@ -124,9 +126,41 @@ TEST_F(PECFusionSensorTest, test_PredictHeading )
 }
 
 /**
- * PredictPosition test
+ * PredictHeading test between two positions
  */
-TEST_F(PECFusionSensorTest, test_PredictPosition )
+TEST_F(PECFusionSensorTest, test_PredictHeading_between_two_positions )
+{
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(), PE::SBasicSensor());
+   PE::SPosition pos1 (10.0, 120.0, 10);
+   PE::SPosition pos2 (10.01, 120.0, 20); //to pos1 distance is 1111,2m 
+   PE::SPosition pos3 (10.001, 120.0, 3); //to pos1 distance is 111,12m 
+   PE::SPosition pos4 (10.0001, 120.0, 2); //to pos1 distance is 11,112m 
+   PE::SPosition pos5 (10.00001, 120.0, 1); //to pos1 distance is 1,1112m 
+
+   //test invalid positions
+   EXPECT_FALSE(fusion.PredictHeading(PE::SPosition(),PE::SPosition()).IsValid());
+   EXPECT_FALSE(fusion.PredictHeading(pos1,PE::SPosition()).IsValid());
+   EXPECT_FALSE(fusion.PredictHeading(PE::SPosition(),pos1).IsValid());
+   //test same positions
+   EXPECT_FALSE(fusion.PredictHeading(pos1,pos1).IsValid());
+   //test big distance to Nord
+   EXPECT_NEAR(0.0,fusion.PredictHeading(pos1,pos2).Value   ,0.001);
+   EXPECT_NEAR(0.772,fusion.PredictHeading(pos1,pos2).Accuracy,0.001);
+   //test big distance to South
+   EXPECT_NEAR(180.0,fusion.PredictHeading(pos2,pos1).Value,0.001);
+   EXPECT_NEAR(0.772,fusion.PredictHeading(pos2,pos1).Accuracy,0.001);
+   //test 111m distance to South
+   EXPECT_NEAR(180.0,fusion.PredictHeading(pos3,pos1).Value,0.001);
+   EXPECT_NEAR(3.334,fusion.PredictHeading(pos3,pos1).Accuracy,0.001);
+   //test 10m distance to South
+   EXPECT_NEAR(180.0,fusion.PredictHeading(pos4,pos5).Value,0.001);
+   EXPECT_NEAR(8.343,fusion.PredictHeading(pos4,pos5).Accuracy,0.001);
+}
+
+/**
+ * PredictPosition straight moving test
+ */
+TEST_F(PECFusionSensorTest, test_PredictPosition_straight_moving )
 {
    PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(), PE::SBasicSensor());
    PE::SPosition    position   (50.0,120.0,10.0); //Lat=50.0[deg] Lon=120.0[deg] accuracy= 10[m]
@@ -157,6 +191,91 @@ TEST_F(PECFusionSensorTest, test_PredictPosition )
    EXPECT_NEAR(120.00098932, fusion.PredictPosition(1000,position,heading_45,1010,speed).Longitude,    0.00000001);
    EXPECT_NEAR( 12.00274469, fusion.PredictPosition(1000,position,heading_45,1010,speed).HorizontalAcc,0.00000001);
 }
+
+/**
+ * PredictPosition turning moving test
+ */
+TEST_F(PECFusionSensorTest, test_PredictPosition_turning_moving )
+{
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(), PE::SBasicSensor());
+   PE::SPosition    position   (50.0,120.0,10.0); //Lat=50.0[deg] Lon=120.0[deg] accuracy= 10[m]
+
+   PE::SBasicSensor heading_0  (  0.0,0.1);        //Heading=  0 [deg] accuracy +/- 0.1[deg]
+   PE::SBasicSensor heading_10 ( 10.0,0.1);        //Heading= 10 [deg] accuracy +/- 0.1[deg]
+   PE::SBasicSensor heading_45 ( 45.0,3.0);        //Heading=45  [deg] accuracy +/- 3[deg]
+   PE::SBasicSensor heading_90 ( 90.0,5.0);        //Heading=90  [deg] accuracy +/- 5[deg]
+   PE::SBasicSensor heading_180(180.0,2.0);        //Heading=180 [deg] accuracy +/- 2[deg]
+   PE::SBasicSensor heading_270(270.0,0.5);        //Heading=270 [deg] accuracy +/- 0.5[deg]
+   PE::SBasicSensor heading_355(355.0,0.2);        //Heading=355 [deg] accuracy +/- 0.2[deg]
+
+   PE::SBasicSensor speed_10       (10.0,0.2);        //Speed=10[m/s], accuracy +/-0.2[m/s]
+   PE::SBasicSensor speed_100      (100.0,0.2);        //Speed=100[m/s], accuracy +/-0.2[m/s]
+   //test same timestamp
+   EXPECT_EQ(position, fusion.PredictPosition(1000, heading_90, 1000, heading_180, position, speed_10));
+   //test outdated timestamp
+   EXPECT_EQ(position, fusion.PredictPosition(1000, heading_90, 999, heading_180, position, speed_10));
+   //incorrect position
+   EXPECT_FALSE(fusion.PredictPosition(1000, heading_90, 1001, heading_180, PE::SPosition(), speed_10).IsValid());
+   //incorrect first heading
+   EXPECT_EQ(position, fusion.PredictPosition(1000, PE::SBasicSensor(), 1001, heading_180, position, speed_10));
+   //incorrect last heading
+   EXPECT_EQ(position, fusion.PredictPosition(1000, heading_90, 1001, PE::SBasicSensor(), position, speed_10));
+   //incorrect speed
+   EXPECT_EQ(position, fusion.PredictPosition(1000, heading_90, 1001, heading_180, position, PE::SBasicSensor()));
+   //test straight moving to the East
+   const PE::SPosition pos_1 = fusion.PredictPosition(1000, heading_90, 1001, heading_90, position, speed_10);
+   EXPECT_NEAR( 50.00000000,pos_1.Latitude,0.00000001);
+   EXPECT_NEAR(120.00013990,pos_1.Longitude,0.00000001);
+   EXPECT_NEAR( 10.20076396,pos_1.HorizontalAcc,0.00000001);
+   EXPECT_NEAR(10.0,PE::TOOLS::ToDistancePrecise(pos_1,position),0.00000001);
+   //test straight moving to 10 degree
+   const PE::SPosition pos_2 = fusion.PredictPosition(1000, heading_10, 1001, heading_10, position, speed_100);
+   EXPECT_NEAR( 50.00088565,pos_2.Latitude,0.00000001);
+   EXPECT_NEAR(120.00024295,pos_2.Longitude,0.00000001);
+   EXPECT_NEAR( 10.20000030,pos_2.HorizontalAcc,0.00000001);
+   EXPECT_NEAR(100.0,PE::TOOLS::ToDistancePrecise(pos_2,position),0.00000001);
+   //test turning moving over 0 from 355->10 degree
+   const PE::SPosition pos_3 = fusion.PredictPosition(1000, heading_355, 1001, heading_10, position, speed_100);
+   EXPECT_NEAR( 50.00087557,pos_3.Latitude,0.00000001);
+   EXPECT_NEAR(120.00024018,pos_3.Longitude,0.00000001);
+   EXPECT_NEAR( 10.20000068,pos_3.HorizontalAcc,0.00000001);
+   EXPECT_NEAR( 98.86159294,PE::TOOLS::ToDistancePrecise(pos_3,position),0.00000001);
+   //test turning moving over 0 from 10->355 degree
+   const PE::SPosition pos_4 = fusion.PredictPosition(1000, heading_10, 1010, heading_355, position, speed_100);
+   EXPECT_NEAR( 50.00885699,pos_4.Latitude,0.00000001);
+   EXPECT_NEAR(119.99879426,pos_4.Longitude,0.00000001);
+   EXPECT_NEAR( 12.00000685,pos_4.HorizontalAcc,0.00000001);
+   EXPECT_NEAR(988.61592946,PE::TOOLS::ToDistancePrecise(pos_4,position),0.00000001);
+
+
+   /*
+   //test turning moving from 180->90 degree
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_180, 1001, heading_90, position, speed_100).Latitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_180, 1001, heading_90, position, speed_100).Longitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_180, 1001, heading_90, position, speed_100).HorizontalAcc,0.00000001);
+   //test turning moving from 90->180 degree
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_90, 1001, heading_180, position, speed_100).Latitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_90, 1001, heading_180, position, speed_100).Longitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_90, 1001, heading_180, position, speed_100).HorizontalAcc,0.00000001);
+   //test turning moving from 180->270 degree
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_180, 1001, heading_270, position, speed_100).Latitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_180, 1001, heading_270, position, speed_100).Longitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_180, 1001, heading_270, position, speed_100).HorizontalAcc,0.00000001);
+   //test turning moving from 270->180 degree
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_270, 1001, heading_180, position, speed_100).Latitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_270, 1001, heading_180, position, speed_100).Longitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_270, 1001, heading_180, position, speed_100).HorizontalAcc,0.00000001);
+   //test turning moving from 0->270 degree
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_0, 1001, heading_270, position, speed_100).Latitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_0, 1001, heading_270, position, speed_100).Longitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_0, 1001, heading_270, position, speed_100).HorizontalAcc,0.00000001);
+   //test turning moving from 270->0 degree
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_270, 1001, heading_0, position, speed_100).Latitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_270, 1001, heading_0, position, speed_100).Longitude,0.00000001);
+   EXPECT_NEAR( 0.0, fusion.PredictPosition(1000, heading_270, 1001, heading_0, position, speed_100).HorizontalAcc,0.00000001);
+   */
+}
+
 
 /**
  * PredictSpeed test
@@ -313,6 +432,7 @@ TEST_F(PECFusionSensorTest, test_MergeHeading )
    //--- 0 and 10
    EXPECT_NEAR(   5.0, fusion.MergeHeading(heading_0,heading_10).Value,    0.001);
    EXPECT_NEAR(   0.1, fusion.MergeHeading(heading_0,heading_10).Accuracy, 0.001);
+   //checking invariant of merging
    EXPECT_NEAR(   5.0, fusion.MergeHeading(heading_10,heading_0).Value,    0.001);
    EXPECT_NEAR(   0.1, fusion.MergeHeading(heading_10,heading_0).Accuracy, 0.001);
    //--- 90:0.6 and 180:0.3
@@ -348,6 +468,69 @@ TEST_F(PECFusionSensorTest, test_MergeHeading )
 }
 
 
+/**
+ * MergePosition test
+ */
+TEST_F(PECFusionSensorTest, test_MergePosition )
+{
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, PE::SPosition(), PE::SBasicSensor());
+
+   PE::SPosition pos_lat0_lon0     = PE::SPosition(    0,    0, 10);
+   PE::SPosition pos_lat1N_lon1E   = PE::SPosition(    1,    1,  9);
+   PE::SPosition pos_lat1N_lon1W   = PE::SPosition(    1,   -1,  8);
+   PE::SPosition pos_lat1S_lon1E   = PE::SPosition(   -1,    1,  7);
+   PE::SPosition pos_lat1S_lon1W   = PE::SPosition(   -1,   -1,  6);
+   PE::SPosition pos_lat1N_lon179E_acc5 = PE::SPosition(    1,  179,  5);
+   PE::SPosition pos_lat1N_lon179W_acc5 = PE::SPosition(    1, -179,  5);
+   PE::SPosition pos_lat1S_lon179E_acc4 = PE::SPosition(   -1,  179,  4);
+   PE::SPosition pos_lat1S_lon179W_acc3 = PE::SPosition(   -1, -179,  3);
+   PE::SPosition pos_lat1S_lon179E_acc2 = PE::SPosition(   -1,  179,  2);
+
+   //all positions are invalid
+   EXPECT_FALSE(fusion.MergePosition(PE::SPosition(), PE::SPosition()).IsValid());
+   //one position is invalid
+   EXPECT_EQ(pos_lat0_lon0, fusion.MergePosition(PE::SPosition(), pos_lat0_lon0));
+   EXPECT_EQ(pos_lat0_lon0, fusion.MergePosition(pos_lat0_lon0, PE::SPosition()));
+   //merge position around Primemeridian on the North semisphere
+   EXPECT_NEAR(   1.000, fusion.MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).Latitude,      0.001);
+   EXPECT_NEAR(  -0.059, fusion.MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).Longitude,     0.001);
+   EXPECT_NEAR(   8.471, fusion.MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).HorizontalAcc, 0.001);
+   //checking invariant of merging
+   EXPECT_NEAR(   1.000, fusion.MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).Latitude,      0.001);
+   EXPECT_NEAR(  -0.059, fusion.MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).Longitude,     0.001);
+   EXPECT_NEAR(   8.471, fusion.MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).HorizontalAcc, 0.001);
+   //merge position around Primemeridian on the South semisphere
+   EXPECT_NEAR(  -1.000, fusion.MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).Latitude,      0.001);
+   EXPECT_NEAR(  -0.077, fusion.MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).Longitude,     0.001);
+   EXPECT_NEAR(   6.461, fusion.MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).HorizontalAcc, 0.001);
+   //merge position around Ecvator on the East semisphere
+   EXPECT_NEAR(  -0.125, fusion.MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).Latitude,      0.001);
+   EXPECT_NEAR(   1.000, fusion.MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).Longitude,     0.001);
+   EXPECT_NEAR(   7.875, fusion.MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).HorizontalAcc, 0.001);
+   //merge position around Ecvator on the West semisphere
+   EXPECT_NEAR(  -0.143, fusion.MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).Latitude,      0.001);
+   EXPECT_NEAR(  -1.000, fusion.MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).Longitude,     0.001);
+   EXPECT_NEAR(   6.857, fusion.MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).HorizontalAcc, 0.001);
+   //merge position around Antimeridian on the North semisphere
+   EXPECT_NEAR(   1.000, fusion.MergePosition(pos_lat1N_lon179E_acc5,pos_lat1N_lon179W_acc5).Latitude,      0.001);
+   EXPECT_NEAR(-180.000, fusion.MergePosition(pos_lat1N_lon179E_acc5,pos_lat1N_lon179W_acc5).Longitude,     0.001);
+   EXPECT_NEAR(   5.000, fusion.MergePosition(pos_lat1N_lon179E_acc5,pos_lat1N_lon179W_acc5).HorizontalAcc, 0.001);
+   //merge position around Antimeridian on the South semisphere
+   EXPECT_NEAR(  -1.000, fusion.MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).Latitude,      0.001);
+   EXPECT_NEAR(-179.857, fusion.MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).Longitude,     0.001);
+   EXPECT_NEAR(   3.428, fusion.MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
+   //checking invariant of merging
+   EXPECT_NEAR(  -1.000, fusion.MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).Latitude,      0.001);
+   EXPECT_NEAR(-179.857, fusion.MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).Longitude,     0.001);
+   EXPECT_NEAR(   3.428, fusion.MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).HorizontalAcc, 0.001);
+   //merge position around Antimeridian on the South semisphere
+   EXPECT_NEAR(  -1.000, fusion.MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Latitude,      0.001);
+   EXPECT_NEAR( 179.800, fusion.MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Longitude,     0.001);
+   EXPECT_NEAR(   2.399, fusion.MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
+}
+
+
+ 
 /**
  * Adding speed test
  */

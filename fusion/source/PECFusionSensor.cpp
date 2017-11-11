@@ -20,6 +20,26 @@
 
 using namespace PE;
 
+
+
+
+PE::TValue ToAngDistance(const PE::TValue& firstHeading, const PE::TValue& secondHeading)
+{
+   if   ( 180 < (firstHeading - secondHeading))
+   {
+      return firstHeading - (secondHeading+360.0);
+   }
+   else if ( -180 > (firstHeading - secondHeading))
+   {
+      return firstHeading+360.0 - secondHeading;
+   }
+   else
+   {
+      return firstHeading - secondHeading;
+   }
+}
+
+
 PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading)
 : m_Timestamp(timestamp)
 , m_Position(position)
@@ -35,53 +55,70 @@ PE::CFusionSensor::~CFusionSensor()
 }
 
 
-void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading)
+void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed)
 {
+   if ( m_Timestamp > timestamp )
+   {
+      return;
+   }
+   SBasicSensor posSpeed   = MergeSensor(
+                                PredictSpeed(m_Timestamp, m_Position, timestamp, position),
+                                speed
+                             );
+   SBasicSensor posHeading = MergeHeading(
+                                PredictHeading(m_Position, position),
+                                heading
+                             );
    m_Speed     = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp),
-                    PredictSpeed(m_Timestamp, m_Position, timestamp, position)
+                    posSpeed
                  );
    m_AngSpeed  = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp),
-                    PredictAngSpeed(m_Timestamp, m_Heading, timestamp, heading)
+                    PredictAngSpeed(m_Timestamp,m_Heading,timestamp,posHeading)
                  );
-   printf("m_Position: %0.2f %0.2f %02.2f %s\n", m_Position.Latitude, m_Position.Longitude, m_Position.HorizontalAcc, (m_Position.IsValid()?"VALID":"INVALID"));
-   printf("position  : %0.2f %0.2f %02.2f %s\n", position.Latitude, position.Longitude, position.HorizontalAcc, (position.IsValid()?"VALID":"INVALID"));
+   m_Heading   = MergeHeading(
+                    PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed),
+                    posHeading
+                 );
    m_Position  = MergePosition(
                     PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed),
                     position
-                 );
-   printf("m_Position: %0.2f %0.2f %02.2f %s\n", m_Position.Latitude, m_Position.Longitude, m_Position.HorizontalAcc, (m_Position.IsValid()?"VALID":"INVALID"));
-   m_Heading   = MergeHeading(
-                    PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed),
-                    heading
                  );
    m_Timestamp = timestamp;
 }
 
 
-void PE::CFusionSensor::AddVelocity(const TTimestamp& timestamp, const SBasicSensor& speed)
+void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor& speed)
 {
+   if ( m_Timestamp > timestamp )
+   {
+      return;
+   }
    m_Speed     = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp),
                     speed
                  );
    m_AngSpeed  = PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp);
-   m_Position  = PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed);
    m_Heading   = PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed);
+   m_Position  = PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed);
    m_Timestamp = timestamp;
 }
 
 
-void PE::CFusionSensor::AddAngularVelocity(const TTimestamp& timestamp, const SBasicSensor& angSpeed)
+void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSensor& angSpeed)
 {
+   if ( m_Timestamp > timestamp )
+   {
+      return;
+   }
    m_Speed     = PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp);
    m_AngSpeed  = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp),
                     angSpeed
                  );
-   m_Position  = PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed);
    m_Heading   = PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed);
+   m_Position  = PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed);
    m_Timestamp = timestamp;
 }
 
@@ -131,6 +168,24 @@ SBasicSensor PE::CFusionSensor::PredictHeading(const TTimestamp& timestampFirst,
 }
 
 
+SBasicSensor PE::CFusionSensor::PredictHeading(const SPosition& positionFirst, const SPosition& positionLast)
+{
+   SBasicSensor resultHeading;
+   if ( positionFirst.IsValid() && 
+        positionLast.IsValid())
+   {
+      TValue distance        = TOOLS::ToDistancePrecise(positionFirst, positionLast);
+      if ( 0.0 < distance )
+      {
+         TValue deviation       = positionFirst.HorizontalAcc + positionLast.HorizontalAcc;
+         resultHeading.Value    = TOOLS::ToHeading(positionFirst, positionLast);
+         resultHeading.Accuracy = TOOLS::ToDegrees(atan(deviation / distance)) / 2;
+      }
+   }
+   return resultHeading;
+}
+
+
 SPosition PE::CFusionSensor::PredictPosition(const TTimestamp& timestampFirst, const SPosition& position, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& speed)
 {
    SPosition resultPosition = position;
@@ -149,6 +204,29 @@ SPosition PE::CFusionSensor::PredictPosition(const TTimestamp& timestampFirst, c
 }
 
 
+SPosition PE::CFusionSensor::PredictPosition(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast, const SPosition& position, const SBasicSensor& speed)
+{
+   SPosition resultPosition = position;
+
+   if ( timestampLast > timestampFirst &&
+          headingFirst.IsValid() &&
+           headingLast.IsValid() &&
+              position.IsValid() &&
+                 speed.IsValid())
+   {
+      TValue deltaTS              = timestampLast - timestampFirst;
+      TValue omega                = TOOLS::ToRadians(fabs(ToAngDistance(headingFirst.Value, headingLast.Value)));
+      TValue arch                 = speed.Value * deltaTS;
+      TValue horda                = arch * ( 0 < omega ? sin(omega) / omega : 1 );
+      TValue additionlaInAccuracy = speed.Accuracy * deltaTS / cos(TOOLS::ToRadians(headingFirst.Accuracy + headingLast.Accuracy)/2);
+      resultPosition              = TOOLS::ToPosition(position, horda, headingLast.Value);
+      resultPosition.HorizontalAcc= position.HorizontalAcc + additionlaInAccuracy;
+   }
+
+   return resultPosition;
+}
+
+
 SBasicSensor PE::CFusionSensor::PredictSpeed(const TTimestamp& timestampFirst, const SPosition& positionFirst, const TTimestamp& timestampLast, const SPosition& positionLast)
 {
    SBasicSensor resutlSpeed;
@@ -162,40 +240,6 @@ SBasicSensor PE::CFusionSensor::PredictSpeed(const TTimestamp& timestampFirst, c
       resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) / deltaTS;
    }
    return resutlSpeed;
-}
-/*
-PE::TValue ToAngDistance(const PE::TValue& firstHeading, const PE::TValue& secondHeading)
-{
-   if      ( firstHeading > 270 && 
-             secondHeading < 90 )
-   {
-      return firstHeading - 360 - secondHeading;
-   }
-   else if ( secondHeading > 270 && 
-             firstHeading  < 90 )
-   {
-      return firstHeading + 360 - secondHeading;
-   }
-   else
-   {
-      return firstHeading - secondHeading;
-   }
-}
-*/
-PE::TValue ToAngDistance(const PE::TValue& firstHeading, const PE::TValue& secondHeading)
-{
-   if   ( 180 < (firstHeading - secondHeading))
-   {
-      return firstHeading - (secondHeading+360.0);
-   }
-   else if ( -180 > (firstHeading - secondHeading))
-   {
-      return firstHeading+360.0 - secondHeading;
-   }
-   else
-   {
-      return firstHeading - secondHeading;
-   }
 }
 
 
@@ -218,9 +262,13 @@ SBasicSensor PE::CFusionSensor::PredictAngSpeed(const TTimestamp& timestampFirst
 SBasicSensor PE::CFusionSensor::MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2)
 {
    if ( false == sen1.IsValid() )
+   {
       return sen2;
+   }
    if ( false == sen2.IsValid() )
+   {
       return sen1;
+   }
    TAccuracy   K = sen1.Accuracy + sen2.Accuracy;
    TValue    val = (sen1.Value * ( K - sen1.Accuracy ) + sen2.Value * ( K - sen2.Accuracy )) / K;
    TAccuracy acc = (sen1.Accuracy * ( K - sen1.Accuracy ) + sen2.Accuracy * ( K - sen2.Accuracy )) / K;
@@ -234,26 +282,58 @@ SBasicSensor PE::CFusionSensor::MergeHeading(const SBasicSensor& head1, const SB
    SBasicSensor headExt2 = head2;
 
    if      ( 180 < (head1.Value - head2.Value) )
+   {
       headExt2.Value += 360.0;
-   else if ( -180 > (head1.Value - head2.Value) )
-      headExt1.Value += 360.0;
+   }
 
+   else if ( -180 > (head1.Value - head2.Value) )
+   {
+      headExt1.Value += 360.0;
+   }
+   
    SBasicSensor result = MergeSensor(headExt1, headExt2);
+
    if ( 360.0 <= result.Value )
+   {
       result.Value -= 360.0;
+   }
+   
    return result;
 }
 
 SPosition PE::CFusionSensor::MergePosition(const SPosition& pos1, const SPosition& pos2)
 {
    if ( false == pos1.IsValid() )
+   {
       return pos2;
+   }
    if ( false == pos2.IsValid() )
+   {
       return pos1;
+   }
+   TValue lon1 = pos1.Longitude;
+   TValue lon2 = pos2.Longitude;
+
+   if      ( 180 < (lon1 - lon2) )
+   {
+      lon2 += 360.0;
+   }
+
+   else if ( -180 > (lon1 - lon2) )
+   {
+      lon1 += 360.0;
+   }
+
    TAccuracy   K = pos1.HorizontalAcc + pos2.HorizontalAcc;
    TValue lat = (pos1.Latitude * ( K - pos1.HorizontalAcc ) + pos2.Latitude * ( K - pos2.HorizontalAcc )) / K;
-   TValue lon = (pos1.Longitude * ( K - pos1.HorizontalAcc ) + pos2.Longitude * ( K - pos2.HorizontalAcc )) / K;
+   TValue lon = (lon1 * ( K - pos1.HorizontalAcc ) + lon2 * ( K - pos2.HorizontalAcc )) / K;
    TAccuracy horizontalAcc = (pos1.HorizontalAcc * ( K - pos1.HorizontalAcc ) + pos2.HorizontalAcc * ( K - pos2.HorizontalAcc )) / K;
+
+   if ( 180.0 <= lon )
+   {
+      lon -= 360.0;
+   }
+
    return SPosition(lat,lon,horizontalAcc);
 }
 

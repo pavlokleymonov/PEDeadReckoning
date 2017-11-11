@@ -201,6 +201,20 @@ TEST_F(PEToolsTest, next_coordinates_crossing_grinvich_test)
    EXPECT_NEAR(  0.000123, pos2.Longitude, 0.000001);
 }
 
+//Test calc new coordinates based on distance, heading and start coordinates crossing antimeridian
+TEST_F(PEToolsTest, next_coordinates_crossing_antimeredian_test)
+{
+   //cross E->W
+   PE::SPosition pos1 = PE::TOOLS::ToPosition(PE::SPosition( 52.123456,179.999123),100,90.0);
+   EXPECT_NEAR( 52.123456, pos1.Latitude , 0.000001);
+   EXPECT_NEAR(-179.999412, pos1.Longitude, 0.000001);
+
+   //cross W->E
+   PE::SPosition pos2 = PE::TOOLS::ToPosition(PE::SPosition( 52.123456,-179.999132),100,270.0);
+   EXPECT_NEAR( 52.123456, pos2.Latitude , 0.000001);
+   EXPECT_NEAR(179.999403, pos2.Longitude, 0.000001);
+}
+
 //Test calc new coordinates based on distance, heading and start coordinates crossing ecvator
 TEST_F(PEToolsTest, next_coordinates_crossing_ecvator_test)
 {
