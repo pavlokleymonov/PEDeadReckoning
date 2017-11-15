@@ -69,6 +69,8 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
                                 PredictHeading(m_Position, position),
                                 heading
                              );
+   SBasicSensor startHeading = m_Heading;
+
    m_Speed     = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp),
                     posSpeed
@@ -82,7 +84,7 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
                     posHeading
                  );
    m_Position  = MergePosition(
-                    PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed),
+                    PredictPosition(m_Timestamp, startHeading, timestamp, m_Heading, m_Position, m_Speed),
                     position
                  );
    m_Timestamp = timestamp;
@@ -95,13 +97,14 @@ void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor
    {
       return;
    }
+   SBasicSensor startHeading = m_Heading;
    m_Speed     = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp),
                     speed
                  );
    m_AngSpeed  = PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp);
    m_Heading   = PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed);
-   m_Position  = PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed);
+   m_Position  = PredictPosition(m_Timestamp, startHeading, timestamp, m_Heading, m_Position, m_Speed);
    m_Timestamp = timestamp;
 }
 
@@ -112,13 +115,14 @@ void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSen
    {
       return;
    }
+   SBasicSensor startHeading = m_Heading;
    m_Speed     = PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp);
    m_AngSpeed  = MergeSensor(
                     PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp),
                     angSpeed
                  );
    m_Heading   = PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed);
-   m_Position  = PredictPosition(m_Timestamp, m_Position, m_Heading, timestamp, m_Speed);
+   m_Position  = PredictPosition(m_Timestamp, startHeading, timestamp, m_Heading, m_Position, m_Speed);
    m_Timestamp = timestamp;
 }
 
@@ -183,24 +187,6 @@ SBasicSensor PE::CFusionSensor::PredictHeading(const SPosition& positionFirst, c
       }
    }
    return resultHeading;
-}
-
-
-SPosition PE::CFusionSensor::PredictPosition(const TTimestamp& timestampFirst, const SPosition& position, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& speed)
-{
-   SPosition resultPosition = position;
-   if ( timestampLast > timestampFirst && 
-        position.IsValid() &&
-         heading.IsValid() &&
-           speed.IsValid())
-   {
-      TValue deltaTS              = timestampLast - timestampFirst;
-      TValue distance             = speed.Value * deltaTS;
-      TValue additionlaInAccuracy = speed.Accuracy * deltaTS / cos(TOOLS::ToRadians(heading.Accuracy));
-      resultPosition              = TOOLS::ToPosition(position, distance, heading.Value);
-      resultPosition.HorizontalAcc= position.HorizontalAcc + additionlaInAccuracy;
-   }
-   return resultPosition;
 }
 
 
