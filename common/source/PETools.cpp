@@ -87,3 +87,20 @@ SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, 
                      fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0,
                      start.HorizontalAcc );
 }
+
+void PE::TOOLS::Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot )
+{
+   Transform2D(xValue,yValue,zRot);
+   Transform2D(yValue,zValue,xRot);
+   Transform2D(xValue,zValue,yRot);
+}
+
+void PE::TOOLS::Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot )
+{
+   TValue x  = xValue;
+   TValue y  = yValue;
+   TValue fi = PE::TOOLS::ToRadians(zRot);
+   xValue = x*cos(fi) - y*sin(fi);
+   yValue = y*cos(fi) + x*sin(fi);
+}
+
