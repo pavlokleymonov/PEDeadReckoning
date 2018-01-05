@@ -90,9 +90,9 @@ SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, 
 
 void PE::TOOLS::Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot )
 {
-   Transform2D(xValue,yValue,zRot);
    Transform2D(yValue,zValue,xRot);
-   Transform2D(xValue,zValue,yRot);
+   Transform2D(zValue,xValue,yRot);
+   Transform2D(xValue,yValue,zRot);
 }
 
 void PE::TOOLS::Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot )

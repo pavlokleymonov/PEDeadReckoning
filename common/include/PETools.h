@@ -90,17 +90,14 @@ TValue ToHeading(const TValue& startHeading, const TTimestamp& deltaTime, const 
 SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
 
 /**
- * Transforms input values to new coordinate system.
+ * Transforms values to new coordinate system and update them accordingly
  *
- * @param inXValue    input X-component of value
- * @param inYValue    input Y-component of value
- * @param inZValue    input Z-component of value
- * @param xRotDeg     rotation around x-axis [deg]
- * @param yRotDeg     rotation around y-axis [deg]
- * @param zRotDeg     rotation around z-axis [deg]
- * @param outXValue   result X-component of value
- * @param outYValue   result Y-component of value
- * @param outZValue   result Z-component of value
+ * @param xValue    X-component of value
+ * @param yValue    Y-component of value
+ * @param zValue    Z-component of value
+ * @param xRot      rotation around x-axis [deg]
+ * @param yRot      rotation around y-axis [deg]
+ * @param zRot      rotation around z-axis [deg]
  */
 void Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot );
 void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );

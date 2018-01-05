@@ -244,6 +244,132 @@ TEST_F(PEToolsTest, complex_test)
    EXPECT_NEAR( -5.1234567, pos2.Longitude, 0.0000001);
 }
 
+TEST_F(PEToolsTest, coordinate_plus_0_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = 0;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(1,x,0.001);
+   EXPECT_NEAR(0,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_plus_45_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = 45;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(0.7071,x,0.001);
+   EXPECT_NEAR(0.7071,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_plus_90_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = 90;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(0,x,0.001);
+   EXPECT_NEAR(1,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_plus_180_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = 180;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(-1,x,0.001);
+   EXPECT_NEAR(0,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_plus_270_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = 270;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(0,x,0.001);
+   EXPECT_NEAR(-1,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_plus_360_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = 360;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(1,x,0.001);
+   EXPECT_NEAR(0,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_minus_90_deg_transform_2d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue zAng = -90;
+   PE::TOOLS::Transform2D(x, y, zAng);
+   EXPECT_NEAR(0,x,0.001);
+   EXPECT_NEAR(-1,y,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_x0_y0_z90_deg_transform_3d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue z = 0;
+   PE::TValue xAng = 0;
+   PE::TValue yAng = 0;
+   PE::TValue zAng = 90;
+   PE::TOOLS::Transform3D(x, y, z, xAng, yAng, zAng);
+   EXPECT_NEAR(0,x,0.001);
+   EXPECT_NEAR(1,y,0.001);
+   EXPECT_NEAR(0,z,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_x90_y0_z90_deg_transform_3d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue z = 0;
+   PE::TValue xAng = 90;
+   PE::TValue yAng = 0;
+   PE::TValue zAng = 90;
+   PE::TOOLS::Transform3D(x, y, z, xAng, yAng, zAng);
+   EXPECT_NEAR(0,x,0.001);
+   EXPECT_NEAR(1,y,0.001);
+   EXPECT_NEAR(0,z,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_x90_y90_z90_deg_transform_3d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 0;
+   PE::TValue z = 0;
+   PE::TValue xAng = 90;
+   PE::TValue yAng = 90;
+   PE::TValue zAng = 90;
+   PE::TOOLS::Transform3D(x, y, z, xAng, yAng, zAng);
+   EXPECT_NEAR(0,x,0.001);
+   EXPECT_NEAR(0,y,0.001);
+   EXPECT_NEAR(-1,z,0.001);
+}
+
+TEST_F(PEToolsTest, coordinate_vX1_vY2_vZ3_x90_y90_z90_deg_transform_3d_test)
+{
+   PE::TValue x = 1;
+   PE::TValue y = 2;
+   PE::TValue z = 3;
+   PE::TValue xAng = 90;
+   PE::TValue yAng = 90;
+   PE::TValue zAng = 90;
+   PE::TOOLS::Transform3D(x, y, z, xAng, yAng, zAng);
+   EXPECT_NEAR(3,x,0.001);
+   EXPECT_NEAR(2,y,0.001);
+   EXPECT_NEAR(-1,z,0.001);
+}
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
