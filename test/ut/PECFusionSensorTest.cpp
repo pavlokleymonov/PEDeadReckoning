@@ -676,6 +676,133 @@ TEST_F(PECFusionSensorTest, test_longitudual_driving_speed_acc_1_pos_acc_1_till_
    EXPECT_NEAR( 3.3665, fusion.GetPosition().HorizontalAcc,0.0001);
 }
 
+/**
+ * Test drive straightforward no GPS signal no turns
+ */
+TEST_F(PECFusionSensorTest, test_drive_straightforward )
+{
+   PE::CFusionSensor fusion = PE::CFusionSensor(10.0, PE::SPosition(50.0000000, 10.0000000, 1), PE::SBasicSensor( 90.0, 0.30 ));
+
+   //speed 3.574m/s gyro 0
+   fusion.AddSpeed(10.25, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(10.25, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(10.50, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(10.50, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(10.75, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(10.75, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(11.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(11.00, PE::SBasicSensor(0.0, 0.001 ));
+   //timestamp
+   EXPECT_NEAR(11.0000000, fusion.GetTimestamp(),0.0000001);
+   //heading
+   EXPECT_NEAR(90.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR( 0.3010, fusion.GetHeading().Accuracy,0.0001);
+   //position
+   EXPECT_NEAR(50.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(10.0000500, fusion.GetPosition().Longitude,0.0000001);
+   EXPECT_NEAR( 1.0011, fusion.GetPosition().HorizontalAcc,0.0001);
+
+   fusion.AddSpeed(11.25, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(11.25, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(11.50, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(11.50, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(11.75, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(11.75, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(12.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(12.00, PE::SBasicSensor(0.0, 0.001 ));
+   //timestamp
+   EXPECT_NEAR(12.0000000, fusion.GetTimestamp(),0.0000001);
+   //heading
+   EXPECT_NEAR(90.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR( 0.3025, fusion.GetHeading().Accuracy,0.0001);
+   //position
+   EXPECT_NEAR(50.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(10.0001000, fusion.GetPosition().Longitude,0.0000001);
+   EXPECT_NEAR( 1.0023, fusion.GetPosition().HorizontalAcc,0.0001);
+
+   fusion.AddSpeed(12.25, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(12.25, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(12.50, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(12.50, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(12.75, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(12.75, PE::SBasicSensor(0.0, 0.001 ));
+   fusion.AddSpeed(13.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(13.00, PE::SBasicSensor(0.0, 0.001 ));
+   //timestamp
+   EXPECT_NEAR(13.0000000, fusion.GetTimestamp(),0.0000001);
+   //heading
+   EXPECT_NEAR(90.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR( 0.3040, fusion.GetHeading().Accuracy,0.0001);
+   //position
+   EXPECT_NEAR(50.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(10.0001500, fusion.GetPosition().Longitude,0.0000001);
+   EXPECT_NEAR( 1.0035, fusion.GetPosition().HorizontalAcc,0.0001);
+}
+
+/**
+ * Test round drive no GPS signal
+ */
+TEST_F(PECFusionSensorTest, test_drive_360_round_drive )
+{
+   PE::CFusionSensor fusion = PE::CFusionSensor(10.0, PE::SPosition(50.0000000, 10.0000000, 1), PE::SBasicSensor( 90.0, 0.30 ));
+
+   //speed 3.574m/s gyro 45grad/s
+   fusion.AddSpeed(11.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(11.00, PE::SBasicSensor(45, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(12.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(12.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(13.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(13.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(14.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(14.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(15.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(15.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(16.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(16.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(17.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(17.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(18.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(18.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+
+   fusion.AddSpeed(19.00, PE::SBasicSensor( 3.574, 0.001 ));
+   fusion.AddAngSpeed(19.00, PE::SBasicSensor(45.0, 0.001 ));
+   EXPECT_NEAR(0.0000, fusion.GetHeading().Value,0.0001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Latitude,0.0000001);
+   EXPECT_NEAR(0.0000000, fusion.GetPosition().Longitude,0.0000001);
+}
+
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
