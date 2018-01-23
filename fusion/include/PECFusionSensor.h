@@ -87,16 +87,6 @@ public:
     */
    const SPosition& GetPosition() const;
 
-   //TODO: have to be moved to private section
-   SBasicSensor PredictSensorAccuracy(const TTimestamp& timestampFirst, const SBasicSensor& sensor, const TTimestamp& timestampLast);
-   SBasicSensor PredictHeading(const TTimestamp& timestampFirst, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& angSpeed);
-   SBasicSensor PredictHeading(const SPosition& positionFirst, const SPosition& positionLast);
-   SPosition    PredictPosition(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast, const SPosition& position, const SBasicSensor& speed);
-   SBasicSensor PredictSpeed(const TTimestamp& timestampFirst, const SPosition& positionFirst, const TTimestamp& timestampLast, const SPosition& positionLast);
-   SBasicSensor PredictAngSpeed(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast);
-   SBasicSensor MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2);
-   SBasicSensor MergeHeading(const SBasicSensor& head1, const SBasicSensor& head2);
-   SPosition    MergePosition(const SPosition& pos1, const SPosition& pos2);
 private:
 
    TTimestamp m_Timestamp;

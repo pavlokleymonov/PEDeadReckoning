@@ -33,6 +33,7 @@ add_library ( pe_common STATIC
 )
 
 add_library ( pe_fusion STATIC
+   ${REPOSITORY_ROOT}/fusion/source/PEFusionTools.cpp
    ${REPOSITORY_ROOT}/fusion/source/PECFusionSensor.cpp
 )
 
@@ -70,12 +71,20 @@ add_executable(test_pe_tools
 target_link_libraries(test_pe_tools pe_common gtest pthread)
 add_test(NAME test_pe_tools COMMAND test_pe_tools)
 
+#####################
+#Test fusion tools PE::FUSION
+add_executable(test_pe_fusion_tools
+   PEFusionToolsTest.cpp
+)
+target_link_libraries(test_pe_fusion_tools pe_fusion pe_common gtest pthread)
+add_test(NAME test_pe_fusion_tools COMMAND test_pe_fusion_tools)
+
 #############################
 #Test class PE::CFusionSensor
 add_executable(test_pe_fusion_sensor
    PECFusionSensorTest.cpp
 )
-target_link_libraries(test_pe_fusion_sensor pe_common pe_fusion gtest pthread )
+target_link_libraries(test_pe_fusion_sensor pe_fusion pe_common gtest pthread )
 add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)
 
 ####################################
