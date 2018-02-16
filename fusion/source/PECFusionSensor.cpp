@@ -36,76 +36,146 @@ PE::CFusionSensor::~CFusionSensor()
 {
 }
 
-
-void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed)
+void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position)
 {
-   if ( m_Timestamp > timestamp )
+   if      ( m_Timestamp == timestamp )
    {
-      return;
+      m_Position = MergePosition( m_Position, position );
    }
-   SBasicSensor posSpeed   = MergeSensor(
-                                PredictSpeed(m_Timestamp, m_Position, timestamp, position),
-                                speed
-                             );
-   SBasicSensor posHeading = MergeHeading(
-                                PredictHeading(m_Position, position),
-                                heading
-                             );
-   SBasicSensor startHeading = m_Heading;
+   else if( m_Timestamp < timestamp )
+   {
+      TTimestamp deltaTimestamp = timestamp - m_Timestamp;
 
-   m_Speed     = MergeSensor(
-                    PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp),
-                    posSpeed
-                 );
-   m_AngSpeed  = MergeSensor(
-                    PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp),
-                    PredictAngSpeed(m_Timestamp,m_Heading,timestamp,posHeading)
-                 );
-   m_Heading   = MergeHeading(
-                    PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed),
-                    posHeading
-                 );
-   m_Position  = MergePosition(
-                    PredictPosition(m_Timestamp, startHeading, timestamp, m_Heading, m_Position, m_Speed),
-                    position
-                 );
-   m_Timestamp = timestamp;
+      SPosition newPosition = MergePosition(
+                     PredictPosition(deltaTimestamp, m_Heading, m_AngSpeed, m_Position, m_Speed),
+                     position
+                  );
+
+      SBasicSensor newHeading = MergeHeading(
+                     PredictHeading(deltaTimestamp, m_Heading, m_AngSpeed),
+                     PredictHeading(m_Position, newPosition)
+                  );
+
+      SBasicSensor newAngSpeed = MergeSensor(
+                     PredictAngSpeed(deltaTimestamp, m_Heading, newHeading),
+                     PredictSensorAccuracy(deltaTimestamp, m_AngSpeed)
+                  );
+
+      SBasicSensor newSpeed = MergeSensor(
+                     PredictSpeed(deltaTimestamp, m_Position, newPosition, newAngSpeed),
+                     PredictSensorAccuracy(deltaTimestamp, m_Speed)
+                  );
+
+      m_Timestamp = timestamp;
+      m_Position  = newPosition;
+      m_Heading   = newHeading;
+      m_AngSpeed  = newAngSpeed;
+      m_Speed     = newSpeed;
+   }
+}
+
+
+void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSensor& heading)
+{
+   if      ( m_Timestamp == timestamp )
+   {
+      m_Heading = MergeHeading( m_Heading, heading );
+   }
+   else if( m_Timestamp < timestamp )
+   {
+      TTimestamp deltaTimestamp = timestamp - m_Timestamp;
+
+      SBasicSensor newHeading = MergeHeading(
+                     PredictHeading(deltaTimestamp, m_Heading, m_AngSpeed),
+                     heading
+                  );
+      SBasicSensor newAngSpeed = MergeSensor(
+                     PredictAngSpeed(deltaTimestamp, m_Heading, newHeading),
+                     PredictSensorAccuracy(deltaTimestamp, m_AngSpeed)
+                  );
+
+      SPosition newPosition = PredictPosition(deltaTimestamp, m_Heading, newAngSpeed, m_Position, m_Speed);
+
+      SBasicSensor newSpeed = MergeSensor(
+                     PredictSpeed(deltaTimestamp, m_Position, newPosition, newAngSpeed),
+                     PredictSensorAccuracy(deltaTimestamp, m_Speed)
+                  );
+
+      m_Timestamp = timestamp;
+      m_Position  = newPosition;
+      m_Heading   = newHeading;
+      m_AngSpeed  = newAngSpeed;
+      m_Speed     = newSpeed;
+   }
 }
 
 
 void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor& speed)
 {
-   if ( m_Timestamp > timestamp )
+   if      ( m_Timestamp == timestamp )
    {
-      return;
+      m_Speed = MergeSensor( m_Speed, speed );
    }
-   SBasicSensor startHeading = m_Heading;
-   m_Speed     = MergeSensor(
-                    PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp),
-                    speed
-                 );
-   m_AngSpeed  = PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp);
-   m_Heading   = PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed);
-   m_Position  = PredictPosition(m_Timestamp, startHeading, timestamp, m_Heading, m_Position, m_Speed);
-   m_Timestamp = timestamp;
+   else if( m_Timestamp < timestamp )
+   {
+      TTimestamp deltaTimestamp = timestamp - m_Timestamp;
+
+      SBasicSensor newSpeed = MergeSensor(
+                     PredictSensorAccuracy(deltaTimestamp, m_Speed),
+                     speed
+                  );
+
+      SBasicSensor newAngSpeed = PredictSensorAccuracy(deltaTimestamp, m_AngSpeed);
+
+      SPosition newPosition = PredictPosition(deltaTimestamp, m_Heading, newAngSpeed, m_Position, newSpeed);
+
+      SBasicSensor newHeading = MergeSensor(
+                     PredictHeading(deltaTimestamp, m_Heading, newAngSpeed),
+                     PredictHeading(m_Position, newPosition)
+                  );
+
+      m_Timestamp = timestamp;
+      m_Position  = newPosition;
+      m_Heading   = newHeading;
+      m_AngSpeed  = newAngSpeed;
+      m_Speed     = newSpeed;
+   }
 }
 
 
 void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSensor& angSpeed)
 {
-   if ( m_Timestamp > timestamp )
+   if      ( m_Timestamp == timestamp )
    {
-      return;
+      m_AngSpeed = MergeSensor( m_AngSpeed, angSpeed );
    }
-   SBasicSensor startHeading = m_Heading;
-   m_Speed     = PredictSensorAccuracy(m_Timestamp, m_Speed, timestamp);
-   m_AngSpeed  = MergeSensor(
-                    PredictSensorAccuracy(m_Timestamp, m_AngSpeed, timestamp),
-                    angSpeed
-                 );
-   m_Heading   = PredictHeading(m_Timestamp, m_Heading, timestamp, m_AngSpeed);
-   m_Position  = PredictPosition(m_Timestamp, startHeading, timestamp, m_Heading, m_Position, m_Speed);
-   m_Timestamp = timestamp;
+   else if( m_Timestamp < timestamp )
+   {
+      TTimestamp deltaTimestamp = timestamp - m_Timestamp;
+
+      SBasicSensor newAngSpeed = MergeSensor(
+                     PredictSensorAccuracy(deltaTimestamp, m_AngSpeed),
+                     angSpeed
+                  );
+
+      SPosition newPosition = PredictPosition(deltaTimestamp, m_Heading, newAngSpeed, m_Position, m_Speed);
+
+      SBasicSensor newHeading = MergeSensor(
+                     PredictHeading(deltaTimestamp, m_Heading, newAngSpeed),
+                     PredictHeading(m_Position, newPosition)
+                  );
+
+      SBasicSensor newSpeed = MergeSensor(
+                     PredictSensorAccuracy(deltaTimestamp, m_Speed),
+                     PredictSpeed(deltaTimestamp, m_Position, newPosition, newAngSpeed)
+                  );
+
+      m_Timestamp = timestamp;
+      m_Position  = newPosition;
+      m_Heading   = newHeading;
+      m_AngSpeed  = newAngSpeed;
+      m_Speed     = newSpeed;
+   }
 }
 
 

@@ -51,9 +51,15 @@ public:
     *
     * @param timestamp    timestamp in seconds
     * @param position     position information
+    */
+   void AddPosition(const TTimestamp& timestamp, const SPosition& position);
+   /**
+    * Adds new heading.
+    *
+    * @param timestamp    timestamp in seconds
     * @param heading      heading of based position in degree (0 - Nord, 90 - East, 180 - South, 270 - West)
     */
-   void AddPosition(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed);
+   void AddHeading(const TTimestamp& timestamp, const SBasicSensor& heading);
    /**
     * Adds new linear velocity
     *
@@ -88,15 +94,25 @@ public:
    const SPosition& GetPosition() const;
 
 private:
-
+   /**
+    * The timestamp of the latest position in seconds
+    */
    TTimestamp m_Timestamp;
-
+   /**
+    * The latest position
+    */
    SPosition m_Position;
-
+   /**
+    * The heading of position in degree (0 - Nord, 90 - East, 180 - South, 270 - West)
+    */
    SBasicSensor m_Heading;
-
+   /**
+    * The angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
+    */
    SBasicSensor m_AngSpeed;
-
+   /**
+    * The linear velocity in meter/seconds
+    */
    SBasicSensor m_Speed;
 
 };

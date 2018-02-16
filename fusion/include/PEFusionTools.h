@@ -24,23 +24,21 @@ namespace FUSION {
 /**
  * Predicts(reduce) sensor accuracy based on delta time and original accuracy
  *
- * @param timestampFirst   timestamp of original accuracy
+ * @param deltaTimestamp   delta timestamp between original and predicted accuracy
  * @param sensor           original sensors data
- * @param timestampLast    timestamp for predicted status of sensor
- * @return                 sensors data wich is adopted for new timestamp
+ * @return                 sensors data wich is adopted according to deltatimestamp
  */
-SBasicSensor PredictSensorAccuracy(const TTimestamp& timestampFirst, const SBasicSensor& sensor, const TTimestamp& timestampLast);
+SBasicSensor PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor);
 
 /**
  * Predicts new heading based on knowed angular velocity, delta time and original heading.
  *
- * @param timestampFirst   timestamp of original heading
+ * @param deltaTimestamp   delta timestamp between original values and predicted heading
  * @param heading          original heading
- * @param timestampLast    timestamp for predicted heading
  * @param angSpeed         angular velocity
  * @return                 predicted heading
  */
-SBasicSensor PredictHeading(const TTimestamp& timestampFirst, const SBasicSensor& heading, const TTimestamp& timestampLast, const SBasicSensor& angSpeed);
+SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed);
 
 /**
  * Predicts new heading based on knowed old and new positions.
@@ -52,39 +50,37 @@ SBasicSensor PredictHeading(const TTimestamp& timestampFirst, const SBasicSensor
 SBasicSensor PredictHeading(const SPosition& positionFirst, const SPosition& positionLast);
 
 /**
- * Predicts new position based on knowed old, new heading, linear speed, delta time and original position.
+ * Predicts new position based on knowed start heading, angular velocity, linear speed, delta time and original position.
  *
- * @param timestampFirst   timestamp of original heading and position
- * @param headingFirst     old heading
- * @param timestampLast    timestamp for predicted position
- * @param headingLast      new heading
+ * @param deltaTimestamp   delta timestamp between original values and predicted position
+ * @param heading          start heading
+ * @param angSpeed         angular velocity
  * @param position         original position
  * @param speed            linear speed
  * @return                 predicted position
  */
-SPosition   PredictPosition(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast, const SPosition& position, const SBasicSensor& speed);
+SPosition   PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed);
 
 /**
- * Predicts new linear speed based on knowed delta time, old and new positions.
+ * Predicts new linear speed based on knowed delta time, angular velocity, old and new positions.
  *
- * @param timestampFirst   timestamp of old position
+ * @param deltaTimestamp   delta timestamp between old and new positions
  * @param positionFirst    old position
- * @param timestampLast    timestamp for new position
  * @param positionLast     new position
+ * @param angSpeed         angular velocity
  * @return                 predicted linear speed
  */
-SBasicSensor PredictSpeed(const TTimestamp& timestampFirst, const SPosition& positionFirst, const TTimestamp& timestampLast, const SPosition& positionLast);
+SBasicSensor PredictSpeed(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& angSpeed);
 
 /**
  * Predicts new angular velocity based on knowed delta time, old and new headings.
  *
- * @param timestampFirst   timestamp of old heading
+ * @param deltaTimestamp   delta timestamp between old and new headings
  * @param headingFirst     old heading
- * @param timestampLast    timestamp of new heading
  * @param headingLast      new heading
  * @return                 predicted angular velocity
  */
-SBasicSensor PredictAngSpeed(const TTimestamp& timestampFirst, const SBasicSensor& headingFirst, const TTimestamp& timestampLast, const SBasicSensor& headingLast);
+SBasicSensor PredictAngSpeed(const TTimestamp& deltaTimestamp, const SBasicSensor& headingFirst, const SBasicSensor& headingLast);
 
 /**
  * Merges two sensors with concerning of its accuracies.

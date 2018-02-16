@@ -42,26 +42,26 @@ public:
 TEST_F(PEFusionToolsTest, test_PredictSensorAccuracy )
 {
    //test same timestamp
-   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1000).Value   , 0.00001);
-   EXPECT_NEAR(0.1, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1000).Accuracy, 0.00001);
+   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(0,PE::SBasicSensor(10.1,0.1)).Value   , 0.00001);
+   EXPECT_NEAR(0.1, PE::FUSION::PredictSensorAccuracy(0,PE::SBasicSensor(10.1,0.1)).Accuracy, 0.00001);
    //test outdated timestamp
-   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),999).Value   , 0.00001);
-   EXPECT_NEAR(0.1, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),999).Accuracy, 0.00001);
+   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(-1,PE::SBasicSensor(10.1,0.1)).Value   , 0.00001);
+   EXPECT_NEAR(0.1, PE::FUSION::PredictSensorAccuracy(-1,PE::SBasicSensor(10.1,0.1)).Accuracy, 0.00001);
    //test prediction after 1 second
-   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1001).Value   , 0.00001);
-   EXPECT_NEAR(0.2, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1001).Accuracy, 0.00001);
+   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(1,PE::SBasicSensor(10.1,0.1)).Value   , 0.00001);
+   EXPECT_NEAR(0.2, PE::FUSION::PredictSensorAccuracy(1,PE::SBasicSensor(10.1,0.1)).Accuracy, 0.00001);
    //test prediction after 2 second
-   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1002).Value   , 0.00001);
-   EXPECT_NEAR(0.3, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1002).Accuracy, 0.00001);
+   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(2,PE::SBasicSensor(10.1,0.1)).Value   , 0.00001);
+   EXPECT_NEAR(0.3, PE::FUSION::PredictSensorAccuracy(2,PE::SBasicSensor(10.1,0.1)).Accuracy, 0.00001);
    //test prediction after 10 second
-   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1010).Value   , 0.00001);
-   EXPECT_NEAR(1.1, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,0.1),1010).Accuracy, 0.00001);
+   EXPECT_NEAR(10.1,PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(10.1,0.1)).Value   , 0.00001);
+   EXPECT_NEAR(1.1, PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(10.1,0.1)).Accuracy, 0.00001);
    //test incorrect value
-   EXPECT_NEAR(PE::MAX_VALUE, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(PE::MAX_VALUE,0.1),1010).Value   , 0.00001);
-   EXPECT_NEAR(0.1,           PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(PE::MAX_VALUE,0.1),1010).Accuracy, 0.00001);
+   EXPECT_NEAR(PE::MAX_VALUE, PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(PE::MAX_VALUE,0.1)).Value   , 0.00001);
+   EXPECT_NEAR(0.1,           PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(PE::MAX_VALUE,0.1)).Accuracy, 0.00001);
    //test incorrect accuracy
-   EXPECT_NEAR(10.1,             PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,PE::MAX_ACCURACY),1010).Value   , 0.00001);
-   EXPECT_NEAR(PE::MAX_ACCURACY, PE::FUSION::PredictSensorAccuracy(1000,PE::SBasicSensor(10.1,PE::MAX_ACCURACY),1010).Accuracy, 0.00001);
+   EXPECT_NEAR(10.1,             PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(10.1,PE::MAX_ACCURACY)).Value   , 0.00001);
+   EXPECT_NEAR(PE::MAX_ACCURACY, PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(10.1,PE::MAX_ACCURACY)).Accuracy, 0.00001);
 }
 
 /**
@@ -72,26 +72,26 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_angular_speed )
    PE::SBasicSensor heading (90.0,0.1); //Heading 90 [deg] accuracy +/- 0.1[deg]
    PE::SBasicSensor angSpeed(10.0,0.2); //10[deg/s], accuracy +/-0.2[deg/s] turning LEFT
    //test same timestamp
-   EXPECT_NEAR(heading.Value,    PE::FUSION::PredictHeading(1000,heading,1000,angSpeed).Value   , 0.00001);
-   EXPECT_NEAR(heading.Accuracy, PE::FUSION::PredictHeading(1000,heading,1000,angSpeed).Accuracy, 0.00001);
+   EXPECT_NEAR(heading.Value,    PE::FUSION::PredictHeading(0,heading,angSpeed).Value   , 0.00001);
+   EXPECT_NEAR(heading.Accuracy, PE::FUSION::PredictHeading(0,heading,angSpeed).Accuracy, 0.00001);
    //test outdated timestamp
-   EXPECT_NEAR(heading.Value,    PE::FUSION::PredictHeading(1000,heading,999,angSpeed).Value   , 0.00001);
-   EXPECT_NEAR(heading.Accuracy, PE::FUSION::PredictHeading(1000,heading,999,angSpeed).Accuracy, 0.00001);
+   EXPECT_NEAR(heading.Value,    PE::FUSION::PredictHeading(-1,heading,angSpeed).Value   , 0.00001);
+   EXPECT_NEAR(heading.Accuracy, PE::FUSION::PredictHeading(-1,heading,angSpeed).Accuracy, 0.00001);
    //test prediction after 1 second
-   EXPECT_NEAR(80.0,  PE::FUSION::PredictHeading(1000,heading,1001,angSpeed).Value   , 0.00001);
-   EXPECT_NEAR(0.3,   PE::FUSION::PredictHeading(1000,heading,1001,angSpeed).Accuracy, 0.00001);
+   EXPECT_NEAR(80.0,  PE::FUSION::PredictHeading(1,heading,angSpeed).Value   , 0.00001);
+   EXPECT_NEAR(0.3,   PE::FUSION::PredictHeading(1,heading,angSpeed).Accuracy, 0.00001);
    //test prediction after 2 second
-   EXPECT_NEAR(70.0,  PE::FUSION::PredictHeading(1000,heading,1002,angSpeed).Value   , 0.00001);
-   EXPECT_NEAR(0.5,   PE::FUSION::PredictHeading(1000,heading,1002,angSpeed).Accuracy, 0.00001);
+   EXPECT_NEAR(70.0,  PE::FUSION::PredictHeading(2,heading,angSpeed).Value   , 0.00001);
+   EXPECT_NEAR(0.5,   PE::FUSION::PredictHeading(2,heading,angSpeed).Accuracy, 0.00001);
    //test prediction after 10 second
-   EXPECT_NEAR(350.0, PE::FUSION::PredictHeading(1000,heading,1010,angSpeed).Value   , 0.00001);
-   EXPECT_NEAR(2.1,   PE::FUSION::PredictHeading(1000,heading,1010,angSpeed).Accuracy, 0.00001);
+   EXPECT_NEAR(350.0, PE::FUSION::PredictHeading(10,heading,angSpeed).Value   , 0.00001);
+   EXPECT_NEAR(2.1,   PE::FUSION::PredictHeading(10,heading,angSpeed).Accuracy, 0.00001);
    //test incorrect heading
-   EXPECT_NEAR(90.0, PE::FUSION::PredictHeading(1000,PE::SBasicSensor(90.0,PE::MAX_ACCURACY),1010,angSpeed).Value, 0.00001);
-   EXPECT_NEAR(0.1,  PE::FUSION::PredictHeading(1000,PE::SBasicSensor(PE::MAX_VALUE,0.1),1010,angSpeed).Accuracy,  0.00001);
+   EXPECT_NEAR(90.0, PE::FUSION::PredictHeading(10,PE::SBasicSensor(90.0,PE::MAX_ACCURACY),angSpeed).Value, 0.00001);
+   EXPECT_NEAR(0.1,  PE::FUSION::PredictHeading(10,PE::SBasicSensor(PE::MAX_VALUE,0.1),angSpeed).Accuracy,  0.00001);
    //test incorrect angular velocity
-   EXPECT_NEAR(90.0, PE::FUSION::PredictHeading(1000,heading,1010,PE::SBasicSensor(10.0,PE::MAX_ACCURACY)).Value, 0.00001);
-   EXPECT_NEAR(0.1,  PE::FUSION::PredictHeading(1000,heading,1010,PE::SBasicSensor(PE::MAX_VALUE,0.2)).Accuracy,  0.00001);
+   EXPECT_NEAR(90.0, PE::FUSION::PredictHeading(10,heading,PE::SBasicSensor(10.0,PE::MAX_ACCURACY)).Value, 0.00001);
+   EXPECT_NEAR(1.1,  PE::FUSION::PredictHeading(10,heading,PE::SBasicSensor(PE::MAX_VALUE,0.2)).Accuracy,  0.00001);
 }
 
 /**
@@ -125,116 +125,422 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_between_two_positions )
    EXPECT_NEAR(8.343,PE::FUSION::PredictHeading(pos4,pos5).Accuracy,0.001);
 }
 
+/**
+ * PredictPosition test invalid inputs
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_invalid_inputs )
+{
+   PE::TTimestamp invalidDeltaTime (0);         //invalid time delta
+   PE::TTimestamp deltaTime ( 2 );              //duration 2 seconds
+   PE::SPosition invalidPos;                    //invalid position
+   PE::SPosition pos ( 50.0, 10.0, 1.0);        //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor invalidHeading;             //invalid heading
+   PE::SBasicSensor worseHeading ( 90.0,45.0);  //worse heading=90[deg] accuracy +/- 45[deg]
+   PE::SBasicSensor heading ( 90.0, 1.0);       //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor invalidSpeed;               //invalid speed
+   PE::SBasicSensor speed ( 5.0, 1.0);          //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor invalidAngSpeed;            //invalid angular speed
+   PE::SBasicSensor worseAngSpeed ( 10.0, 22.5);//worse left angular speed =10[deg/s] accuracy +/- 22.5[deg/s]
+   PE::SBasicSensor angSpeed ( 10.0, 0.5);      //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
+
+   //invalid deltatime -> same position
+   EXPECT_EQ( pos, PE::FUSION::PredictPosition(invalidDeltaTime, heading, angSpeed, pos, speed));
+
+   //invalid position -> invalid 
+   EXPECT_FALSE( PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, invalidPos, speed).IsValid());
+
+   //invalid speed -> same position but 3 times worse accuracy after 3 second
+   EXPECT_EQ( 50.0, PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, invalidSpeed).Latitude);
+   EXPECT_EQ( 10.0, PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, invalidSpeed).Longitude);
+   EXPECT_EQ(  3.0, PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, invalidSpeed).HorizontalAcc);
+
+   //invalid heading -> same position but very worse accuracy
+   EXPECT_EQ( 50.0, PE::FUSION::PredictPosition(deltaTime, invalidHeading, angSpeed, pos, speed).Latitude);
+   EXPECT_EQ( 10.0, PE::FUSION::PredictPosition(deltaTime, invalidHeading, angSpeed, pos, speed).Longitude);
+   EXPECT_EQ( 13.0, PE::FUSION::PredictPosition(deltaTime, invalidHeading, angSpeed, pos, speed).HorizontalAcc);
+
+   //invalid angular velocity -> same position but very worse accuracy
+   EXPECT_EQ( 50.0, PE::FUSION::PredictPosition(deltaTime, heading, invalidAngSpeed, pos, speed).Latitude);
+   EXPECT_EQ( 10.0, PE::FUSION::PredictPosition(deltaTime, heading, invalidAngSpeed, pos, speed).Longitude);
+   EXPECT_EQ( 13.0, PE::FUSION::PredictPosition(deltaTime, heading, invalidAngSpeed, pos, speed).HorizontalAcc);
+
+   //too worse fused angle accuracy -> same position but very worse accuracy
+   EXPECT_EQ( 50.0, PE::FUSION::PredictPosition(deltaTime, worseHeading, worseAngSpeed, pos, speed).Latitude);
+   EXPECT_EQ( 10.0, PE::FUSION::PredictPosition(deltaTime, worseHeading, worseAngSpeed, pos, speed).Longitude);
+   EXPECT_EQ( 13.0, PE::FUSION::PredictPosition(deltaTime, worseHeading, worseAngSpeed, pos, speed).HorizontalAcc);
+
+   //all value are valid moving around
+   EXPECT_NEAR( 50.0000039, PE::FUSION::PredictPosition(1, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0000696, PE::FUSION::PredictPosition(1, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  2.0006855, PE::FUSION::PredictPosition(1, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0000155, PE::FUSION::PredictPosition(2, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0001370, PE::FUSION::PredictPosition(2, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  3.0018286, PE::FUSION::PredictPosition(2, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0000345, PE::FUSION::PredictPosition(3, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0002004, PE::FUSION::PredictPosition(3, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  4.0038107, PE::FUSION::PredictPosition(3, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0000602, PE::FUSION::PredictPosition(4, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0002576, PE::FUSION::PredictPosition(4, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  5.0068617, PE::FUSION::PredictPosition(4, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0000920, PE::FUSION::PredictPosition(5, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0003070, PE::FUSION::PredictPosition(5, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  6.0112121, PE::FUSION::PredictPosition(5, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0001288, PE::FUSION::PredictPosition(6, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0003471, PE::FUSION::PredictPosition(6, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  7.0170932, PE::FUSION::PredictPosition(6, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0001695, PE::FUSION::PredictPosition(7, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0003766, PE::FUSION::PredictPosition(7, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  8.0247375, PE::FUSION::PredictPosition(7, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0002128, PE::FUSION::PredictPosition(8, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0003947, PE::FUSION::PredictPosition(8, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR(  9.0343785, PE::FUSION::PredictPosition(8, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+
+   EXPECT_NEAR( 50.0002576, PE::FUSION::PredictPosition(9, heading, angSpeed, pos, speed).Latitude, 0.0000001);
+   EXPECT_NEAR( 10.0004008, PE::FUSION::PredictPosition(9, heading, angSpeed, pos, speed).Longitude, 0.0000001);
+   EXPECT_NEAR( 10.0462509, PE::FUSION::PredictPosition(9, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
+}
 
 /**
- * PredictPosition turning moving test
+ * PredictPosition turning left for 180 degree
  */
-TEST_F(PEFusionToolsTest, test_PredictPosition_turning_moving )
+TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left_10_deg_per_sec_duration_18_sec )
 {
-   PE::SPosition    position   (50.0,120.0,10.0); //Lat=50.0[deg] Lon=120.0[deg] accuracy= 10[m]
+   PE::TTimestamp  deltaTime ( 18 );               //duration 18 seconds
+   PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed (  10.0, 0.5);        //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
 
-   PE::SBasicSensor heading_0  (  0.0,0.1);        //Heading=  0 [deg] accuracy +/- 0.1[deg]
-   PE::SBasicSensor heading_10 ( 10.0,0.1);        //Heading= 10 [deg] accuracy +/- 0.1[deg]
-   PE::SBasicSensor heading_45 ( 45.0,3.0);        //Heading=45  [deg] accuracy +/- 3[deg]
-   PE::SBasicSensor heading_90 ( 90.0,5.0);        //Heading=90  [deg] accuracy +/- 5[deg]
-   PE::SBasicSensor heading_180(180.0,2.0);        //Heading=180 [deg] accuracy +/- 2[deg]
-   PE::SBasicSensor heading_270(270.0,0.5);        //Heading=270 [deg] accuracy +/- 0.5[deg]
-   PE::SBasicSensor heading_355(355.0,0.2);        //Heading=355 [deg] accuracy +/- 0.2[deg]
+   const PE::SPosition pos_predict = PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, speed);
+   EXPECT_NEAR( 50.000515,pos_predict.Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
+   EXPECT_NEAR( 19.293105,pos_predict.HorizontalAcc,0.000001);
+   //check distance
+   EXPECT_NEAR( PE::TOOLS::ToDistance(pos, pos_predict), speed.Value * deltaTime * 2 / PE::PI,0.000001);
 
-   PE::SBasicSensor speed_10       (10.0,0.2);        //Speed=10[m/s], accuracy +/-0.2[m/s]
-   PE::SBasicSensor speed_100      (100.0,0.2);        //Speed=100[m/s], accuracy +/-0.2[m/s]
-   //test same timestamp
-   EXPECT_EQ(position, PE::FUSION::PredictPosition(1000, heading_90, 1000, heading_180, position, speed_10));
-   //test outdated timestamp
-   EXPECT_EQ(position, PE::FUSION::PredictPosition(1000, heading_90, 999, heading_180, position, speed_10));
-   //incorrect position
-   EXPECT_FALSE(PE::FUSION::PredictPosition(1000, heading_90, 1001, heading_180, PE::SPosition(), speed_10).IsValid());
-   //incorrect first heading
-   EXPECT_EQ(position, PE::FUSION::PredictPosition(1000, PE::SBasicSensor(), 1001, heading_180, position, speed_10));
-   //incorrect last heading
-   EXPECT_EQ(position, PE::FUSION::PredictPosition(1000, heading_90, 1001, PE::SBasicSensor(), position, speed_10));
-   //incorrect speed
-   EXPECT_EQ(position, PE::FUSION::PredictPosition(1000, heading_90, 1001, heading_180, position, PE::SBasicSensor()));
-   //test straight moving to the East
-   const PE::SPosition pos_1 = PE::FUSION::PredictPosition(1000, heading_90, 1001, heading_90, position, speed_10);
-   EXPECT_NEAR( 50.00000000,pos_1.Latitude,0.00000001);
-   EXPECT_NEAR(120.00013990,pos_1.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20076396,pos_1.HorizontalAcc,0.00000001);
-   EXPECT_NEAR(10.0,PE::TOOLS::ToDistancePrecise(pos_1,position),0.00000001);
-   //test straight moving to 10 degree
-   const PE::SPosition pos_2 = PE::FUSION::PredictPosition(1000, heading_10, 1001, heading_10, position, speed_100);
-   EXPECT_NEAR( 50.00088565,pos_2.Latitude,0.00000001);
-   EXPECT_NEAR(120.00024295,pos_2.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20000030,pos_2.HorizontalAcc,0.00000001);
-   EXPECT_NEAR(100.0,PE::TOOLS::ToDistancePrecise(pos_2,position),0.00000001);
-   //test turning moving over 0 from 355->10 degree
-   const PE::SPosition pos_3 = PE::FUSION::PredictPosition(1000, heading_355, 1001, heading_10, position, speed_100);
-   EXPECT_NEAR( 50.00087557,pos_3.Latitude,0.00000001);
-   EXPECT_NEAR(120.00024018,pos_3.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20000068,pos_3.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 98.86159294,PE::TOOLS::ToDistancePrecise(pos_3,position),0.00000001);
-   //test turning moving over 0 from 10->355 degree
-   const PE::SPosition pos_4 = PE::FUSION::PredictPosition(1000, heading_10, 1010, heading_355, position, speed_100);
-   EXPECT_NEAR( 50.00885699,pos_4.Latitude,0.00000001);
-   EXPECT_NEAR(119.99879426,pos_4.Longitude,0.00000001);
-   EXPECT_NEAR( 12.00000685,pos_4.HorizontalAcc,0.00000001);
-   EXPECT_NEAR(988.61592946,PE::TOOLS::ToDistancePrecise(pos_4,position),0.00000001);
-   //test turning moving from 180->90 degree
-   const PE::SPosition pos_5 = PE::FUSION::PredictPosition(1000, heading_180, 1001, heading_90, position, speed_100);
-   EXPECT_NEAR( 50.00000000,pos_5.Latitude,0.00000001);
-   EXPECT_NEAR(120.00089069,pos_5.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20037373,pos_5.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 63.66197723,PE::TOOLS::ToDistancePrecise(pos_5,position),0.00000001);
-   //test turning moving from 90->180 degree
-   const PE::SPosition pos_6 = PE::FUSION::PredictPosition(1000, heading_90, 1001, heading_180, position, speed_100);
-   EXPECT_NEAR( 49.99942747,pos_6.Latitude,0.00000001);
-   EXPECT_NEAR(120.00000000,pos_6.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20037373,pos_6.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 63.66197723,PE::TOOLS::ToDistancePrecise(pos_6,position),0.00000001);
-   //test turning moving from 180->270 degree
-   const PE::SPosition pos_7 = PE::FUSION::PredictPosition(1000, heading_180, 1001, heading_270, position, speed_100);
-   EXPECT_NEAR( 50.00000000,pos_7.Latitude,0.00000001);
-   EXPECT_NEAR(119.99910930,pos_7.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20004760,pos_7.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 63.66197723,PE::TOOLS::ToDistancePrecise(pos_7,position),0.00000001);
-   //test turning moving from 270->180 degree
-   const PE::SPosition pos_8 = PE::FUSION::PredictPosition(1000, heading_270, 1001, heading_180, position, speed_100);
-   EXPECT_NEAR( 49.99942747,pos_8.Latitude,0.00000001);
-   EXPECT_NEAR(120.00000000,pos_8.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20004760,pos_8.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 63.66197723,PE::TOOLS::ToDistancePrecise(pos_8,position),0.00000001);
-   //test turning moving from 0->270 degree
-   const PE::SPosition pos_9 = PE::FUSION::PredictPosition(1000, heading_0, 1001, heading_270, position, speed_100);
-   EXPECT_NEAR( 50.00000000,pos_9.Latitude,0.00000001);
-   EXPECT_NEAR(119.99910930,pos_9.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20000274,pos_9.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 63.66197723,PE::TOOLS::ToDistancePrecise(pos_9,position),0.00000001);
-   //test turning moving from 270->0 degree
-   const PE::SPosition pos_10 = PE::FUSION::PredictPosition(1000, heading_270, 1001, heading_0, position, speed_100);
-   EXPECT_NEAR( 50.00057252,pos_10.Latitude,0.00000001);
-   EXPECT_NEAR(120.00000000,pos_10.Longitude,0.00000001);
-   EXPECT_NEAR( 10.20000274,pos_10.HorizontalAcc,0.00000001);
-   EXPECT_NEAR( 63.66197723,PE::TOOLS::ToDistancePrecise(pos_10,position),0.00000001);
+   const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
+   EXPECT_NEAR(270.000000,heading_predict.Value,0.000001);
+   EXPECT_NEAR( 10.000000,heading_predict.Accuracy,0.000001);
 }
+
+/**
+ * PredictPosition turning right for 180 degree
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_right_10_deg_per_sec_duration_18_sec )
+{
+   PE::TTimestamp  deltaTime ( 18 );               //duration 18 seconds
+   PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed ( -10.0, 0.5);        //Right angular speed =-10[deg/s] accuracy +/- 0.5[deg/s]
+
+   const PE::SPosition pos_predict = PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, speed);
+   EXPECT_NEAR( 49.999485,pos_predict.Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
+   EXPECT_NEAR( 19.293105,pos_predict.HorizontalAcc,0.000001);
+   //check distance
+   EXPECT_NEAR( PE::TOOLS::ToDistance(pos, pos_predict), speed.Value * deltaTime * 2 / PE::PI,0.000001);
+
+   const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
+   EXPECT_NEAR(270.000000,heading_predict.Value,0.000001);
+   EXPECT_NEAR( 10.000000,heading_predict.Accuracy,0.000001);
+}
+
+/**
+ * PredictPosition turning left for 360 degree
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left_10_deg_per_sec_duration_36_sec )
+{
+   PE::TTimestamp  deltaTime ( 36 );               //duration 36 seconds
+   PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed (  10.0, 0.5);        //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
+
+   const PE::SPosition pos_predict = PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, speed);
+   EXPECT_NEAR( 50.000000,pos_predict.Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
+   EXPECT_NEAR( 39.131965,pos_predict.HorizontalAcc,0.000001);
+   //check distance has to be zero (passed full circle )
+   EXPECT_NEAR( 0, PE::TOOLS::ToDistance(pos, pos_predict),0.000001);
+
+   const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
+   EXPECT_NEAR( 90.000000,heading_predict.Value,0.000001);
+   EXPECT_NEAR( 19.000000,heading_predict.Accuracy,0.000001);
+}
+
+/**
+ * PredictPosition turning right for 360 degree
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_right_10_deg_per_sec_duration_36_sec )
+{
+   PE::TTimestamp  deltaTime ( 36 );               //duration 36 seconds
+   PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed ( -10.0, 0.5);        //Right angular speed =-10[deg/s] accuracy +/- 0.5[deg/s]
+
+   const PE::SPosition pos_predict = PE::FUSION::PredictPosition(deltaTime, heading, angSpeed, pos, speed);
+   EXPECT_NEAR( 50.000000,pos_predict.Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
+   EXPECT_NEAR( 39.131965,pos_predict.HorizontalAcc,0.000001);
+   //check distance has to be zero (passed full circle )
+   EXPECT_NEAR( 0, PE::TOOLS::ToDistance(pos, pos_predict),0.000001);
+
+   const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
+   EXPECT_NEAR( 90.000000,heading_predict.Value,0.000001);
+   EXPECT_NEAR( 19.000000,heading_predict.Accuracy,0.000001);
+}
+
+/**
+ * PredictPosition straight driving 5 [m/s]
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_straight_driving_5_m_per_sec_duration_10sec )
+{
+   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading180 ( 180.0, 1.0);        //Heading=180[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading270 ( 270.0, 1.0);        //Heading=270[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed (   0.0, 0.5);        //Angular speed =0[deg/s] accuracy +/- 0.5[deg/s]
+
+   //Head 0
+   EXPECT_NEAR( 50.000449,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 90
+   EXPECT_NEAR( 50.000000,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 10.000699,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 180
+   EXPECT_NEAR( 49.999551,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 270
+   EXPECT_NEAR( 50.000000,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(  9.999301,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
+}
+
+/**
+ * PredictPosition straight driving 5 [m/s] and crossing Grinvitch meridian
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Grinvitch_meridian )
+{
+   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   PE::SPosition         pos (  50.0, 0.0, 1.0);  //Lat=50[deg] Lon=0[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading180 ( 180.0, 1.0);        //Heading=180[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading270 ( 270.0, 1.0);        //Heading=270[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed (   0.0, 0.5);        //Angular speed =0[deg/s] accuracy +/- 0.5[deg/s]
+
+   //Head 0
+   EXPECT_NEAR( 50.000449,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(  0.000000,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 90
+   EXPECT_NEAR( 50.000000,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(  0.000699,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 180
+   EXPECT_NEAR( 49.999551,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(  0.000000,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 270
+   EXPECT_NEAR( 50.000000,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( -0.000699,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //EXPECT_FALSE(true);
+}
+
+/**
+ * PredictPosition straight driving 5 [m/s] and crossing Anti meridian
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Anti_meridian )
+{
+   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   PE::SPosition         pos (  50.0, 180.0, 1.0);  //Lat=50[deg] Lon=180[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading180 ( 180.0, 1.0);        //Heading=180[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading270 ( 270.0, 1.0);        //Heading=270[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed (   0.0, 0.5);        //Angular speed =0[deg/s] accuracy +/- 0.5[deg/s]
+
+   //Head 0
+   EXPECT_NEAR(  50.000449,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(-180.000000,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR(  11.060591,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 90
+   EXPECT_NEAR(  50.000000,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(-179.999301,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR(  11.060591,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 180
+   EXPECT_NEAR(  49.999551,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(-180.000000,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR(  11.060591,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 270
+   EXPECT_NEAR(  50.000000,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 179.999301,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR(  11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
+}
+
+/**
+ * PredictPosition straight driving 5 [m/s] and crossing Equator
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Equator )
+{
+   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   PE::SPosition         pos ( 0.0, 10.0, 1.0);  //Lat=0[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading180 ( 180.0, 1.0);        //Heading=180[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor  heading270 ( 270.0, 1.0);        //Heading=270[deg] accuracy +/- 1[deg]
+   PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
+   PE::SBasicSensor angSpeed (   0.0, 0.5);        //Angular speed =0[deg/s] accuracy +/- 0.5[deg/s]
+
+   //Head 0
+   EXPECT_NEAR(  0.000449,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading000, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 90
+   EXPECT_NEAR(  0.000000,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 10.000449,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading090, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 180
+   EXPECT_NEAR( -0.000449,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR( 10.000000,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading180, angSpeed, pos, speed).HorizontalAcc,0.000001);
+   //Head 270
+   EXPECT_NEAR(  0.000000,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Latitude,0.000001);
+   EXPECT_NEAR(  9.999551,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Longitude,0.000001);
+   EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
+}
+
+/**
+ * PredictSpeed test invalid input
+ */
+TEST_F(PEFusionToolsTest, test_PredictSpeed_invalid_input )
+{
+   PE::TTimestamp invalidDeltaTime (0);         //invalid time delta
+   PE::TTimestamp deltaTime ( 2 );              //duration 2 seconds
+   PE::SPosition invalidPos;                    //invalid position
+   PE::SPosition pos     ( 50.00000000, 10.00000000, 1.0); //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   //PE::SPosition pos4sec ( 50.000060275243563, 10.000257636985225, 1.0);
+   PE::SPosition pos4sec ( 50.00006027, 10.00025763, 1.0); //mm precision
+   PE::SBasicSensor invalidAngSpeed;            //invalid angular speed
+   PE::SBasicSensor worseAngSpeed ( 10.0, 22.5);//worse left angular speed =10[deg/s] accuracy +/- 22.5[deg/s]
+   PE::SBasicSensor angSpeed ( 10.0, 0.5);      //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
+
+   //invalid delta time
+   EXPECT_FALSE(PE::FUSION::PredictSpeed(invalidDeltaTime,pos,pos4sec,angSpeed).IsValid());
+
+   //invalid first position
+   EXPECT_FALSE(PE::FUSION::PredictSpeed(deltaTime,invalidPos,pos4sec,angSpeed).IsValid());
+
+   //invalid second position
+   EXPECT_FALSE(PE::FUSION::PredictSpeed(deltaTime,pos,invalidPos,angSpeed).IsValid());
+
+   //same position
+   EXPECT_TRUE(   PE::FUSION::PredictSpeed(deltaTime,pos,pos,angSpeed).IsValid());
+   EXPECT_EQ(0.0, PE::FUSION::PredictSpeed(deltaTime,pos,pos,angSpeed).Value);
+   EXPECT_EQ(6.0, PE::FUSION::PredictSpeed(deltaTime,pos,pos,angSpeed).Accuracy);
+
+   //invalid angular velocity
+   EXPECT_TRUE(       PE::FUSION::PredictSpeed(4,pos,pos4sec,invalidAngSpeed).IsValid());
+   EXPECT_NEAR(4.899, PE::FUSION::PredictSpeed(4,pos,pos4sec,invalidAngSpeed).Value, 0.001);
+   EXPECT_NEAR( 10.0, PE::FUSION::PredictSpeed(4,pos,pos4sec,invalidAngSpeed).Accuracy, 0.001);
+
+   //too worse anglular velocity accuracy
+   EXPECT_TRUE(       PE::FUSION::PredictSpeed(4,pos,pos4sec,worseAngSpeed).IsValid());
+   EXPECT_NEAR(4.899, PE::FUSION::PredictSpeed(4,pos,pos4sec,worseAngSpeed).Value, 0.001);
+   EXPECT_NEAR( 10.0, PE::FUSION::PredictSpeed(4,pos,pos4sec,worseAngSpeed).Accuracy, 0.001);
+
+   //all is valid and speed is 5[m/s]
+   EXPECT_TRUE(     PE::FUSION::PredictSpeed(4,pos,pos4sec,angSpeed).IsValid());
+   EXPECT_NEAR(5.0, PE::FUSION::PredictSpeed(4,pos,pos4sec,angSpeed).Value, 0.001);
+   EXPECT_NEAR(9.804, PE::FUSION::PredictSpeed(4,pos,pos4sec,angSpeed).Accuracy, 0.001);
+}
+
+/**
+ * PredictSpeed turning left for 180 degree
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_left_10_deg_per_sec_duration_18_sec )
+{
+   PE::TTimestamp deltaTime ( 18 );                       //duration 18 seconds
+   PE::SPosition  pos      ( 50.000000, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SPosition  pos18sec ( 50.000515, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor angSpeed (  10.0, 0.5);               //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
+
+   EXPECT_TRUE(PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).IsValid());
+   EXPECT_NEAR( 5.00, PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).Value, 0.01);
+   EXPECT_NEAR(24.49, PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).Accuracy, 0.01);
+}
+
+/**
+ * PredictSpeed turning right for 180 degree
+ */
+TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_right_10_deg_per_sec_duration_18_sec )
+{
+   PE::TTimestamp deltaTime ( 18 );                       //duration 18 seconds
+   PE::SPosition  pos      ( 50.000000, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SPosition  pos18sec ( 50.000515, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+   PE::SBasicSensor angSpeed ( -10.0, 0.5);               //Right angular speed =-10[deg/s] accuracy +/- 0.5[deg/s]
+
+   EXPECT_TRUE(PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).IsValid());
+   EXPECT_NEAR( 5.00, PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).Value, 0.01);
+   EXPECT_NEAR(24.49, PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).Accuracy, 0.01);
+}
+
+/**
+ * PredictSpeed turning left for 360 degree GOOD CASE has to be covered
+ */
+//TODO
+// TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_left_10_deg_per_sec_duration_36_sec )
+// {
+//    PE::TTimestamp  deltaTime ( 36 );               //duration 36 seconds
+//    PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
+//    PE::SBasicSensor angSpeed (  10.0, 0.5);        //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
+// 
+//    EXPECT_TRUE(PE::FUSION::PredictSpeed(deltaTime,pos,pos,angSpeed).IsValid());
+//    EXPECT_NEAR( 5.00, PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).Value, 0.01);
+//    EXPECT_NEAR(24.49, PE::FUSION::PredictSpeed(deltaTime,pos,pos18sec,angSpeed).Accuracy, 0.01);
+//    EXPECT_TRUE(false);
+// }
+
 
 
 /**
  * PredictSpeed test
  */
+/*
 TEST_F(PEFusionToolsTest, test_PredictSpeed )
 {
-   PE::SBasicSensor heading_90 (90.0,5.0);        //Heading=90 [deg] accuracy +/- 5[deg]
-   PE::SBasicSensor heading_180(180.0,2.0);       //Heading=180 [deg] accuracy +/- 2[deg]
-   PE::SBasicSensor heading_45 (45.0,3.0);        //Heading=45 [deg] accuracy +/- 3[deg]
-   PE::SBasicSensor speed      (10.0,0.2);        //Speed=10[m/s], accuracy +/-0.2[m/s]
-
-   PE::SPosition position       (50.0,120.0,1.0); //Lat=50.0[deg] Lon=120.0[deg] accuracy= 1[m]
-//   PE::SPosition position_1sec  = PE::FUSION::PredictPosition(1000, position, heading_90,  1001, speed);
-   PE::SPosition position_1sec  = PE::FUSION::PredictPosition(1000, heading_90, 1001, heading_90, position, speed);
-//   PE::SPosition position_2sec  = PE::FUSION::PredictPosition(1000, position, heading_180, 1002, speed);
-   PE::SPosition position_2sec  = PE::FUSION::PredictPosition(1000, heading_180, 1002, heading_180, position, speed);
-//   PE::SPosition position_10sec = PE::FUSION::PredictPosition(1000, position, heading_45,  1010, speed);
-   PE::SPosition position_10sec = PE::FUSION::PredictPosition(1000, heading_45, 1010, heading_45, position, speed);
+   PE::SBasicSensor heading_45 ( 45.0,3.0);        //Heading=45  [deg] accuracy +/- 3[deg]
+   PE::SBasicSensor heading_90 ( 90.0,5.0);        //Heading=90  [deg] accuracy +/- 5[deg]
+   PE::SBasicSensor heading_180(180.0,2.0);        //Heading=180 [deg] accuracy +/- 2[deg]
+   PE::SBasicSensor speed      (10.0,0.2);         //Speed=10[m/s], accuracy +/-0.2[m/s]
+   PE::SBasicSensor angSpeed_0(0.0,0.2);           //Zero angular  speed =   0[deg/s] accuracy +/- 0.2[deg/s]
+   PE::SBasicSensor angSpeed_10_right(-10.0,0.1);  //Right angular speed = -10[deg/s] accuracy +/- 0.1[deg/s]
+   PE::SBasicSensor angSpeed_10_left(10.0,0.1);    //Left  angular speed =  10[deg/s] accuracy +/- 0.1[deg/s]
+   PE::SBasicSensor angSpeed_45_right(-45.0,0.2);  //Right angular speed = -45[deg/s] accuracy +/- 0.2[deg/s]
+   PE::SBasicSensor angSpeed_45_left(45.0,0.2);    //Left angular  speed =  45[deg/s] accuracy +/- 0.2[deg/s]
+   PE::SBasicSensor angSpeed_45_left_acc_45(45.0,45.0);//Left angular  speed =  45[deg/s] accuracy +/- 45.0[deg/s]
+   PE::SPosition    position       (50.0,120.0,1.0); //Lat=50.0[deg] Lon=120.0[deg] accuracy= 1[m]
+   PE::SPosition    position_1sec  = PE::FUSION::PredictPosition(1, heading_90, angSpeed_0, position, speed);
+   PE::SPosition    position_2sec  = PE::FUSION::PredictPosition(2, heading_180, 1002, heading_180, position, speed);
+   PE::SPosition    position_10sec = PE::FUSION::PredictPosition(10, heading_45, 1010, heading_45, position, speed);
    //test same timestamp
    EXPECT_FALSE(PE::FUSION::PredictSpeed(1000,position,1000,position_1sec).IsValid());
    //test outdated timestamp
@@ -256,10 +562,11 @@ TEST_F(PEFusionToolsTest, test_PredictSpeed )
    EXPECT_NEAR( 10.0, PE::FUSION::PredictSpeed(1000,position,1010,position_10sec).Value,    0.001);
    EXPECT_NEAR(  0.4, PE::FUSION::PredictSpeed(1000,position,1010,position_10sec).Accuracy, 0.001);
 }
-
+*/
 /**
  * PredictAngSpeed TEST
  */
+ /*
 TEST_F(PEFusionToolsTest, test_PredictAngSpeed )
 {
    PE::SBasicSensor heading_0  (  0.0,0.1);        //Heading=  0 [deg] accuracy +/- 0.1[deg]
@@ -344,11 +651,12 @@ TEST_F(PEFusionToolsTest, test_PredictAngSpeed )
    EXPECT_NEAR(  90.0, PE::FUSION::PredictAngSpeed(1000,heading_181,1001,heading_91).Value,    0.001);
    EXPECT_NEAR(   1.6, PE::FUSION::PredictAngSpeed(1000,heading_181,1001,heading_91).Accuracy, 0.001);
 }
-
+*/
 
 /**
  * MergeHeading test
  */
+ /*
 TEST_F(PEFusionToolsTest, test_MergeHeading )
 {
    PE::SBasicSensor heading_0  (  0.0,0.1);        //Heading=  0 [deg] accuracy +/- 0.1[deg]
@@ -404,11 +712,12 @@ TEST_F(PEFusionToolsTest, test_MergeHeading )
    EXPECT_NEAR( 180.249, PE::FUSION::MergeHeading(heading_180,heading_181).Value,    0.001);
    EXPECT_NEAR(   0.449, PE::FUSION::MergeHeading(heading_180,heading_181).Accuracy, 0.001);
 }
-
+*/
 
 /**
  * MergePosition test
  */
+ /*
 TEST_F(PEFusionToolsTest, test_MergePosition )
 {
    PE::SPosition pos_lat0_lon0     = PE::SPosition(    0,    0, 10);
@@ -464,7 +773,7 @@ TEST_F(PEFusionToolsTest, test_MergePosition )
    EXPECT_NEAR( 179.800, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Longitude,     0.001);
    EXPECT_NEAR(   2.399, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
 }
-
+*/
 
 int main(int argc, char *argv[])
 {
