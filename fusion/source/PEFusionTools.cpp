@@ -116,22 +116,22 @@ SBasicSensor PE::FUSION::PredictSpeed(const TTimestamp& deltaTimestamp, const SP
    {
       TValue horda         = TOOLS::ToDistancePrecise(positionFirst,positionLast);
       resutlSpeed.Value    = horda / deltaTimestamp ;
-      resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) * (1 + deltaTimestamp);
-      if ( 0.0 < horda && angSpeed.IsValid() )
+      resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) * PE::PI / 2;
+      if (  0.0 < horda && angSpeed.IsValid() )
       {
-         TValue fi = angSpeed.Accuracy * deltaTimestamp;
-         if ( 90 > fi )
+         TValue fi       = TOOLS::ToRadians(fabs(angSpeed.Accuracy * deltaTimestamp));
+         TValue omega    = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
+         if ( TOOLS::ToRadians(90) > fi && 
+              TOOLS::ToRadians(90) > omega)
          {
-            TValue omega         = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
             TValue arch          = horda * ( 0 < omega ? omega / sin(omega) : 1);
             resutlSpeed.Value    = arch / deltaTimestamp;
-            resutlSpeed.Accuracy = resutlSpeed.Accuracy / cos( TOOLS::ToRadians(fi) ) * (horda / arch);
+            resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) * arch / horda / cos( fi );
          }
       }
    }
    return resutlSpeed;
 }
-
 
 SBasicSensor PE::FUSION::PredictAngSpeed(const TTimestamp& deltaTimestamp, const SBasicSensor& headingFirst, const SBasicSensor& headingLast)
 {
@@ -139,7 +139,7 @@ SBasicSensor PE::FUSION::PredictAngSpeed(const TTimestamp& deltaTimestamp, const
    if ( 0 < deltaTimestamp && headingFirst.IsValid() && headingLast.IsValid() )
    {
       resultAngSpeed.Value    = ToAngDistance(headingFirst.Value, headingLast.Value) / deltaTimestamp;
-      resultAngSpeed.Accuracy = (headingFirst.Accuracy + headingLast.Accuracy) * (1 + deltaTimestamp);
+      resultAngSpeed.Accuracy = headingFirst.Accuracy + headingLast.Accuracy;
    }
    return resultAngSpeed;
 }
@@ -223,5 +223,4 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
 
    return SPosition(lat,lon,horizontalAcc);
 }
-
 
