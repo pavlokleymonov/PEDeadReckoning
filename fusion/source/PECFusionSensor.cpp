@@ -61,6 +61,7 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
                      PredictSensorAccuracy(deltaTimestamp, m_AngSpeed)
                   );
 
+//    SBasicSensor newSpeed = PredictSensorAccuracy(deltaTimestamp, m_Speed);
       SBasicSensor newSpeed = MergeSensor(
                      PredictSpeed(deltaTimestamp, m_Position, newPosition, newAngSpeed),
                      PredictSensorAccuracy(deltaTimestamp, m_Speed)
@@ -96,6 +97,7 @@ void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSens
 
       SPosition newPosition = PredictPosition(deltaTimestamp, m_Heading, newAngSpeed, m_Position, m_Speed);
 
+//    SBasicSensor newSpeed = PredictSensorAccuracy(deltaTimestamp, m_Speed);
       SBasicSensor newSpeed = MergeSensor(
                      PredictSpeed(deltaTimestamp, m_Position, newPosition, newAngSpeed),
                      PredictSensorAccuracy(deltaTimestamp, m_Speed)
@@ -165,6 +167,7 @@ void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSen
                      PredictHeading(m_Position, newPosition)
                   );
 
+//    SBasicSensor newSpeed = PredictSensorAccuracy(deltaTimestamp, m_Speed);
       SBasicSensor newSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_Speed),
                      PredictSpeed(deltaTimestamp, m_Position, newPosition, newAngSpeed)

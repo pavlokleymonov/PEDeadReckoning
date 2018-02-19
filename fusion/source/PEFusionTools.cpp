@@ -116,17 +116,17 @@ SBasicSensor PE::FUSION::PredictSpeed(const TTimestamp& deltaTimestamp, const SP
    {
       TValue horda         = TOOLS::ToDistancePrecise(positionFirst,positionLast);
       resutlSpeed.Value    = horda / deltaTimestamp ;
-      resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) * PE::PI / 2;
+      resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) / cos(TOOLS::ToRadians(45));
       if (  0.0 < horda && angSpeed.IsValid() )
       {
          TValue fi       = TOOLS::ToRadians(fabs(angSpeed.Accuracy * deltaTimestamp));
          TValue omega    = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
-         if ( TOOLS::ToRadians(90) > fi && 
+         if ( TOOLS::ToRadians(45) > fi && 
               TOOLS::ToRadians(90) > omega)
          {
             TValue arch          = horda * ( 0 < omega ? omega / sin(omega) : 1);
             resutlSpeed.Value    = arch / deltaTimestamp;
-            resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) * arch / horda / cos( fi );
+            resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) / cos( fi );
          }
       }
    }

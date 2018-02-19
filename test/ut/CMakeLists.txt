@@ -81,11 +81,11 @@ add_test(NAME test_pe_fusion_tools COMMAND test_pe_fusion_tools)
 
 #############################
 #Test class PE::CFusionSensor
-##add_executable(test_pe_fusion_sensor
-##   PECFusionSensorTest.cpp
-##)
-##target_link_libraries(test_pe_fusion_sensor pe_fusion pe_common gtest pthread )
-##add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)
+add_executable(test_pe_fusion_sensor
+   PECFusionSensorTest.cpp
+)
+target_link_libraries(test_pe_fusion_sensor pe_fusion pe_common gtest pthread )
+add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)
 
 ####################################
 #Test class PE::CPositionFilterSpeed
