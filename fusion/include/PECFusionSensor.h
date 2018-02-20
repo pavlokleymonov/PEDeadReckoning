@@ -40,8 +40,10 @@ public:
     * @param timestamp    timestamp in seconds. HINT: for first initialisation please provide stored position and latest timestamp
     * @param position     based position
     * @param heading      heading of based position in degree (0 - Nord, 90 - East, 180 - South, 270 - West)
+    * @param angSpeed     angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
+    * @param speed        linear velocity in meter/seconds
     */
-   CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading);
+   CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SBasicSensor& speed);
    /**
     * Destructor 
     */
@@ -92,8 +94,47 @@ public:
     * @return         position.
     */
    const SPosition& GetPosition() const;
+   /**
+    * Returns latest fusioned speed.
+    *
+    * @return         speed.
+    */
+   const SBasicSensor& GetSpeed() const;
+   /**
+    * Returns latest fusioned angular velocity.
+    *
+    * @return         angSpeed.
+    */
+   const SBasicSensor& GetAngSpeed() const;
+   /**
+    *
+    */
+   void DoSimpleFusion();
+   /**
+    *
+    */
+   void DoComplexFusion();
 
 private:
+   struct SSensorItem
+   {
+      SSensorItem(const TTimestamp& ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& sp, const SBasicSensor& asp)
+         : timestamp(ts)
+         , position (pos)
+         , heading  (head)
+         , speed    (sp)
+         , angSpeed (asp)
+      {}
+
+      TTimestamp timestamp;
+      SPosition position;
+      SBasicSensor heading;
+      SBasicSensor speed;
+      SBasicSensor angSpeed;
+   };
+
+   typedef std::vector<SSensorItem> TSensorsList;
+
    /**
     * The timestamp of the latest position in seconds
     */
@@ -114,6 +155,13 @@ private:
     * The linear velocity in meter/seconds
     */
    SBasicSensor m_Speed;
+
+   TSensorsList m_SensorsList;
+
+   void DoSimpleOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
+
+   void DoComplexOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
+
 
 };
 

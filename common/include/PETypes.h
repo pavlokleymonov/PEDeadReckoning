@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <limits>
 #include <string>
+#include <vector>
 
 namespace PE {
 
