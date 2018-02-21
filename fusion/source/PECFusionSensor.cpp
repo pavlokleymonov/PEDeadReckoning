@@ -145,7 +145,9 @@ void PE::CFusionSensor::DoSimpleOneItemFusion(const TTimestamp& timestamp, const
       TTimestamp deltaTimestamp = timestamp - m_Timestamp;
 
       m_Timestamp = timestamp;
-      m_Position  = MergePosition(position, PredictPosition(deltaTimestamp, m_Heading, m_AngSpeed, m_Position, m_Speed));
+      PE::SPosition pos = PredictPosition(deltaTimestamp, m_Heading, m_AngSpeed, m_Position, m_Speed);
+      printf("lat=%.8f lon=%.8f",pos.Latitude,pos.Longitude);
+      m_Position  = MergePosition(position, pos);
       m_Heading   = MergeHeading(heading, PredictHeading(deltaTimestamp, m_Heading, m_AngSpeed));
       m_Speed     = MergeSensor(speed, PredictSensorAccuracy(deltaTimestamp, m_Speed));
       m_AngSpeed  = MergeSensor(angSpeed, PredictSensorAccuracy(deltaTimestamp, m_AngSpeed));

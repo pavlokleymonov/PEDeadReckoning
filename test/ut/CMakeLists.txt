@@ -89,12 +89,12 @@ add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)
 
 ####################################
 #Test class PE::CPositionFilterSpeed
-add_executable(test_pe_position_filter_speed
-   ${REPOSITORY_ROOT}/filter/source/PECPositionFilterSpeed.cpp
-   PECPositionFilterSpeedTest.cpp
-)
-target_link_libraries(test_pe_position_filter_speed pe_common pe_filter gtest pthread )
-add_test(NAME test_pe_position_filter_speed COMMAND test_pe_position_filter_speed)
+#add_executable(test_pe_position_filter_speed
+#   ${REPOSITORY_ROOT}/filter/source/PECPositionFilterSpeed.cpp
+#   PECPositionFilterSpeedTest.cpp
+#)
+#target_link_libraries(test_pe_position_filter_speed pe_common pe_filter gtest pthread )
+#add_test(NAME test_pe_position_filter_speed COMMAND test_pe_position_filter_speed)
 
 #################################
 #Test class PE::CCalibrationScale
