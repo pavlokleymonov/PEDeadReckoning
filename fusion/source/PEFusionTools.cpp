@@ -249,6 +249,7 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
    return SPosition(lat,lon,horizontalAcc);
 }
 
+
 TValue PE::FUSION::KalmanFilter(const TValue& value1, const TAccuracy& accuracy1, const TValue& value2, const TAccuracy& accuracy2)
 {
    TAccuracy   K = accuracy1 + accuracy2;

@@ -351,6 +351,7 @@ TEST_F(PECFusionSensorTest, test_reliable_position_only_fusion_circle_driving )
    EXPECT_NEAR(  0.77630108, fusion.GetSpeed().Accuracy        , 0.00000001);
 }
 
+#endif
 
 /**
  * !!! Test direct driving immediately after turning by speed 10m/s and angular speed 0.
@@ -366,7 +367,12 @@ TEST_F(PECFusionSensorTest, test_direct_driving_immediately_after_turning_speed_
    PE::SBasicSensor angSpeed150 ( 15.0,0.1);
    PE::SBasicSensor angSpeed120 ( 12.0,0.1);
    PE::SBasicSensor angSpeed090 (  9.0,0.1);
+   PE::SBasicSensor angSpeed080 (  8.0,0.1);
+   PE::SBasicSensor angSpeed070 (  7.0,0.1);
+   PE::SBasicSensor angSpeed060 (  6.0,0.1);
    PE::SBasicSensor angSpeed050 (  5.0,0.1);
+   PE::SBasicSensor angSpeed040 (  4.0,0.1);
+   PE::SBasicSensor angSpeed030 (  3.0,0.1);
    PE::SBasicSensor angSpeed020 (  2.0,0.1);
    PE::SBasicSensor angSpeed010 (  1.0,0.1);
    PE::SBasicSensor angSpeed000 (  0.0,0.1);
@@ -376,71 +382,198 @@ TEST_F(PECFusionSensorTest, test_direct_driving_immediately_after_turning_speed_
 
    //start dirrect driving 
    fusion.AddSpeed   (1.0, speed);
-   fusion.AddAngSpeed(1.0, angSpeed200);
+   fusion.AddAngSpeed(1.0, angSpeed190); //71
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR( 70.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR( 20.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR( 70.66666666, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR( 19.33333333, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.13333333, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 70.80000000, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 19.199999999, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.12000000, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
    fusion.AddSpeed   (2.0, speed);
-   fusion.AddAngSpeed(2.0, angSpeed190);//Head51
+   fusion.AddAngSpeed(2.0, angSpeed160); //55
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR( 51.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR( 19.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR( 53.93939393, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR( 16.72727272, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14545454, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 54.44497041, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 16.35502958, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.12071005, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (3.0, speed);
-   fusion.AddAngSpeed(3.0, angSpeed175);
+   fusion.AddAngSpeed(3.0, angSpeed120); //43
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR( 33.50000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR( 17.50000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR( 41.22621564, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR( 12.71317829, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 42.106667119, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 12.338303294, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (4.0, speed);
-   fusion.AddAngSpeed(4.0, angSpeed165);//Head17
+   fusion.AddAngSpeed(4.0, angSpeed090);//34
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR( 17.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR( 16.50000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR( 17.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR( 16.50000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 32.906540883, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 09.200126235, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (5.0, speed);
-   fusion.AddAngSpeed(5.0, angSpeed090);//Head8
+   fusion.AddAngSpeed(5.0, angSpeed080);//26
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 24.901604892, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 08.004935990, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (6.0, speed);
-   fusion.AddAngSpeed(6.0, angSpeed050);//Head3
+   fusion.AddAngSpeed(6.0, angSpeed070);//19
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR(  3.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR(  5.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 17.758648556, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 07.142956336, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (7.0, speed);
-   fusion.AddAngSpeed(7.0, angSpeed020);//Head1
+   fusion.AddAngSpeed(7.0, angSpeed060);//13
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR(  1.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR(  2.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+   //    With normal MergeSensor ???
+   //    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+   //    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+   //    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+   //    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+   //    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+   // With extended MergeSensorEx
+   EXPECT_NEAR( 11.713287341, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 06.045361214, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (8.0, speed);
-   fusion.AddAngSpeed(8.0, angSpeed010);//Head0
+   fusion.AddAngSpeed(8.0, angSpeed050);//7
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR( 00.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR(  1.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 06.598915954, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 05.114371387, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
    fusion.AddSpeed   (9.0, speed);
-   fusion.AddAngSpeed(9.0, angSpeed000);//Head0
+   fusion.AddAngSpeed(9.0, angSpeed040);//3
    fusion.DoFusion();
-   EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
-   EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
-   EXPECT_NEAR( 00.00000000, fusion.GetHeading().Value     , 0.00000001);
-   EXPECT_NEAR( 00.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR( 02.533342128, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 04.065573825, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+   fusion.AddSpeed   (10.0, speed);
+   fusion.AddAngSpeed(10.0, angSpeed030);//0
+   fusion.DoFusion();
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR(359.433263216, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 03.100078912, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+   fusion.AddSpeed   (11.0, speed);
+   fusion.AddAngSpeed(11.0, angSpeed000);//0
+   fusion.DoFusion();
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR(359.064689865, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 00.368573350, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
+   fusion.AddSpeed   (12.0, speed);
+   fusion.AddAngSpeed(12.0, angSpeed000);//0
+   fusion.DoFusion();
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR(359.325310581, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR(-00.260620715, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
+
+
+   fusion.AddSpeed   (13.0, speed);
+   fusion.AddAngSpeed(13.0, angSpeed000);//0
+   fusion.DoFusion();
+//    With normal MergeSensor ???
+//    EXPECT_NEAR( 50.00000000, fusion.GetPosition().Latitude , 0.00000001);
+//    EXPECT_NEAR( 10.00000000, fusion.GetPosition().Longitude, 0.00000001);
+//    EXPECT_NEAR(  8.00000000, fusion.GetHeading().Value     , 0.00000001);
+//    EXPECT_NEAR(  9.00000000, fusion.GetAngSpeed().Value    , 0.00000001);
+//    EXPECT_NEAR( 00.14883720, fusion.GetAngSpeed().Accuracy , 0.00000001);
+// With extended MergeSensorEx
+   EXPECT_NEAR(359.141023906, fusion.GetHeading().Value     , 0.00000001);
+   EXPECT_NEAR( 01.668527518, fusion.GetHeading().Accuracy  , 0.00000001);
+   EXPECT_NEAR( 00.184286675, fusion.GetAngSpeed().Value    , 0.00000001);
+   EXPECT_NEAR( 00.120710678, fusion.GetAngSpeed().Accuracy , 0.00000001);
 }
 
-#endif
 
 #ifdef TTT
 /**
