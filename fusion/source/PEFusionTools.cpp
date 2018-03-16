@@ -35,7 +35,6 @@ TValue ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)
    }
 }
 
-
 SBasicSensor PE::FUSION::PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
 {
    SBasicSensor resultSensor = sensor;
@@ -63,17 +62,24 @@ SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const 
 }
 
 
-SBasicSensor PE::FUSION::PredictHeading(const SPosition& positionFirst, const SPosition& positionLast)
+SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading)
 {
-   SBasicSensor resultHeading;
-   if ( positionFirst.IsValid() && positionLast.IsValid() )
+   SBasicSensor resultHeading = PredictSensorAccuracy(deltaTimestamp, heading);
+   if ( 0 < deltaTimestamp && positionFirst.IsValid() && positionLast.IsValid() )
    {
       TValue distance        = TOOLS::ToDistancePrecise(positionFirst, positionLast);
       if ( 0.0 < distance )
       {
          TValue deviation       = positionFirst.HorizontalAcc + positionLast.HorizontalAcc;
          resultHeading.Value    = TOOLS::ToHeading(positionFirst, positionLast);
-         resultHeading.Accuracy = TOOLS::ToDegrees(atan(deviation / distance)) / 2;
+         resultHeading.Accuracy = TOOLS::ToDegrees(atan(deviation / distance)) / 2 * deltaTimestamp;
+         if (heading.IsValid())
+         {
+            TValue omega           = ToAngDistance(heading.Value, TOOLS::ToHeading(positionFirst, positionLast)) * 2;
+            resultHeading.Value    = TOOLS::ToHeading(heading.Value,1,omega);
+            //printf("posHead=%.2f oldHead=%.2f omega=%.2f newHead=%.2f",TOOLS::ToHeading(positionFirst, positionLast),heading.Value,omega,resultHeading.Value);
+            resultHeading.Accuracy += heading.Accuracy;
+         }
       }
    }
    return resultHeading;
@@ -155,9 +161,29 @@ SBasicSensor PE::FUSION::MergeSensor(const SBasicSensor& sen1, const SBasicSenso
    {
       return sen1;
    }
-   TAccuracy   K = sen1.Accuracy + sen2.Accuracy;
-   TValue    val = (sen1.Value * ( K - sen1.Accuracy ) + sen2.Value * ( K - sen2.Accuracy )) / K;
-   TAccuracy acc = (sen1.Accuracy * ( K - sen1.Accuracy ) + sen2.Accuracy * ( K - sen2.Accuracy )) / K;
+   TValue val = KalmanFilter(sen1.Value, sen1.Accuracy, sen2.Value, sen2.Accuracy);
+   TAccuracy acc = KalmanFilter(sen1.Accuracy, sen1.Accuracy, sen2.Accuracy, sen2.Accuracy);
+   return SBasicSensor(val,acc);
+}
+
+
+SBasicSensor PE::FUSION::MergeSensorEx(const SBasicSensor& sen1, const SBasicSensor& sen2)
+{
+   if ( false == sen1.IsValid() )
+   {
+      return sen2;
+   }
+   if ( false == sen2.IsValid() )
+   {
+      return sen1;
+   }
+
+   TValue amplify = sen1.Accuracy + sen2.Accuracy;
+   TAccuracy acc1 = sen1.Accuracy * amplify / sen2.Accuracy;
+   TAccuracy acc2 = sen2.Accuracy * amplify / sen1.Accuracy;
+
+   TValue val = KalmanFilter(sen1.Value, acc1, sen2.Value, acc2);
+   TAccuracy acc = KalmanFilter(sen1.Accuracy, acc1, sen2.Accuracy, acc2);
    return SBasicSensor(val,acc);
 }
 
@@ -211,10 +237,9 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
       lon1 += 360.0;
    }
 
-   TAccuracy   K = pos1.HorizontalAcc + pos2.HorizontalAcc;
-   TValue lat = (pos1.Latitude * ( K - pos1.HorizontalAcc ) + pos2.Latitude * ( K - pos2.HorizontalAcc )) / K;
-   TValue lon = (lon1 * ( K - pos1.HorizontalAcc ) + lon2 * ( K - pos2.HorizontalAcc )) / K;
-   TAccuracy horizontalAcc = (pos1.HorizontalAcc * ( K - pos1.HorizontalAcc ) + pos2.HorizontalAcc * ( K - pos2.HorizontalAcc )) / K;
+   TValue lat = KalmanFilter(pos1.Latitude, pos1.HorizontalAcc, pos2.Latitude, pos2.HorizontalAcc);
+   TValue lon = KalmanFilter(lon1, pos1.HorizontalAcc, lon2, pos2.HorizontalAcc);
+   TAccuracy horizontalAcc = KalmanFilter(pos1.HorizontalAcc, pos1.HorizontalAcc, pos2.HorizontalAcc, pos2.HorizontalAcc);
 
    if ( 180.0 <= lon )
    {
@@ -222,5 +247,11 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
    }
 
    return SPosition(lat,lon,horizontalAcc);
+}
+
+TValue PE::FUSION::KalmanFilter(const TValue& value1, const TAccuracy& accuracy1, const TValue& value2, const TAccuracy& accuracy2)
+{
+   TAccuracy   K = accuracy1 + accuracy2;
+   return (value1 * (K - accuracy1) + value2 * (K - accuracy2)) / K;
 }
 

@@ -94,35 +94,155 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_angular_speed )
    EXPECT_NEAR(1.1,  PE::FUSION::PredictHeading(10,heading,PE::SBasicSensor(PE::MAX_VALUE,0.2)).Accuracy,  0.00001);
 }
 
-/**
- * PredictHeading test between two positions
+/** !!!
+ * PredictHeading test invalid timesatmp
  */
-TEST_F(PEFusionToolsTest, test_PredictHeading_between_two_positions )
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_invalid_timesatmp )
 {
-   PE::SPosition pos1 (10.0, 120.0, 10);
-   PE::SPosition pos2 (10.01, 120.0, 20); //to pos1 distance is 1111,2m 
-   PE::SPosition pos3 (10.001, 120.0, 3); //to pos1 distance is 111,12m 
-   PE::SPosition pos4 (10.0001, 120.0, 2); //to pos1 distance is 11,112m 
-   PE::SPosition pos5 (10.00001, 120.0, 1); //to pos1 distance is 1,1112m 
+   PE::SPosition                 pos(50.0,10.0,1.0); //lat=50 lon=10
+   PE::SPosition                pos2(50.0,10.1,1.0); //lat=50 lon=10.1
+   EXPECT_FALSE(PE::FUSION::PredictHeading(0, pos,pos2,PE::SBasicSensor()).IsValid());
+}
 
-   //test invalid positions
-   EXPECT_FALSE(PE::FUSION::PredictHeading(PE::SPosition(),PE::SPosition()).IsValid());
-   EXPECT_FALSE(PE::FUSION::PredictHeading(pos1,PE::SPosition()).IsValid());
-   EXPECT_FALSE(PE::FUSION::PredictHeading(PE::SPosition(),pos1).IsValid());
-   //test same positions
-   EXPECT_FALSE(PE::FUSION::PredictHeading(pos1,pos1).IsValid());
-   //test big distance to Nord
-   EXPECT_NEAR(0.0,PE::FUSION::PredictHeading(pos1,pos2).Value   ,0.001);
-   EXPECT_NEAR(0.772,PE::FUSION::PredictHeading(pos1,pos2).Accuracy,0.001);
-   //test big distance to South
-   EXPECT_NEAR(180.0,PE::FUSION::PredictHeading(pos2,pos1).Value,0.001);
-   EXPECT_NEAR(0.772,PE::FUSION::PredictHeading(pos2,pos1).Accuracy,0.001);
-   //test 111m distance to South
-   EXPECT_NEAR(180.0,PE::FUSION::PredictHeading(pos3,pos1).Value,0.001);
-   EXPECT_NEAR(3.334,PE::FUSION::PredictHeading(pos3,pos1).Accuracy,0.001);
-   //test 10m distance to South
-   EXPECT_NEAR(180.0,PE::FUSION::PredictHeading(pos4,pos5).Value,0.001);
-   EXPECT_NEAR(8.343,PE::FUSION::PredictHeading(pos4,pos5).Accuracy,0.001);
+/** !!!
+ * PredictHeading test invalid position, invalid heading
+ */
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_invalid_position_invalid_heding )
+{
+   PE::SPosition                 pos(50.0,10.0,1.0); //lat=50 lon=10
+   EXPECT_FALSE(PE::FUSION::PredictHeading(1, PE::SPosition(),PE::SPosition(),PE::SBasicSensor()).IsValid());
+   EXPECT_FALSE(PE::FUSION::PredictHeading(1, pos,PE::SPosition(),PE::SBasicSensor()).IsValid());
+   EXPECT_FALSE(PE::FUSION::PredictHeading(1, PE::SPosition(),pos,PE::SBasicSensor()).IsValid());
+}
+
+/** !!!
+ * PredictHeading test invalid position, valid heading
+ */
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_invalid_position_valid_heding )
+{
+   PE::SPosition                 pos(50.0,10.0,1.0); //lat=50 lon=10
+   PE::SBasicSensor          heading(90.0,1.0);   //90deg
+   EXPECT_TRUE(PE::FUSION::PredictHeading(1.0, PE::SPosition(),PE::SPosition(),heading).IsValid());
+   EXPECT_EQ(90.0, PE::FUSION::PredictHeading(1.0, PE::SPosition(),PE::SPosition(),heading).Value);
+   EXPECT_EQ( 2.0, PE::FUSION::PredictHeading(1.0, PE::SPosition(),PE::SPosition(),heading).Accuracy);
+
+   EXPECT_TRUE(PE::FUSION::PredictHeading(1,pos,PE::SPosition(),heading).IsValid());
+   EXPECT_EQ(90.0, PE::FUSION::PredictHeading(1,pos,PE::SPosition(),heading).Value);
+   EXPECT_EQ( 2.0, PE::FUSION::PredictHeading(1,pos,PE::SPosition(),heading).Accuracy);
+
+   EXPECT_TRUE(PE::FUSION::PredictHeading(1,PE::SPosition(),pos,heading).IsValid());
+   EXPECT_EQ(90.0, PE::FUSION::PredictHeading(1,PE::SPosition(),pos,heading).Value);
+   EXPECT_EQ( 2.0, PE::FUSION::PredictHeading(1,PE::SPosition(),pos,heading).Accuracy);
+}
+
+/** !!!
+ * PredictHeading test same position
+ */
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_same_position )
+{
+   PE::SPosition                 pos(50.0,10.0,1.0); //lat=50 lon=10
+   PE::SBasicSensor          heading(90.0,1.0);   //90deg
+   //invalid heading
+   EXPECT_FALSE(PE::FUSION::PredictHeading(1,pos,pos,PE::SBasicSensor()).IsValid());
+   //valid heading
+   EXPECT_TRUE(PE::FUSION::PredictHeading(1,pos,pos,heading).IsValid());
+   EXPECT_EQ(90.0, PE::FUSION::PredictHeading(1,pos,pos,heading).Value);
+   EXPECT_EQ( 2.0, PE::FUSION::PredictHeading(1,pos,pos,heading).Accuracy);
+}
+
+/** !!!
+ * PredictHeading test by two positions circle moving
+ */
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_circle_moving )
+{
+   PE::SPosition         pos_pre_cond(50.0,9.99,1.0); //lat=50 lon=9.99
+   PE::SPosition                 pos0(50.0,10.0,1.0); //lat=50 lon=10
+   PE::SPosition                 pos1(50.0000086, 10.0000849, 1.0);
+   PE::SPosition                 pos2(50.0000337, 10.0001615, 1.0);
+   PE::SPosition                 pos3(50.0000728, 10.0002223, 1.0);
+   PE::SBasicSensor           heading; //last knowed heading, at begining is invalid
+
+   //setup precondition to have correct position only heading
+   heading = PE::FUSION::PredictHeading(1,pos_pre_cond,pos0,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01); //90
+   EXPECT_NEAR( 0.08, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(1,pos0,pos1,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(72.09, heading.Value, 0.01); //72
+   EXPECT_NEAR( 9.09, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(1,pos1,pos2,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(53.88, heading.Value, 0.01); //54
+   EXPECT_NEAR(18.11, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(1,pos2,pos3,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(36.08, heading.Value, 0.01); //36
+   EXPECT_NEAR(27.12, heading.Accuracy, 0.01);
+}
+
+
+/** !!!
+ * PredictHeading test by two positions dirrect moving
+ */
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_two_positions_dirrect_moving )
+{
+   PE::SPosition pos1 (50.0, 10.0000000, 1.0);
+   PE::SPosition pos2 (50.0, 10.0000010, 1.0); //to pos1 distance is 1,1112m 
+   PE::SPosition pos3 (50.0, 10.0000100, 1.0); //to pos1 distance is 11,112m 
+   PE::SPosition pos4 (50.0, 10.0001000, 1.0); //to pos1 distance is 111,12m 
+   PE::SPosition pos5 (50.0, 10.0010000, 1.0); //to pos1 distance is 1111,2m 
+   PE::SBasicSensor           heading; //last knowed heading, at begining is invalid
+
+   heading = PE::FUSION::PredictHeading(1,pos1,pos2,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR(43.97, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(1,pos2,pos3,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR(80.06, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(1,pos3,pos4,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR(88.69, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(1,pos4,pos5,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR(89.58, heading.Accuracy, 0.01);
+}
+
+/** !!!
+ * PredictHeading test by two positions dirrect moving small timestamp
+ */
+TEST_F(PEFusionToolsTest, test_PredictHeading_by_two_positions_dirrect_moving_small_timesatmp )
+{
+   PE::SPosition pos1 (50.0, 10.0000000, 1.0);
+   PE::SPosition pos2 (50.0, 10.0000010, 1.0); //to pos1 distance is 1,1112m 
+   PE::SPosition pos3 (50.0, 10.0000100, 1.0); //to pos1 distance is 11,112m 
+   PE::SPosition pos4 (50.0, 10.0001000, 1.0); //to pos1 distance is 111,12m 
+   PE::SBasicSensor           heading; //last knowed heading, at begining is invalid
+
+   heading = PE::FUSION::PredictHeading(0.01,pos1,pos2,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR( 0.43, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(0.01,pos2,pos3,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR( 0.80, heading.Accuracy, 0.01);
+
+   heading = PE::FUSION::PredictHeading(0.01,pos3,pos4,heading);
+   EXPECT_TRUE(heading.IsValid());
+   EXPECT_NEAR(89.99, heading.Value, 0.01);
+   EXPECT_NEAR( 0.88, heading.Accuracy, 0.01);
 }
 
 /**

@@ -43,11 +43,13 @@ SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SBasicSensor
 /**
  * Predicts new heading based on knowed old and new positions.
  *
- * @param positionFirst    old position
- * @param positionLast     new position
- * @return                 predicted heading
+ * @param deltaTimestamp      delta timestamp between oold and new positions
+ * @param positionFirst       old position
+ * @param positionLast        new position
+ * @param previouse heading   heading
+ * @return                    predicted heading
  */
-SBasicSensor PredictHeading(const SPosition& positionFirst, const SPosition& positionLast);
+SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading);
 
 /**
  * Predicts new position based on knowed start heading, angular velocity, linear speed, delta time and original position.
@@ -59,7 +61,7 @@ SBasicSensor PredictHeading(const SPosition& positionFirst, const SPosition& pos
  * @param speed            linear speed
  * @return                 predicted position
  */
-SPosition   PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed);
+SPosition PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed);
 
 /**
  * Predicts new linear speed based on knowed delta time, angular velocity, old and new positions.
@@ -92,6 +94,15 @@ SBasicSensor PredictAngSpeed(const TTimestamp& deltaTimestamp, const SBasicSenso
 SBasicSensor MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2);
 
 /**
+ * Merges two sensors with concerning of its accuracies and reducing influence of less accurate sensor
+ *
+ * @param sen1             first sensor
+ * @param sen2             second sensor
+ * @return                 merged sensor
+ */
+SBasicSensor MergeSensorEx(const SBasicSensor& sen1, const SBasicSensor& sen2);
+
+/**
  * Merges two headings with concerning of its accuracies.
  *
  * @param head1            first heading
@@ -107,7 +118,20 @@ SBasicSensor MergeHeading(const SBasicSensor& head1, const SBasicSensor& head2);
  * @param pos2             second position
  * @return                 merged position
  */
-SPosition    MergePosition(const SPosition& pos1, const SPosition& pos2);
+SPosition MergePosition(const SPosition& pos1, const SPosition& pos2);
+
+/**
+ * Merges two values based on accuracy
+ * by using Kalman filter
+ *
+ * @param value1             first value
+ * @param accuracy1          first accuracy
+ * @param value2             second value
+ * @param accuracy2          second accuracy
+ * @return                   merged values
+ */
+TValue KalmanFilter(const TValue& value1, const TAccuracy& accuracy1, const TValue& value2, const TAccuracy& accuracy2);
+
 
 } // namespace FUSION
 } // namespace PE

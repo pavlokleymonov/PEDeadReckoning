@@ -109,11 +109,7 @@ public:
    /**
     *
     */
-   void DoSimpleFusion();
-   /**
-    *
-    */
-   void DoComplexFusion();
+   void DoFusion();
 
 private:
    struct SSensorItem
@@ -151,16 +147,16 @@ private:
     * The angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
     */
    SBasicSensor m_AngSpeed;
+   TValue m_AngAcceleration;
    /**
     * The linear velocity in meter/seconds
     */
    SBasicSensor m_Speed;
+   TValue m_LineAcceleration;
 
    TSensorsList m_SensorsList;
 
-   void DoSimpleOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
-
-   void DoComplexOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
+   void DoOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
 
 
 };
