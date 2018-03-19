@@ -165,8 +165,7 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
       }
 
       m_AngSpeed.Value += (m_AngAcceleration * deltaTimestamp);
-//    SBasicSensor newAngSpeed = MergeSensor(
-      SBasicSensor newAngSpeed = MergeSensorEx(
+      SBasicSensor newAngSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_AngSpeed),
                      angSpeed
                   );

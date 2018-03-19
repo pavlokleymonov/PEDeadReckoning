@@ -819,35 +819,35 @@ TEST_F(PEFusionToolsTest, test_MergeHeading )
    EXPECT_NEAR(   5.0, PE::FUSION::MergeHeading(heading_10,heading_0).Value,    0.001);
    EXPECT_NEAR(   0.1, PE::FUSION::MergeHeading(heading_10,heading_0).Accuracy, 0.001);
    //--- 90:0.6 and 180:0.3
-   EXPECT_NEAR( 150.0, PE::FUSION::MergeHeading(heading_90,heading_180).Value,    0.001);
-   EXPECT_NEAR(   0.4, PE::FUSION::MergeHeading(heading_90,heading_180).Accuracy, 0.001);
+   EXPECT_NEAR( 162.0, PE::FUSION::MergeHeading(heading_90,heading_180).Value,    0.001);
+   EXPECT_NEAR(  0.36, PE::FUSION::MergeHeading(heading_90,heading_180).Accuracy, 0.001);
    //--- 0:0.1 and 180:0.3
-   EXPECT_NEAR(  45.0, PE::FUSION::MergeHeading(heading_0,heading_180).Value,    0.001);
-   EXPECT_NEAR(  0.15, PE::FUSION::MergeHeading(heading_0,heading_180).Accuracy, 0.001);
+   EXPECT_NEAR(  18.0, PE::FUSION::MergeHeading(heading_0,heading_180).Value,    0.001);
+   EXPECT_NEAR(  0.12, PE::FUSION::MergeHeading(heading_0,heading_180).Accuracy, 0.001);
    //--- 90:0.6 and 270:0.5
-   EXPECT_NEAR(188.182, PE::FUSION::MergeHeading(heading_90,heading_270).Value,    0.001);
-   EXPECT_NEAR(  0.545, PE::FUSION::MergeHeading(heading_90,heading_270).Accuracy, 0.001);
+   EXPECT_NEAR(196.229, PE::FUSION::MergeHeading(heading_90,heading_270).Value,    0.001);
+   EXPECT_NEAR(  0.541, PE::FUSION::MergeHeading(heading_90,heading_270).Accuracy, 0.001);
    //--- 91:0.7 and 355:0.2
-   EXPECT_NEAR(16.333, PE::FUSION::MergeHeading(heading_91,heading_355).Value,    0.001);
-   EXPECT_NEAR( 0.311, PE::FUSION::MergeHeading(heading_91,heading_355).Accuracy, 0.001);
+   EXPECT_NEAR( 2.245, PE::FUSION::MergeHeading(heading_91,heading_355).Value,    0.001);
+   EXPECT_NEAR( 0.237, PE::FUSION::MergeHeading(heading_91,heading_355).Accuracy, 0.001);
    //--- 181:0.9 and 1:0.8
-   EXPECT_NEAR(85.705, PE::FUSION::MergeHeading(heading_181,heading_1).Value,    0.001);
-   EXPECT_NEAR( 0.847, PE::FUSION::MergeHeading(heading_181,heading_1).Accuracy, 0.001);
+   EXPECT_NEAR(80.448, PE::FUSION::MergeHeading(heading_181,heading_1).Value,    0.001);
+   EXPECT_NEAR( 0.844, PE::FUSION::MergeHeading(heading_181,heading_1).Accuracy, 0.001);
    //--- 355:0.2 and 1:0.8
-   EXPECT_NEAR( 356.199, PE::FUSION::MergeHeading(heading_355,heading_1).Value,    0.001);
-   EXPECT_NEAR(    0.32, PE::FUSION::MergeHeading(heading_355,heading_1).Accuracy, 0.001);
+   EXPECT_NEAR( 355.352, PE::FUSION::MergeHeading(heading_355,heading_1).Value,    0.001);
+   EXPECT_NEAR(    0.235, PE::FUSION::MergeHeading(heading_355,heading_1).Accuracy, 0.001);
    //--- 355:0.2 and 10:0.1
-   EXPECT_NEAR(   5.0, PE::FUSION::MergeHeading(heading_355,heading_10).Value,    0.001);
-   EXPECT_NEAR( 0.133, PE::FUSION::MergeHeading(heading_355,heading_10).Accuracy, 0.001);
+   EXPECT_NEAR(   7.0, PE::FUSION::MergeHeading(heading_355,heading_10).Value,    0.001);
+   EXPECT_NEAR( 0.120, PE::FUSION::MergeHeading(heading_355,heading_10).Accuracy, 0.001);
    //--- 0:0.1 and 1:0.8
-   EXPECT_NEAR( 0.111, PE::FUSION::MergeHeading(heading_0,heading_1).Value,    0.001);
-   EXPECT_NEAR( 0.177, PE::FUSION::MergeHeading(heading_0,heading_1).Accuracy, 0.001);
+   EXPECT_NEAR( 0.015, PE::FUSION::MergeHeading(heading_0,heading_1).Value,    0.001);
+   EXPECT_NEAR( 0.110, PE::FUSION::MergeHeading(heading_0,heading_1).Accuracy, 0.001);
    //--- 90:0.6 and 91:0.7
-   EXPECT_NEAR(90.461, PE::FUSION::MergeHeading(heading_90,heading_91).Value,    0.001);
-   EXPECT_NEAR( 0.646, PE::FUSION::MergeHeading(heading_90,heading_91).Accuracy, 0.001);
+   EXPECT_NEAR(90.423, PE::FUSION::MergeHeading(heading_90,heading_91).Value,    0.001);
+   EXPECT_NEAR( 0.642, PE::FUSION::MergeHeading(heading_90,heading_91).Accuracy, 0.001);
    //--- 180:0.3 and 181:0.9
-   EXPECT_NEAR( 180.249, PE::FUSION::MergeHeading(heading_180,heading_181).Value,    0.001);
-   EXPECT_NEAR(   0.449, PE::FUSION::MergeHeading(heading_180,heading_181).Accuracy, 0.001);
+   EXPECT_NEAR( 180.100, PE::FUSION::MergeHeading(heading_180,heading_181).Value,    0.001);
+   EXPECT_NEAR(   0.360, PE::FUSION::MergeHeading(heading_180,heading_181).Accuracy, 0.001);
 }
 
 /**
@@ -873,40 +873,40 @@ TEST_F(PEFusionToolsTest, test_MergePosition )
    EXPECT_EQ(pos_lat0_lon0, PE::FUSION::MergePosition(pos_lat0_lon0, PE::SPosition()));
    //merge position around Primemeridian on the North semisphere
    EXPECT_NEAR(   1.000, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).Latitude,      0.001);
-   EXPECT_NEAR(  -0.059, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).Longitude,     0.001);
-   EXPECT_NEAR(   8.471, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).HorizontalAcc, 0.001);
+   EXPECT_NEAR(  -0.117, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).Longitude,     0.001);
+   EXPECT_NEAR(   8.441, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1N_lon1W).HorizontalAcc, 0.001);
    //checking invariant of merging
    EXPECT_NEAR(   1.000, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).Latitude,      0.001);
-   EXPECT_NEAR(  -0.059, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).Longitude,     0.001);
-   EXPECT_NEAR(   8.471, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).HorizontalAcc, 0.001);
+   EXPECT_NEAR(  -0.117, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).Longitude,     0.001);
+   EXPECT_NEAR(   8.441, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1N_lon1E).HorizontalAcc, 0.001);
    //merge position around Primemeridian on the South semisphere
    EXPECT_NEAR(  -1.000, PE::FUSION::MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).Latitude,      0.001);
-   EXPECT_NEAR(  -0.077, PE::FUSION::MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).Longitude,     0.001);
-   EXPECT_NEAR(   6.461, PE::FUSION::MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).HorizontalAcc, 0.001);
+   EXPECT_NEAR(  -0.153, PE::FUSION::MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).Longitude,     0.001);
+   EXPECT_NEAR(   6.423, PE::FUSION::MergePosition(pos_lat1S_lon1W,pos_lat1S_lon1E).HorizontalAcc, 0.001);
    //merge position around Ecvator on the East semisphere
-   EXPECT_NEAR(  -0.125, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).Latitude,      0.001);
+   EXPECT_NEAR(  -0.246, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).Latitude,      0.001);
    EXPECT_NEAR(   1.000, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).Longitude,     0.001);
-   EXPECT_NEAR(   7.875, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).HorizontalAcc, 0.001);
+   EXPECT_NEAR(   7.753, PE::FUSION::MergePosition(pos_lat1N_lon1E,pos_lat1S_lon1E).HorizontalAcc, 0.001);
    //merge position around Ecvator on the West semisphere
-   EXPECT_NEAR(  -0.143, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).Latitude,      0.001);
+   EXPECT_NEAR(  -0.280, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).Latitude,      0.001);
    EXPECT_NEAR(  -1.000, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).Longitude,     0.001);
-   EXPECT_NEAR(   6.857, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).HorizontalAcc, 0.001);
+   EXPECT_NEAR(   6.720, PE::FUSION::MergePosition(pos_lat1N_lon1W,pos_lat1S_lon1W).HorizontalAcc, 0.001);
    //merge position around Antimeridian on the North semisphere
    EXPECT_NEAR(   1.000, PE::FUSION::MergePosition(pos_lat1N_lon179E_acc5,pos_lat1N_lon179W_acc5).Latitude,      0.001);
    EXPECT_NEAR(-180.000, PE::FUSION::MergePosition(pos_lat1N_lon179E_acc5,pos_lat1N_lon179W_acc5).Longitude,     0.001);
    EXPECT_NEAR(   5.000, PE::FUSION::MergePosition(pos_lat1N_lon179E_acc5,pos_lat1N_lon179W_acc5).HorizontalAcc, 0.001);
    //merge position around Antimeridian on the South semisphere
    EXPECT_NEAR(  -1.000, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).Latitude,      0.001);
-   EXPECT_NEAR(-179.857, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).Longitude,     0.001);
-   EXPECT_NEAR(   3.428, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
+   EXPECT_NEAR(-179.720, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).Longitude,     0.001);
+   EXPECT_NEAR(   3.360, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc4,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
    //checking invariant of merging
    EXPECT_NEAR(  -1.000, PE::FUSION::MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).Latitude,      0.001);
-   EXPECT_NEAR(-179.857, PE::FUSION::MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).Longitude,     0.001);
-   EXPECT_NEAR(   3.428, PE::FUSION::MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).HorizontalAcc, 0.001);
+   EXPECT_NEAR(-179.720, PE::FUSION::MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).Longitude,     0.001);
+   EXPECT_NEAR(   3.360, PE::FUSION::MergePosition(pos_lat1S_lon179W_acc3,pos_lat1S_lon179E_acc4).HorizontalAcc, 0.001);
    //merge position around Antimeridian on the South semisphere
    EXPECT_NEAR(  -1.000, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Latitude,      0.001);
-   EXPECT_NEAR( 179.800, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Longitude,     0.001);
-   EXPECT_NEAR(   2.399, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
+   EXPECT_NEAR( 179.615, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Longitude,     0.001);
+   EXPECT_NEAR(   2.307, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
 }
 
 int main(int argc, char *argv[])

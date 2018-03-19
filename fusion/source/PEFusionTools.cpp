@@ -161,22 +161,9 @@ SBasicSensor PE::FUSION::MergeSensor(const SBasicSensor& sen1, const SBasicSenso
    {
       return sen1;
    }
-   TValue val = KalmanFilter(sen1.Value, sen1.Accuracy, sen2.Value, sen2.Accuracy);
-   TAccuracy acc = KalmanFilter(sen1.Accuracy, sen1.Accuracy, sen2.Accuracy, sen2.Accuracy);
-   return SBasicSensor(val,acc);
-}
 
-
-SBasicSensor PE::FUSION::MergeSensorEx(const SBasicSensor& sen1, const SBasicSensor& sen2)
-{
-   if ( false == sen1.IsValid() )
-   {
-      return sen2;
-   }
-   if ( false == sen2.IsValid() )
-   {
-      return sen1;
-   }
+//    TValue val = KalmanFilter(sen1.Value, sen1.Accuracy, sen2.Value, sen2.Accuracy);
+//    TAccuracy acc = KalmanFilter(sen1.Accuracy, sen1.Accuracy, sen2.Accuracy, sen2.Accuracy);
 
    TValue amplify = sen1.Accuracy + sen2.Accuracy;
    TAccuracy acc1 = sen1.Accuracy * amplify / sen2.Accuracy;
@@ -237,9 +224,17 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
       lon1 += 360.0;
    }
 
-   TValue lat = KalmanFilter(pos1.Latitude, pos1.HorizontalAcc, pos2.Latitude, pos2.HorizontalAcc);
-   TValue lon = KalmanFilter(lon1, pos1.HorizontalAcc, lon2, pos2.HorizontalAcc);
-   TAccuracy horizontalAcc = KalmanFilter(pos1.HorizontalAcc, pos1.HorizontalAcc, pos2.HorizontalAcc, pos2.HorizontalAcc);
+//    TValue lat = KalmanFilter(pos1.Latitude, pos1.HorizontalAcc, pos2.Latitude, pos2.HorizontalAcc);
+//    TValue lon = KalmanFilter(lon1, pos1.HorizontalAcc, lon2, pos2.HorizontalAcc);
+//    TAccuracy horizontalAcc = KalmanFilter(pos1.HorizontalAcc, pos1.HorizontalAcc, pos2.HorizontalAcc, pos2.HorizontalAcc);
+
+   TValue amplify = pos1.HorizontalAcc + pos2.HorizontalAcc;
+   TAccuracy acc1 = pos1.HorizontalAcc * amplify / pos2.HorizontalAcc;
+   TAccuracy acc2 = pos2.HorizontalAcc * amplify / pos1.HorizontalAcc;
+   TValue lat = KalmanFilter(pos1.Latitude, acc1, pos2.Latitude, acc2);
+   TValue lon = KalmanFilter(lon1, acc1, lon2, acc2);
+   TAccuracy horizontalAcc = KalmanFilter(pos1.HorizontalAcc, acc1, pos2.HorizontalAcc, acc2);
+
 
    if ( 180.0 <= lon )
    {

@@ -94,15 +94,6 @@ SBasicSensor PredictAngSpeed(const TTimestamp& deltaTimestamp, const SBasicSenso
 SBasicSensor MergeSensor(const SBasicSensor& sen1, const SBasicSensor& sen2);
 
 /**
- * Merges two sensors with concerning of its accuracies and reducing influence of less accurate sensor
- *
- * @param sen1             first sensor
- * @param sen2             second sensor
- * @return                 merged sensor
- */
-SBasicSensor MergeSensorEx(const SBasicSensor& sen1, const SBasicSensor& sen2);
-
-/**
  * Merges two headings with concerning of its accuracies.
  *
  * @param head1            first heading
