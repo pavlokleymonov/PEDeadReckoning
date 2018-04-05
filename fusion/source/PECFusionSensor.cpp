@@ -159,18 +159,29 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
 
       if ( position.IsValid() )
       {
-         posHeading  = PredictHeading(deltaTimestamp, m_Position, position, m_Heading);
-         posAngSpeed = PredictAngSpeed(deltaTimestamp, m_Heading, posHeading);
-         posSpeed    = PredictSpeed(deltaTimestamp, m_Position, position, posAngSpeed);
+         TValue distPos = TOOLS::ToDistancePrecise(m_Position,position);
+         TAccuracy accPos = m_Position.HorizontalAcc + position.HorizontalAcc;
+         if (distPos > accPos)
+         {
+            posHeading  = PredictHeading(deltaTimestamp, m_Position, position, m_Heading);
+            posAngSpeed = PredictAngSpeed(deltaTimestamp, m_Heading, posHeading);
+            posSpeed    = PredictSpeed(deltaTimestamp, m_Position, position, posAngSpeed);
+         }
       }
 
-      m_AngSpeed.Value += (m_AngAcceleration * deltaTimestamp);
+      if ( m_AngSpeed.IsValid() )
+      {
+         m_AngSpeed.Value += (m_AngAcceleration * deltaTimestamp);
+      }
       SBasicSensor newAngSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_AngSpeed),
                      angSpeed
                   );
 
-      m_Speed.Value += (m_LineAcceleration * deltaTimestamp);
+      if ( m_Speed.IsValid() )
+      {
+         m_Speed.Value += (m_LineAcceleration * deltaTimestamp);
+      }
       SBasicSensor newSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_Speed),
                      speed
@@ -189,11 +200,17 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
       m_Timestamp       = timestamp;
 
       newAngSpeed        = MergeSensor( newAngSpeed, posAngSpeed);
-      m_AngAcceleration  = (newAngSpeed.Value - m_AngSpeed.Value) / deltaTimestamp;
+      if ( newAngSpeed.IsValid() && m_AngSpeed.IsValid() )
+      {
+         m_AngAcceleration  = (newAngSpeed.Value - m_AngSpeed.Value) / deltaTimestamp;
+      }
       m_AngSpeed         = newAngSpeed;
 
       newSpeed           = MergeSensor( newSpeed, posSpeed);
-      m_LineAcceleration = (newSpeed.Value - m_Speed.Value) / deltaTimestamp;
+      if ( newSpeed.IsValid() && m_Speed.IsValid() )
+      {
+         m_LineAcceleration = (newSpeed.Value - m_Speed.Value) / deltaTimestamp;
+      }
       m_Speed            = newSpeed;
 
       m_Heading          = MergeHeading( newHeading, posHeading);
