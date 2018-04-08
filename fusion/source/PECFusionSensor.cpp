@@ -142,14 +142,7 @@ const SBasicSensor& PE::CFusionSensor::GetAngSpeed() const
 
 void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed)
 {
-   if ( m_Timestamp == timestamp )
-   {
-      m_Position = MergePosition(position, m_Position);
-      m_Heading  = MergeHeading(heading, m_Heading);
-      m_Speed    = MergeSensor(speed, m_Speed);
-      m_AngSpeed = MergeSensor(angSpeed, m_AngSpeed);
-   }
-   else if( m_Timestamp < timestamp )
+   if( m_Timestamp < timestamp )
    {
       TTimestamp deltaTimestamp = timestamp - m_Timestamp;
 
