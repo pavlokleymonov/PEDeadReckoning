@@ -29,7 +29,7 @@ PE::CNormalisation::CNormalisation()
 {
 }
 
-PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount)
+PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount)
 : mMean(0.0)
 , mMld(0.0)
 , mReliable(0.0)
@@ -46,7 +46,7 @@ PE::CNormalisation::~CNormalisation()
 
 void PE::CNormalisation::AddSensor(const TValue& value)
 {
-   if ( 0 < mSampleCount )
+   if ( 0 < mSampleCount && 0.0 <= mAccumulatedReliable )
    {
       TValue oldMean = mAccumulatedValue / mSampleCount;
       mMean = (mAccumulatedValue + value) / (mSampleCount + 1);
@@ -54,21 +54,34 @@ void PE::CNormalisation::AddSensor(const TValue& value)
       mAccumulatedMld += fabs( mMean - value );
       mMld = mAccumulatedMld / mSampleCount;
 
-      TValue deltaMean = fabs( oldMean - mMean );
-
       if ( 0.0 == mMld )
       {
          mAccumulatedReliable += 100;
       }
-      else if ( deltaMean < mMld )
+      else
       {
-         mAccumulatedReliable += 100 - deltaMean / mMld * 100;
+         TValue deltaMean = fabs( oldMean - mMean );
+         //If differences between new mean and previouse mean values less then mld(sigma) then value increase reliability
+         if ( deltaMean < mMld )
+         {
+            mAccumulatedReliable += 100 - deltaMean / mMld * 100;
+         }
       }
 
       mReliable = mAccumulatedReliable / mSampleCount;
+      mAccumulatedValue += value;
+      mSampleCount += 1;
    }
-   mAccumulatedValue += value;
-   mSampleCount += 1;
+   else
+   {
+      mMean = 0.0;
+      mMld = 0.0;
+      mReliable = 0.0;
+      mAccumulatedValue = value;
+      mAccumulatedMld = 0.0;
+      mAccumulatedReliable = 0.0;
+      mSampleCount = 1;
+   }
 }
 
 const TValue& PE::CNormalisation::GetMean() const
@@ -101,7 +114,7 @@ const TValue& PE::CNormalisation::GetAccumulatedReliable() const
    return mAccumulatedReliable;
 }
 
-const TValue& PE::CNormalisation::GetSampleCount() const
+const std::size_t& PE::CNormalisation::GetSampleCount() const
 {
    return mSampleCount;
 }

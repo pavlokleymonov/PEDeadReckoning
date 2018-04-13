@@ -36,7 +36,7 @@ public:
 /**
  * check set of same values
  */
-TEST_F(PECNormalisationTest, no_init_values_amount_of_same_values_3)
+TEST_F(PECNormalisationTest, test_no_init_values_amount_of_same_values_3)
 {
    PE::CNormalisation norm = PE::CNormalisation();
    EXPECT_EQ(0.0, norm.GetMean());
@@ -63,7 +63,7 @@ TEST_F(PECNormalisationTest, no_init_values_amount_of_same_values_3)
  * check values form set [10.0...10.05]
  * no initial settings
  */
-TEST_F(PECNormalisationTest, no_init_values_amount_of_values_40)
+TEST_F(PECNormalisationTest, test_no_init_values_amount_of_values_40)
 {
    PE::CNormalisation norm = PE::CNormalisation();
    norm.AddSensor(10.0016967);
@@ -136,7 +136,7 @@ TEST_F(PECNormalisationTest, no_init_values_amount_of_values_40)
  * Initial settings are correct
  * 
  */
-TEST_F(PECNormalisationTest, set_init_and_amount_of_values_28)
+TEST_F(PECNormalisationTest, test_set_init_and_amount_of_values_28)
 {
    PE::CNormalisation norm = PE::CNormalisation(120.2822062, 0.123918864, 771.9994714, 12);
    norm.AddSensor(10.02808851);
@@ -178,6 +178,162 @@ TEST_F(PECNormalisationTest, set_init_and_amount_of_values_28)
    EXPECT_NEAR(10.024251, norm.GetMean(),    0.000001);
    EXPECT_NEAR( 0.012306, norm.GetMld(),   0.000001);
    EXPECT_NEAR(88.241321, norm.GetReliable(),0.000001);
+}
+
+/**
+ * test invalid sample count
+ * 
+ */
+TEST_F(PECNormalisationTest, test_invalid_sample_count)
+{
+   PE::CNormalisation norm = PE::CNormalisation(0.0, 0.0, 100, 0);
+   norm.AddSensor(1.00);
+   EXPECT_NEAR( 0.0, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.01);
+   EXPECT_NEAR( 1.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (   1, norm.GetSampleCount());
+
+   norm.AddSensor(2.00);
+   EXPECT_NEAR( 1.5, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.5, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.01);
+   EXPECT_NEAR( 3.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 0.5, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (   2, norm.GetSampleCount());
+
+}
+
+/**
+ * test invalid accumulated reliable value
+ * 
+ */
+TEST_F(PECNormalisationTest, test_invalid_accumulated_reliable_value)
+{
+   PE::CNormalisation norm = PE::CNormalisation(0.0, 0.0, -100, 1);
+   norm.AddSensor(1.00);
+   EXPECT_NEAR( 0.0, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.01);
+   EXPECT_NEAR( 1.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (   1, norm.GetSampleCount());
+
+   norm.AddSensor(2.00);
+   EXPECT_NEAR( 1.5, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.5, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.01);
+   EXPECT_NEAR( 3.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 0.5, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (   2, norm.GetSampleCount());
+
+}
+
+/**
+ * test zero accumulated reliable value
+ * 
+ */
+TEST_F(PECNormalisationTest, test_invalid_zero_accumulated_reliable_value)
+{
+   PE::CNormalisation norm = PE::CNormalisation(0.0, 0.0, 0, 1);
+   norm.AddSensor(1.00);
+   EXPECT_NEAR( 0.5, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.5, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.01);
+   EXPECT_NEAR( 1.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 0.5, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (   2, norm.GetSampleCount());
+
+   norm.AddSensor(2.00);
+   EXPECT_NEAR(  1.0, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.75, norm.GetMld(), 0.01);
+   EXPECT_NEAR(16.67, norm.GetReliable(),0.01);
+   EXPECT_NEAR(  3.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR(  1.5, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(33.33, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (    3, norm.GetSampleCount());
+
+}
+
+/**
+ * test reduced reliable value by big difference
+ * 
+ */
+TEST_F(PECNormalisationTest, test_reduced_reliable_value_by_big_difference)
+{
+   PE::CNormalisation norm = PE::CNormalisation(0.0, 0.0, 0, 1);
+   norm.AddSensor(1.00);
+   EXPECT_NEAR( 0.5, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.5, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.01);
+   EXPECT_NEAR( 1.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 0.5, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (   2, norm.GetSampleCount());
+
+   norm.AddSensor(2.00);
+   EXPECT_NEAR(  1.0, norm.GetMean(), 0.01);
+   EXPECT_NEAR( 0.75, norm.GetMld(), 0.01);
+   EXPECT_NEAR(16.67, norm.GetReliable(),0.01);
+   EXPECT_NEAR(  3.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR(  1.5, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(33.33, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (    3, norm.GetSampleCount());
+
+   norm.AddSensor(2.00);
+   EXPECT_NEAR(  1.25, norm.GetMean(), 0.01);
+   EXPECT_NEAR(  0.75, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 33.33, norm.GetReliable(),0.01);
+   EXPECT_NEAR(   5.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR(  2.25, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(100.00, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (     4, norm.GetSampleCount());
+
+   norm.AddSensor(1.00);
+   EXPECT_NEAR(  1.20, norm.GetMean(), 0.01);
+   EXPECT_NEAR(  0.61, norm.GetMld(), 0.01);
+   EXPECT_NEAR( 47.96, norm.GetReliable(),0.01);
+   EXPECT_NEAR(   6.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR(  2.45, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(191.84, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (     5, norm.GetSampleCount());
+
+   //big jump UP by implausible value reliable has to be less then before
+   norm.AddSensor(10.00);
+   EXPECT_NEAR(  2.66, norm.GetMean(), 0.01);
+   EXPECT_NEAR(  1.96, norm.GetMld(), 0.01); //ACCURACY decreased
+   EXPECT_NEAR( 43.38, norm.GetReliable(),0.01); //RELIABLE decriased
+   EXPECT_NEAR(  16.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR(  9.78, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(216.88, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (     6, norm.GetSampleCount());
+
+   //value again in reasonable range 
+   norm.AddSensor(2.00);
+   EXPECT_NEAR(  2.57, norm.GetMean(), 0.01);
+   EXPECT_NEAR(  1.72, norm.GetMld(), 0.01); //accuracy INCREASED
+   EXPECT_NEAR( 51.89, norm.GetReliable(),0.01); //reliable INCREASED
+   EXPECT_NEAR(  18.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 10.35, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(311.36, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (     7, norm.GetSampleCount());
+
+   //big jump DOWN by implausible value reliable has to be less then before
+   norm.AddSensor(-10.00);
+   EXPECT_NEAR(  1.00, norm.GetMean(), 0.01);
+   EXPECT_NEAR(  3.05, norm.GetMld(), 0.01); //ACCURACY decreased
+   EXPECT_NEAR( 51.41, norm.GetReliable(),0.01); //RELIABLE decriased
+   EXPECT_NEAR(   8.0, norm.GetAccumulatedValue(),0.01);
+   EXPECT_NEAR( 21.35, norm.GetAccumulatedMld(),0.01);
+   EXPECT_NEAR(359.85, norm.GetAccumulatedReliable(),0.01);
+   EXPECT_EQ  (     8, norm.GetSampleCount());
+
 }
 
 int main(int argc, char *argv[])

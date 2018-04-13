@@ -98,19 +98,19 @@ add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)
 
 #################################
 #Test class PE::CCalibrationScale
-add_executable(test_pe_calibration_scale
-   PECCalibrationScaleTest.cpp
-)
-target_link_libraries(test_pe_calibration_scale pe_common pe_calibration gtest pthread )
-add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
+#add_executable(test_pe_calibration_scale
+#   PECCalibrationScaleTest.cpp
+#)
+#target_link_libraries(test_pe_calibration_scale pe_common pe_calibration gtest pthread )
+#add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
 
 ################################
 #Test class PE::CCalibrationBase
-add_executable(test_pe_calibration_base
-   PECCalibrationBaseTest.cpp
-)
-target_link_libraries(test_pe_calibration_base pe_common pe_calibration gtest pthread )
-add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
+#add_executable(test_pe_calibration_base
+#   PECCalibrationBaseTest.cpp
+#)
+#target_link_libraries(test_pe_calibration_base pe_common pe_calibration gtest pthread )
+#add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
 
 ##############################
 #Test class PE::CNormalisation
