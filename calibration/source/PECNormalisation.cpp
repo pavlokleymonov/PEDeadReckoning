@@ -68,9 +68,9 @@ void PE::CNormalisation::AddSensor(const TValue& value)
          }
       }
 
-      mReliable = mAccumulatedReliable / mSampleCount;
       mAccumulatedValue += value;
       mSampleCount += 1;
+      mReliable = mAccumulatedReliable / mSampleCount;
    }
    else
    {
