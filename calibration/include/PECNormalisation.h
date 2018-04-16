@@ -37,7 +37,7 @@ public:
     * @param  accumulatedReliable accumulated all reliables before
     * @param  sampleCount         sampels count before
     */
-   CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount);
+   CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount); //sample count may be more then 4 billion
    /**
     * Destructor of normalisation
     */

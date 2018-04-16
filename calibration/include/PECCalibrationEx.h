@@ -16,8 +16,6 @@
 
 #include <vector>
 #include "PECNormalisation.h"
-#include "PECCalibrationScale.h"
-#include "PECCalibrationBase.h"
 namespace PE
 {
 /**
@@ -30,10 +28,12 @@ public:
    /**
     * Constructor of calibration
     *
-    * @param  calibQueueLength   calibration queue length
-    *                            0 - unlimited
+    * @param  normScale   instance of normalisation class for the scale
+    * @param  normBase    instance of normalisation class for the base
+    * @param  limit       minimum level of reference value
+    *
     */
-   CCalibrationEx( std::size_t calibQueueLength );
+   CCalibrationEx(PE::CNormalisation& normScale, PE::CNormalisation& normBase, const PE::TValue& limit);
    /**
     * Adds new reference value to the calibration
     *
@@ -61,7 +61,7 @@ public:
    /**
     * Returns sensor accuracy
     *
-    * @return    accuracy of the sensors
+    * @return    accuracy of the sensors 1 sigma
     */
    const TValue GetAccuracy() const;
    /**
@@ -72,24 +72,40 @@ public:
    const std::size GetStatus() const;
 
 private:
-   CNormalisation mNormScale;
-   CNormalisation mNormBase;
-
-   TValue mBase;
-   TValue mScale;
-   TValue mAccuracy;
-   std::size mStatus;
 
    /**
-    * Checks base queue and calculates new base
-    *
+    * Flag shows if reference value crossed the positive limit
     */
-   void AdjustBase();
+   bool               mStarted;
    /**
-    * Checks scale queue and calculates new base
-    *
     */
-   void AdjustScale();
+   PE::TValue         mStartLimit;
+   std::size          mRefCount;
+   PE::TValue         mRefAccumPositive;
+   PE::TValue         mRefAccumNegative;
+   std::size          mSenCount;
+   PE::TValue         mSenAccumPositive;
+   PE::TValue         mSenAccumNegative;
+
+   /**
+    * Normalisation instance for Scale calibration
+    */
+   PE::CNormalisation& mNormScale;
+   /**
+    * Normalisation instance for Base calibration
+    */
+   PE::CNormalisation& mNormBase;
+
+
+
+
+
+//    TValue mBase;
+//    TValue mScale;
+//    TValue mAccuracy;
+//    std::size mStatus;
+
+   
 };
 
 
