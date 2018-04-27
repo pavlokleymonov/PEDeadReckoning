@@ -11,13 +11,11 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the License for more information.
  */
-#ifndef __PE_CCallibration_H__
-#define __PE_CCallibration_H__
+#ifndef __PE_CCalibration_H__
+#define __PE_CCalibration_H__
 
-#include <vector>
+#include "PETypes.h"
 #include "PECNormalisation.h"
-#include "PECCalibrationScale.h"
-#include "PECCalibrationBase.h"
 namespace PE
 {
 /**
@@ -30,17 +28,19 @@ public:
    /**
     * Constructor of calibration
     *
-    * @param  calibQueueLength   calibration queue length
-    *                            0 - unlimited
+    * @param  normScale         instance of normalisation class for the scale
+    * @param  normBasePositive  instance of normalisation class for the base on posetive values
+    * @param  normBaseNegative  instance of normalisation class for the base on negative values
+    * @param  limit             minimum level of reference value
+    *
     */
-   CCalibration( std::size_t calibQueueLength );
+   CCalibration(PE::CNormalisation& normScale, PE::CNormalisation& normBasePositive, PE::CNormalisation& normBaseNegative, const PE::TValue& limit);
    /**
     * Adds new reference value to the calibration
     *
     * @param  value      values of reference value
-    * @param  accuracy   accuracy of the reference value
     */
-   void AddReference(const TValue& value, const TValue& accuracy);
+   void AddReference(const TValue& value);
    /**
     * Adds new sensor raw value to the calibration
     *
@@ -54,48 +54,89 @@ public:
     */
    const TValue GetScale() const;
    /**
-    * Returns base of the sensor
+    * Returns mean linear deviation of the scale factor
     *
-    * @return    base factor
+    * @return    mld of scale factor(ecvivalent 1 sigma)
     */
-   const TValue GetBase() const;
+   const TValue GetScaleMld() const;
    /**
-    * Returns sensor accuracy
+    * Returns reliable status of the scale
     *
-    * @return    accuracy of the sensors
+    * @return    reliable status. range [0..100] percent.
     */
-   const TValue GetAccuracy() const;
+   const TValue GetScaleReliable() const;
    /**
-    * Returns sensor calibartion status
+    * Returns sensor base by positive values
     *
-    * @return    calibration status. range [0..100] percent based on reliable status 
+    * @return    positive sensor base
     */
-   const std::size GetStatus() const;
+   const TValue GetBasePositive() const;
+   /**
+    * Returns mean linear deviation of the positive sensor base
+    *
+    * @return    mld of positive sensor base(ecvivalent 1 sigma)
+    */
+   const TValue GetBasePositiveMld() const;
+   /**
+    * Returns reliable status of the positive sensor base
+    *
+    * @return    reliable status. range [0..100] percent.
+    */
+   const TValue GetBasePositiveReliable() const;
+   /**
+    * Returns sensor base by negative values
+    *
+    * @return    negative sensor base
+    */
+   const TValue GetBaseNegative() const;
+   /**
+    * Returns mean linear deviation of the negative sensor base
+    *
+    * @return    mld of negative sensor base(ecvivalent 1 sigma)
+    */
+   const TValue GetBaseNegativeMld() const;
+   /**
+    * Returns reliable status of the negative sensor base
+    *
+    * @return    reliable status. range [0..100] percent.
+    */
+   const TValue GetBaseNegativeReliable() const;
 
 private:
-   CNormalisation& mNormScale;
-   CNormalisation& mNormBase;
-
-   std::vector<CCalibrationBase*>  mBaseQueue;
-   std::vector<CCalibrationScale*> mScaleQueue;
-
-   TValue mBase;
-   TValue mScale;
-   TValue mAccuracy;
-   std::size mStatus;
 
    /**
-    * Checks base queue and calculates new base
-    *
+    * Flag shows if reference value crossed the absolute limit
     */
-   void AdjustBase();
+   bool               mStarted;
    /**
-    * Checks scale queue and calculates new base
-    *
     */
-   void AdjustScale();
+   PE::TValue         mStartLimit;
+   std::size_t        mRefCountPositive;
+   PE::TValue         mRefAccumPositive;
+   std::size_t        mRefCountNegative;
+   PE::TValue         mRefAccumNegative;
+   std::size_t        mSenCountPositive;
+   PE::TValue         mSenAccumPositive;
+   std::size_t        mSenCountNegative;
+   PE::TValue         mSenAccumNegative;
+
+   /**
+    * Normalisation instance for Scale calibration
+    */
+   PE::CNormalisation& mNormScale;
+   PE::CNormalisation* mpNormScale;
+   /**
+    * Normalisation instance for Base calibration positive values
+    */
+   PE::CNormalisation& mNormBasePositive;
+   PE::CNormalisation* mpNormBasePositive;
+   /**
+    * Normalisation instance for Base calibration negative values
+    */
+   PE::CNormalisation& mNormBaseNegative;
+   PE::CNormalisation* mpNormBaseNegative;
 };
 
 
 } //namespace PE
-#endif //__PE_CCallibration_H__
+#endif //__PE_CCalibration_H__

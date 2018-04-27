@@ -15,7 +15,6 @@ include_directories(
    ${GTEST_GMOCK_DIR}
    ${REPOSITORY_ROOT}/common/include
    ${REPOSITORY_ROOT}/fusion/include
-   ${REPOSITORY_ROOT}/filter/include
    ${REPOSITORY_ROOT}/calibration/include
    ${CMAKE_CURRENT_SOURCE_DIR}/mock
 )
@@ -37,14 +36,9 @@ add_library ( pe_fusion STATIC
    ${REPOSITORY_ROOT}/fusion/source/PECFusionSensor.cpp
 )
 
-add_library ( pe_filter STATIC
-   ${REPOSITORY_ROOT}/filter/source/PECPositionFilterSpeed.cpp
-)
-
 add_library ( pe_calibration STATIC
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECCalibration.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
 )
 
 ##########################
@@ -87,30 +81,13 @@ add_executable(test_pe_fusion_sensor
 target_link_libraries(test_pe_fusion_sensor pe_fusion pe_common gtest pthread )
 add_test(NAME test_pe_fusion_sensor COMMAND test_pe_fusion_sensor)
 
-####################################
-#Test class PE::CPositionFilterSpeed
-#add_executable(test_pe_position_filter_speed
-#   ${REPOSITORY_ROOT}/filter/source/PECPositionFilterSpeed.cpp
-#   PECPositionFilterSpeedTest.cpp
-#)
-#target_link_libraries(test_pe_position_filter_speed pe_common pe_filter gtest pthread )
-#add_test(NAME test_pe_position_filter_speed COMMAND test_pe_position_filter_speed)
-
 #################################
-#Test class PE::CCalibrationScale
-#add_executable(test_pe_calibration_scale
-#   PECCalibrationScaleTest.cpp
-#)
-#target_link_libraries(test_pe_calibration_scale pe_common pe_calibration gtest pthread )
-#add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
-
-################################
-#Test class PE::CCalibrationBase
-#add_executable(test_pe_calibration_base
-#   PECCalibrationBaseTest.cpp
-#)
-#target_link_libraries(test_pe_calibration_base pe_common pe_calibration gtest pthread )
-#add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
+#Test class PE::CCalibration
+add_executable(test_pe_calibration
+   PECCalibrationTest.cpp
+)
+target_link_libraries(test_pe_calibration pe_common pe_calibration gtest pthread )
+add_test(NAME test_pe_calibration COMMAND test_pe_calibration)
 
 ##############################
 #Test class PE::CNormalisation

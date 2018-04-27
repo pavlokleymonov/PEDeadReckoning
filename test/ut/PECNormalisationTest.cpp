@@ -49,6 +49,8 @@ TEST_F(PECNormalisationTest, test_no_init_values_amount_of_same_values_till_full
    EXPECT_NEAR(0.0, norm.GetReliable(),0.01);
 
    norm.AddSensor(10.0);
+   EXPECT_EQ(10.0, norm.GetMean());
+   EXPECT_EQ(0.0, norm.GetMld());
    EXPECT_NEAR(50.0, norm.GetReliable(),0.01);
 
    norm.AddSensor(10.0);

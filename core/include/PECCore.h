@@ -15,11 +15,11 @@
 #define __PE_CCore_H__
 
 #include "PETypes.h"
-#include "PESLocation.h"
 #include "PESGnss.h"
 #include "PESOdometer.h"
 #include "PESGyro.h"
 #include "PECCalibration.h"
+#include "PECFusionSensor.h"
 
 
 
@@ -44,19 +44,14 @@ public:
     */
    CCore();
    /**
-    * Constructor with already known calibartion information
-    */
-   explicit CCore(const CCalibration& calibration);
-   /**
     * Destructor 
     */
    virtual ~CCore();
-   /**
-    * Returns current location information.
-    *
-    * @return       Location information
-    */
-   virtual SLocation GetLocation() const;
+   virtual bool SetCfg();
+   virtual bool LoadPersistency();
+   virtual bool StorePersistency();
+   virtual void AddPositionObserver();
+   virtual 
    /**
     * Returns calibration data.
     *
