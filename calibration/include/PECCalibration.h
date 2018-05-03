@@ -19,7 +19,8 @@
 namespace PE
 {
 /**
- *  - 
+ *  All sensors data have to be adjusted to reference value frequancy
+ *  Mean value has to be calculated from all sensors data in a time range between two referenc values
  *
  */
 class CCalibration
@@ -28,13 +29,11 @@ public:
    /**
     * Constructor of calibration
     *
-    * @param  normScale         instance of normalisation class for the scale
-    * @param  normBasePositive  instance of normalisation class for the base on posetive values
-    * @param  normBaseNegative  instance of normalisation class for the base on negative values
-    * @param  limit             minimum level of reference value
+    * @param  normScale    instance of normalisation class for the scale
+    * @param  normBase     instance of normalisation class for the base
     *
     */
-   CCalibration(PE::CNormalisation& normScale, PE::CNormalisation& normBasePositive, PE::CNormalisation& normBaseNegative, const PE::TValue& limit);
+   CCalibration(PE::CNormalisation& normScale, PE::CNormalisation& normBase);
    /**
     * Adds new reference value to the calibration
     *
@@ -48,7 +47,8 @@ public:
     */
    void AddSensor(const TValue& value);
    /**
-    * Returns scale factor between sensors and reference value
+    * Returns scale factor between sensors and reference value,
+    *         it has to be multiply to sensor value after substruction of the base
     *
     * @return    scale factor
     */
@@ -66,75 +66,44 @@ public:
     */
    const TValue GetScaleReliable() const;
    /**
-    * Returns sensor base by positive values
+    * Returns sensor base which has to be substructed from original sensor value
     *
-    * @return    positive sensor base
+    * @return    sensor base
     */
-   const TValue GetBasePositive() const;
+   const TValue GetBase() const;
    /**
-    * Returns mean linear deviation of the positive sensor base
+    * Returns mean linear deviation of the sensor base
     *
-    * @return    mld of positive sensor base(ecvivalent 1 sigma)
+    * @return    mld of sensor base(ecvivalent 1 sigma)
     */
-   const TValue GetBasePositiveMld() const;
+   const TValue GetBaseMld() const;
    /**
-    * Returns reliable status of the positive sensor base
+    * Returns reliable status of the sensor base
     *
     * @return    reliable status. range [0..100] percent.
     */
-   const TValue GetBasePositiveReliable() const;
-   /**
-    * Returns sensor base by negative values
-    *
-    * @return    negative sensor base
-    */
-   const TValue GetBaseNegative() const;
-   /**
-    * Returns mean linear deviation of the negative sensor base
-    *
-    * @return    mld of negative sensor base(ecvivalent 1 sigma)
-    */
-   const TValue GetBaseNegativeMld() const;
-   /**
-    * Returns reliable status of the negative sensor base
-    *
-    * @return    reliable status. range [0..100] percent.
-    */
-   const TValue GetBaseNegativeReliable() const;
+   const TValue GetBaseReliable() const;
 
 private:
-
-   /**
-    * Flag shows if reference value crossed the absolute limit
-    */
-   bool               mStarted;
-   /**
-    */
-   PE::TValue         mStartLimit;
-   std::size_t        mRefCountPositive;
-   PE::TValue         mRefAccumPositive;
-   std::size_t        mRefCountNegative;
-   PE::TValue         mRefAccumNegative;
-   std::size_t        mSenCountPositive;
-   PE::TValue         mSenAccumPositive;
-   std::size_t        mSenCountNegative;
-   PE::TValue         mSenAccumNegative;
 
    /**
     * Normalisation instance for Scale calibration
     */
    PE::CNormalisation& mNormScale;
-   PE::CNormalisation* mpNormScale;
    /**
     * Normalisation instance for Base calibration positive values
     */
-   PE::CNormalisation& mNormBasePositive;
-   PE::CNormalisation* mpNormBasePositive;
-   /**
-    * Normalisation instance for Base calibration negative values
-    */
-   PE::CNormalisation& mNormBaseNegative;
-   PE::CNormalisation* mpNormBaseNegative;
+   PE::CNormalisation& mNormBase;
+
+   PE::TValue mRefMin;
+   PE::TValue mRefMax;
+   PE::TValue mRefLast;
+   PE::TValue mSenMin;
+   PE::TValue mSenMax;
+   PE::TValue mSenLast;
+
+   void processScale();
+   void processBase();
 };
 
 

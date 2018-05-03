@@ -20,83 +20,69 @@
 using namespace PE;
 
 
-PE::CCalibration::CCalibration(PE::CNormalisation& normScale, PE::CNormalisation& normBasePositive, PE::CNormalisation& normBaseNegative, const PE::TValue& limit)
-: mStarted(false)
-, mStartLimit(limit)
-, mRefCountPositive(0)
-, mRefAccumPositive(0.0)
-, mRefCountNegative(0)
-, mRefAccumNegative(0.0)
-, mSenCountPositive(0)
-, mSenAccumPositive(0.0)
-, mSenCountNegative(0)
-, mSenAccumNegative(0.0)
-, mNormScale(normScale)
-, mNormBasePositive(normBasePositive)
-, mNormBaseNegative(normBaseNegative)
-, mpNormScale(0)
-, mpNormBasePositive(0)
-, mpNormBaseNegative(0)
+PE::CCalibration::CCalibration(CNormalisation& normScale, CNormalisation& normBase)
+: mNormScale(normScale)
+, mNormBase(normBase)
+, mRefMin(MAX_VALUE)
+, mRefMax(MAX_VALUE)
+, mRefLast(MAX_VALUE)
+, mSenMin(MAX_VALUE)
+, mSenMax(MAX_VALUE)
+, mSenLast(MAX_VALUE)
 {
 }
 
 
 void PE::CCalibration::AddReference(const TValue& value)
 {
-   if (false == mStarted)
+   if ( MAX_VALUE == mRefLast )
    {
-      if (fabs(mStartLimit) < fabs(value) )
-      {
-         mStarted = true;
-      }
+      mRefMax = value;
+      mRefMin = value;
+      mRefLast = value;
    }
-   if (mStarted)
+   else
    {
-      if (0.0 < value)
+      if ( mRefLast < value )
       {
-         ++mRefCountPositive;
-         mRefAccumPositive += value;
+         mRefMax = value;
+         mRefMin = mRefLast;
       }
       else
       {
-         ++mRefCountNegative;
-         mRefAccumNegative += value;
+         mRefMax = mRefLast;
+         mRefMin = value;
       }
+      mRefLast = value;
+      //processScale();
+      //processBase();
    }
 }
 
 
 void PE::CCalibration::AddSensor(const TValue& value)
 {
-   if (mStarted)
+   if ( MAX_VALUE == mSenLast )
    {
-      if (0.0 < value)
+      mSenMax = value;
+      mSenMin = value;
+      mSenLast = value;
+   }
+   else
+   {
+      if ( mSenLast < value )
       {
-         ++mSenCountPositive;
-         mSenAccumPositive += value;
+         mSenMax = value;
+         mSenMin = mSenLast;
       }
       else
       {
-         ++mSenCountNegative;
-         mSenAccumNegative += value;
+         mSenMax = mSenLast;
+         mSenMin = value;
       }
-      TValue SenAccumABS = (mSenAccumPositive - mSenAccumNegative) / (mSenCountPositive + mSenCountNegative);
-      TValue RefAccumABS = (mRefAccumPositive - mRefAccumNegative) / (mRefCountPositive + mRefCountNegative);
-      if ( 0.0 < RefAccumABS && 0.0 < SenAccumABS )
-      {
-         TValue scale = RefAccumABS / SenAccumABS;
-         mNormScale.AddSensor(scale);
-         if ( 0.0 < mSenAccumPositive )
-         {
-            TValue basePositive = mRefAccumPositive / mRefCountPositive / scale - mSenAccumPositive / mSenCountPositive;
-            mNormBasePositive.AddSensor(basePositive);
-         }
-         if ( 0.0 > mSenAccumNegative )
-         {
-            TValue baseNegative = mRefAccumNegative / mRefCountNegative / scale - mSenAccumNegative / mSenCountNegative;
-            mNormBaseNegative.AddSensor(baseNegative);
-         }
-      }
+      mSenLast = value;
+      processScale();
+      processBase();
    }
 }
 
@@ -119,37 +105,51 @@ const TValue PE::CCalibration::GetScaleReliable() const
 }
 
 
-const TValue PE::CCalibration::GetBasePositive() const
+const TValue PE::CCalibration::GetBase() const
 {
-   return mNormBasePositive.GetMean();
+   return mNormBase.GetMean();
 }
 
 
-const TValue PE::CCalibration::GetBasePositiveMld() const
+const TValue PE::CCalibration::GetBaseMld() const
 {
-   return mNormBasePositive.GetMld();
+   return mNormBase.GetMld();
 }
 
 
-const TValue PE::CCalibration::GetBasePositiveReliable() const
+const TValue PE::CCalibration::GetBaseReliable() const
 {
-   return mNormBasePositive.GetReliable();
+   return mNormBase.GetReliable();
 }
 
 
-const TValue PE::CCalibration::GetBaseNegative() const
+void PE::CCalibration::processScale()
 {
-   return mNormBaseNegative.GetMean();
+   if ( MAX_VALUE!=mRefLast &&
+        MAX_VALUE!=mSenLast )
+   {
+      TValue refDelta = mRefMax - mRefMin;
+      TValue senDelta = mSenMax - mSenMin;
+      if ( 0 < refDelta && 
+           0 < senDelta )
+      {
+         TValue scale = refDelta / senDelta;
+         mNormScale.AddSensor(scale);
+      }
+   }
 }
 
 
-const TValue PE::CCalibration::GetBaseNegativeMld() const
+void PE::CCalibration::processBase()
 {
-   return mNormBaseNegative.GetMld();
-}
-
-
-const TValue PE::CCalibration::GetBaseNegativeReliable() const
-{
-   return mNormBaseNegative.GetReliable();
+   if ( 0 != mNormScale.GetMean() )
+   {
+      if ( MAX_VALUE != mRefLast &&
+           MAX_VALUE != mSenLast)
+      {
+         TValue base = mSenLast - mRefLast / mNormScale.GetMean();
+         //printf("base=%0.9f\n", base);
+         mNormBase.AddSensor(base);
+      }
+   }
 }
