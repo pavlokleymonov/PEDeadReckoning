@@ -83,6 +83,10 @@ public:
     * @return    reliable status. range [0..100] percent.
     */
    const TValue GetBaseReliable() const;
+   /**
+    *
+    */
+   void DoCalibration();
 
 private:
 
@@ -98,12 +102,18 @@ private:
    PE::TValue mRefMin;
    PE::TValue mRefMax;
    PE::TValue mRefLast;
+   PE::TValue mRefAcc;
+   uint32_t mRefCnt;
    PE::TValue mSenMin;
    PE::TValue mSenMax;
    PE::TValue mSenLast;
+   PE::TValue mSenAcc;
+   uint32_t mSenCnt;
 
+   void processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
    void processScale();
    void processBase();
+   void cleanAcc();
 };
 
 

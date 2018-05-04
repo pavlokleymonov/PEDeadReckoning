@@ -26,64 +26,28 @@ PE::CCalibration::CCalibration(CNormalisation& normScale, CNormalisation& normBa
 , mRefMin(MAX_VALUE)
 , mRefMax(MAX_VALUE)
 , mRefLast(MAX_VALUE)
+, mRefAcc(0.0)
+, mRefCnt(0)
 , mSenMin(MAX_VALUE)
 , mSenMax(MAX_VALUE)
 , mSenLast(MAX_VALUE)
+, mSenAcc(0.0)
+, mSenCnt(0)
 {
 }
 
 
 void PE::CCalibration::AddReference(const TValue& value)
 {
-   if ( MAX_VALUE == mRefLast )
-   {
-      mRefMax = value;
-      mRefMin = value;
-      mRefLast = value;
-   }
-   else
-   {
-      if ( mRefLast < value )
-      {
-         mRefMax = value;
-         mRefMin = mRefLast;
-      }
-      else
-      {
-         mRefMax = mRefLast;
-         mRefMin = value;
-      }
-      mRefLast = value;
-      //processScale();
-      //processBase();
-   }
+   mRefAcc += value;
+   ++mRefCnt;
 }
 
 
 void PE::CCalibration::AddSensor(const TValue& value)
 {
-   if ( MAX_VALUE == mSenLast )
-   {
-      mSenMax = value;
-      mSenMin = value;
-      mSenLast = value;
-   }
-   else
-   {
-      if ( mSenLast < value )
-      {
-         mSenMax = value;
-         mSenMin = mSenLast;
-      }
-      else
-      {
-         mSenMax = mSenLast;
-         mSenMin = value;
-      }
-      mSenLast = value;
-      processScale();
-      processBase();
-   }
+   mSenAcc += value;
+   ++mSenCnt;
 }
 
 
@@ -123,6 +87,44 @@ const TValue PE::CCalibration::GetBaseReliable() const
 }
 
 
+void PE::CCalibration::DoCalibration()
+{
+   if (0 < mRefCnt && 
+       0 < mSenCnt )
+   {
+      processValue(mRefLast,mRefMax,mRefMin,mRefAcc / mRefCnt);
+      processValue(mSenLast,mSenMax,mSenMin,mSenAcc / mSenCnt);
+      processScale();
+      processBase();
+      cleanAcc();
+   }
+}
+
+
+void PE::CCalibration::processValue(TValue& last, TValue& max, TValue& min, const TValue& value)
+{
+   if ( MAX_VALUE == last )
+   {
+      max = value;
+      min = value;
+   }
+   else
+   {
+      if ( last < value )
+      {
+         max = value;
+         min = last;
+      }
+      else
+      {
+         max = last;
+         min = value;
+      }
+   }
+   last = value;
+}
+
+
 void PE::CCalibration::processScale()
 {
    if ( MAX_VALUE!=mRefLast &&
@@ -147,9 +149,17 @@ void PE::CCalibration::processBase()
       if ( MAX_VALUE != mRefLast &&
            MAX_VALUE != mSenLast)
       {
-         TValue base = mSenLast - mRefLast / mNormScale.GetMean();
-         //printf("base=%0.9f\n", base);
+         TValue base = mSenLast * mNormScale.GetMean() - mRefLast;
          mNormBase.AddSensor(base);
       }
    }
+}
+
+
+void PE::CCalibration::cleanAcc()
+{
+   mRefCnt = 0;
+   mSenCnt = 0;
+   mRefAcc = 0.0;
+   mSenAcc = 0.0;
 }
