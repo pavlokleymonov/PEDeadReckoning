@@ -12,7 +12,7 @@
  * See the License for more information.
  */
 
-#include "PECCalibration.h"
+#include "PECCalibrationBase.h"
 #include "PETools.h"
 #include <math.h>
 
@@ -20,167 +20,68 @@
 using namespace PE;
 
 
-PE::CCalibration::CCalibration(CNormalisation& normScale, CNormalisation& normBase)
-: mNormScale(normScale)
-, mNormBase(normBase)
-, mRefMin(MAX_VALUE)
-, mRefMax(MAX_VALUE)
-, mRefLast(MAX_VALUE)
-, mInstRefAcc(0.0)
-, mInstRefCnt(0)
+PE::CCalibrationBase::CCalibrationBase(CNormalisation& norm)
+: mNorm(norm)
+, mBase(0)
 , mRefAcc(0.0)
 , mRefCnt(0)
-, mRefDelatAcc(0.0)
-, mRefDeltaCnt(0)
-, mSenMin(MAX_VALUE)
-, mSenMax(MAX_VALUE)
-, mSenLast(MAX_VALUE)
-, mInstSenAcc(0.0)
-, mInstSenCnt(0)
 , mSenAcc(0.0)
 , mSenCnt(0)
-, mSenDeltaAcc(0.0)
-, mSenDeltaCnt(0)
 {
 }
 
 
-void PE::CCalibration::AddReference(const TValue& value)
+void PE::CCalibrationBase::AddReference(const TValue& value)
 {
-   mInstRefAcc += value;
-   ++mInstRefCnt;
    mRefAcc += value;
    ++mRefCnt;
 }
 
 
-void PE::CCalibration::AddSensor(const TValue& value)
+void PE::CCalibrationBase::AddSensor(const TValue& value)
 {
-   mInstSenAcc += value;
-   ++mInstSenCnt;
    mSenAcc += value;
    ++mSenCnt;
 }
 
 
-const TValue PE::CCalibration::GetScale() const
+void PE::CCalibrationBase::AddScale(const TValue& value)
 {
-   return mNormScale.GetMean();
+   mScale = value;
 }
 
 
-const TValue PE::CCalibration::GetScaleMld() const
+const TValue PE::CCalibrationBase::GetBase() const
 {
-   return mNormScale.GetMld();
+   return mBase;
 }
 
 
-const TValue PE::CCalibration::GetScaleReliable() const
+const TValue PE::CCalibrationBase::GetMean() const
 {
-   return mNormScale.GetReliable();
+   return mNorm.GetMean();
 }
 
 
-const TValue PE::CCalibration::GetBase() const
+const TValue PE::CCalibrationBase::GetMld() const
 {
-   return mNormBase.GetMean();
+   return mNorm.GetMld();
 }
 
 
-const TValue PE::CCalibration::GetBaseMld() const
+const TValue PE::CCalibrationBase::GetReliable() const
 {
-   return mNormBase.GetMld();
+   return mNorm.GetReliable();
 }
 
 
-const TValue PE::CCalibration::GetBaseReliable() const
+void PE::CCalibrationBase::DoCalibration()
 {
-   return mNormBase.GetReliable();
-}
-
-
-void PE::CCalibration::DoCalibration()
-{
-   if (0 < mInstRefCnt && 
-       0 < mInstSenCnt )
+   if ( 0.0 < mScale  &&
+          0 < mSenCnt &&
+          0 < mRefCnt)
    {
-      processValue(mRefLast,mRefMax,mRefMin,mInstRefAcc / mInstRefCnt);
-      processValue(mSenLast,mSenMax,mSenMin,mInstSenAcc / mInstSenCnt);
-      processScale();
-      processBase();
-      cleanInst();
+      mBase = (mSenAcc / mSenCnt) * mScale - (mRefAcc / mRefCnt);
+      mNorm.AddSensor(mBase);
    }
-}
-
-
-void PE::CCalibration::processValue(TValue& last, TValue& max, TValue& min, const TValue& value)
-{
-   if ( MAX_VALUE == last )
-   {
-      max = value;
-      min = value;
-   }
-   else
-   {
-      if ( last < value )
-      {
-         max = value;
-         min = last;
-      }
-      else
-      {
-         max = last;
-         min = value;
-      }
-   }
-   last = value;
-}
-
-
-void PE::CCalibration::processScale()
-{
-   if ( MAX_VALUE!=mRefLast &&
-        MAX_VALUE!=mSenLast )
-   {
-      TValue refDelta = mRefMax - mRefMin;
-      TValue senDelta = mSenMax - mSenMin;
-
-      if ( 0 < refDelta )
-      {
-         mRefDelatAcc += refDelta;
-         ++mRefDeltaCnt;
-      }
-      if ( 0 < senDelta )
-      {
-         mSenDeltaAcc += senDelta;
-         ++mSenDeltaCnt;
-      }
-      if ( 0 < refDelta &&
-           0 < senDelta )
-      {
-         TValue scale = ( mRefDelatAcc / mRefDeltaCnt ) / ( mSenDeltaAcc / mSenDeltaCnt );
-         mNormScale.AddSensor(scale);
-      }
-   }
-}
-
-
-void PE::CCalibration::processBase()
-{
-   if ( 0 != mNormScale.GetMean() &&
-        0 != mRefCnt &&
-        0 != mSenCnt )
-   {
-      TValue base = (mSenAcc / mSenCnt) * mNormScale.GetMean() - (mRefAcc / mRefCnt);
-      mNormBase.AddSensor(base);
-   }
-}
-
-
-void PE::CCalibration::cleanInst()
-{
-   mInstRefCnt = 0;
-   mInstSenCnt = 0;
-   mInstRefAcc = 0.0;
-   mInstSenAcc = 0.0;
 }

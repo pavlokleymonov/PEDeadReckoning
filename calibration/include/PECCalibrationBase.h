@@ -11,8 +11,8 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the License for more information.
  */
-#ifndef __PE_CCalibration_H__
-#define __PE_CCalibration_H__
+#ifndef __PE_CCalibrationBase_H__
+#define __PE_CCalibrationBase_H__
 
 #include "PETypes.h"
 #include "PECNormalisation.h"
@@ -23,17 +23,16 @@ namespace PE
  *  Mean value has to be calculated from all sensors data in a time range between two referenc values
  *
  */
-class CCalibration
+class CCalibrationBase
 {
 public:
    /**
     * Constructor of calibration
     *
-    * @param  normScale    instance of normalisation class for the scale
-    * @param  normBase     instance of normalisation class for the base
+    * @param  norm    instance of normalisation class for the scale
     *
     */
-   CCalibration(PE::CNormalisation& normScale, PE::CNormalisation& normBase);
+   CCalibrationBase(PE::CNormalisation& norm);
    /**
     * Adds new reference value to the calibration
     *
@@ -47,44 +46,37 @@ public:
     */
    void AddSensor(const TValue& value);
    /**
-    * Returns scale factor between sensors and reference value,
-    *         it has to be multiply to sensor value after substruction of the base
+    * Adds new scale to the sensor
     *
-    * @return    scale factor
+    * @param  value     scale value of the sensor
     */
-   const TValue GetScale() const;
+   void AddScale(const TValue& value);
    /**
-    * Returns mean linear deviation of the scale factor
-    *
-    * @return    mld of scale factor(ecvivalent 1 sigma)
-    */
-   const TValue GetScaleMld() const;
-   /**
-    * Returns reliable status of the scale
-    *
-    * @return    reliable status. range [0..100] percent.
-    */
-   const TValue GetScaleReliable() const;
-   /**
-    * Returns sensor base which has to be substructed from original sensor value
+    * Returns sensor base which has to be substructed from scaled sensor value
     *
     * @return    sensor base
     */
    const TValue GetBase() const;
    /**
+    * Returns sensor base which has to be substructed from scaled sensor value
+    *
+    * @return    sensor base
+    */
+   const TValue GetMean() const;
+   /**
     * Returns mean linear deviation of the sensor base
     *
     * @return    mld of sensor base(ecvivalent 1 sigma)
     */
-   const TValue GetBaseMld() const;
+   const TValue GetMld() const;
    /**
     * Returns reliable status of the sensor base
     *
     * @return    reliable status. range [0..100] percent.
     */
-   const TValue GetBaseReliable() const;
+   const TValue GetReliable() const;
    /**
-    *
+    * Does calibration calculation based on internal accumulated reference and sensor values
     */
    void DoCalibration();
 
@@ -93,38 +85,15 @@ private:
    /**
     * Normalisation instance for Scale calibration
     */
-   PE::CNormalisation& mNormScale;
-   /**
-    * Normalisation instance for Base calibration positive values
-    */
-   PE::CNormalisation& mNormBase;
-
-   PE::TValue mRefMin;
-   PE::TValue mRefMax;
-   PE::TValue mRefLast;
-   PE::TValue mInstRefAcc;
-   uint32_t mInstRefCnt;
+   PE::CNormalisation& mNorm;
+   PE::TValue mBase;
+   PE::TValue mScale;
    PE::TValue mRefAcc;
    uint32_t mRefCnt;
-   PE::TValue mRefDelatAcc;
-   uint32_t mRefDeltaCnt;
-   
-   PE::TValue mSenMin;
-   PE::TValue mSenMax;
-   PE::TValue mSenLast;
-   PE::TValue mInstSenAcc;
-   uint32_t mInstSenCnt;
    PE::TValue mSenAcc;
    uint32_t mSenCnt;
-   PE::TValue mSenDeltaAcc;
-   uint32_t mSenDeltaCnt;
-
-   void processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
-   void processScale();
-   void processBase();
-   void cleanInst();
 };
 
 
 } //namespace PE
-#endif //__PE_CCalibration_H__
+#endif //__PE_CCalibrationBase_H__
