@@ -399,6 +399,44 @@ TEST_F(PECNormalisationTest, test_zero_accumulated_reliable_zero_value)
 
 
 /**
+ * test zero accumulated reliable zero value
+ * 
+ */
+TEST_F(PECNormalisationTest, test_zero_all_accumulated_and_values_around_zero)
+{
+   PE::CNormalisation norm = PE::CNormalisation(0.0, 0.0, 0, 0);
+   norm.AddSensor(0.00);
+   EXPECT_NEAR( 0.0, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.0, norm.GetMld(), 0.001);
+   EXPECT_NEAR( 0.0, norm.GetReliable(),0.001);
+   norm.AddSensor(0.00);
+   EXPECT_NEAR( 0.0, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.0, norm.GetMld(), 0.001);
+   EXPECT_NEAR(50.00, norm.GetReliable(),0.001);
+   norm.AddSensor(0.00);
+   EXPECT_NEAR( 0.0, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.0, norm.GetMld(), 0.001);
+   EXPECT_NEAR(66.667, norm.GetReliable(),0.001);
+   norm.AddSensor(+0.1);
+   EXPECT_NEAR( 0.025, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.025, norm.GetMld(), 0.001);
+   EXPECT_NEAR(50.000, norm.GetReliable(),0.001);
+   norm.AddSensor(-0.1);
+   EXPECT_NEAR( 0.000, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.044, norm.GetMld(), 0.001);
+   EXPECT_NEAR(48.571, norm.GetReliable(),0.001);
+   norm.AddSensor(-0.15);
+   EXPECT_NEAR(-0.025, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.060, norm.GetMld(), 0.001);
+   EXPECT_NEAR(50.198, norm.GetReliable(),0.001);
+   norm.AddSensor(+0.15);
+   EXPECT_NEAR( 0.000, norm.GetMean(), 0.001);
+   EXPECT_NEAR( 0.075, norm.GetMld(), 0.001);
+   EXPECT_NEAR(52.551, norm.GetReliable(),0.001);
+}
+
+
+/**
  * test big precalibrated values
  * 
  */

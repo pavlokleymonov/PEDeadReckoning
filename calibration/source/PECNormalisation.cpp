@@ -46,7 +46,8 @@ PE::CNormalisation::~CNormalisation()
 
 void PE::CNormalisation::AddSensor(const TValue& value)
 {
-   if ( 0 < mSampleCount && 0.0 <= mAccumulatedReliable )
+   if ( 0    < mSampleCount && 
+        0.0 <= mAccumulatedReliable )
    {
       TValue oldMean = mAccumulatedValue / mSampleCount;
       mMean = (mAccumulatedValue + value) / (mSampleCount + 1);

@@ -85,7 +85,7 @@ TEST_F(PECFusionSensorTest, test_create )
 }
 
 
-TEST_F(PECFusionSensorTest, test_incorrect_timestamp )
+TEST_F(PECFusionSensorTest, test_incorrect_first_timestamp )
 {
    PE::SPosition pos = PE::SPosition(50.0, 10.0, 1);//lat=50 lon=10
    PE::SBasicSensor heading = PE::SBasicSensor(90.0,0.3);//90deg
@@ -131,6 +131,39 @@ TEST_F(PECFusionSensorTest, test_incorrect_timestamp )
    EXPECT_NEAR(     1.200, fusion.GetPosition().HorizontalAcc,0.001);
    EXPECT_NEAR(    90.000, fusion.GetHeading().Value,0.001);
    EXPECT_NEAR(     0.656, fusion.GetHeading().Accuracy,0.001);
+}
+
+
+TEST_F(PECFusionSensorTest, test_incorrect_position_timestamp )
+{
+   PE::SBasicSensor  heading  ( 90.0,0.1);
+   PE::SBasicSensor angSpeed  (  0.0,0.1);
+   PE::SBasicSensor    speed  (  0.0,0.1);
+   PE::SPosition         pos  ( 50.0,10.0, 0.1);
+   PE::CFusionSensor  fusion  ( 10.0,pos , heading, angSpeed, speed);
+
+   fusion.AddPosition(10.0, PE::SPosition( 50.0,10.0, 0.1));
+   fusion.AddPosition( 9.0, PE::SPosition( 50.1,10.1, 0.1));
+   fusion.DoFusion();
+   EXPECT_NEAR(50.0, fusion.GetPosition().Latitude , 0.00000001);
+   EXPECT_NEAR(10.0, fusion.GetPosition().Longitude, 0.00000001);
+   EXPECT_NEAR( 0.1, fusion.GetPosition().HorizontalAcc, 0.00000001);
+}
+
+
+TEST_F(PECFusionSensorTest, test_incorrect_ang_speed_timestamp )
+{
+   PE::SBasicSensor  heading  ( 90.0,0.1);
+   PE::SBasicSensor angSpeed  (  0.0,0.1);
+   PE::SBasicSensor    speed  (  0.0,0.1);
+   PE::SPosition         pos  ( 50.0,10.0, 0.1);
+   PE::CFusionSensor  fusion  ( 10.0,pos , heading, angSpeed, speed);
+
+   fusion.AddAngSpeed(10.0, angSpeed);
+   fusion.AddAngSpeed( 9.0, PE::SBasicSensor(99, 0.000001));
+   fusion.DoFusion();
+   EXPECT_NEAR(0.0, fusion.GetAngSpeed().Value, 0.00000001);
+   EXPECT_NEAR(0.1, fusion.GetAngSpeed().Accuracy, 0.00000001);
 }
 
 

@@ -107,6 +107,13 @@ public:
     */
    const SBasicSensor& GetAngSpeed() const;
    /**
+    * Returns predicted angular velocity concerning provided timestamp
+    *
+    * @param timestamp    timestamp of predicted value in seconds
+    * @return             angular velocity [deg/s].
+    */
+//    SBasicSensor GetAngSpeed(const TTimestamp& timestamp) const;
+   /**
     *
     */
    void DoFusion();
