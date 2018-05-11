@@ -19,8 +19,6 @@
 namespace PE
 {
 /**
- *  All sensors data have to be adjusted to reference value frequancy
- *  Mean value has to be calculated from all sensors data in a time range between two referenc values
  *
  */
 class CCalibrationScale
@@ -36,31 +34,31 @@ public:
    /**
     * Adds new reference value to the calibration
     *
-    * @param  value      values of reference value
+    * @param  value      value of reference source
     */
    void AddReference(const TValue& value);
    /**
     * Adds new sensor raw value to the calibration
     *
-    * @param  value     raw sensor value, zero offset has to be adjusted before
+    * @param  value     raw sensor value
     */
    void AddSensor(const TValue& value);
    /**
-    * Returns scale factor between sensors and reference value,
-    *         it has to be multiply to sensor value after substruction of the base
+    * Returns scale factor between sensor and reference values based on simple average
+    *         of delta between them
     *
     * @return    scale factor
     */
    const TValue GetScale() const;
    /**
-    * Returns scale factor between sensors and reference value,
-    *         it has to be multiply to sensor value after substruction of the base
+    * Returns scale factor based on normalisation of each scale.
+    *         More accurate then simple GetScale.
     *
     * @return    scale factor
     */
    const TValue GetMean() const;
    /**
-    * Returns mean linear deviation of the scale factor
+    * Returns mean linear deviation of the scale factor(from the GetMean)
     *
     * @return    mld of scale factor(ecvivalent 1 sigma)
     */
@@ -75,6 +73,11 @@ public:
     * Does calibration calculation based on internal accumulated reference and sensor values
     */
    void DoCalibration();
+   /**
+    * Resets internal state to be able to process new data without dependencies for previouse one.
+    * It would be usefull after gap detection in any income data.
+    */
+   void Reset();
 
 private:
 
@@ -82,6 +85,11 @@ private:
     * Normalisation instance for Scale calibration
     */
    PE::CNormalisation& mNorm;
+   /**
+    * Latest simple average of delta between sensor and reference values
+    */
+   PE::TValue mScale;
+
    PE::TValue mRefMin;
    PE::TValue mRefMax;
    PE::TValue mRefLast;
@@ -89,7 +97,7 @@ private:
    uint32_t mInstRefCnt;
    PE::TValue mRefDelatAcc;
    uint32_t mRefDeltaCnt;
-   
+
    PE::TValue mSenMin;
    PE::TValue mSenMax;
    PE::TValue mSenLast;
@@ -98,13 +106,13 @@ private:
    PE::TValue mSenDeltaAcc;
    uint32_t mSenDeltaCnt;
 
-   PE::TValue mScale;
-
    /**
     * Calculate new max, min values, returns delta between max and min values
     */
    TValue processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
-
+   /**
+    * Clear all intermediate instant values of sensors and references
+    */
    void clearInst();
 };
 

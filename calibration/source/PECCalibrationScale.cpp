@@ -13,8 +13,6 @@
  */
 
 #include "PECCalibrationScale.h"
-#include "PETools.h"
-#include <math.h>
 
 
 using namespace PE;
@@ -22,6 +20,7 @@ using namespace PE;
 
 PE::CCalibrationScale::CCalibrationScale(CNormalisation& norm)
 : mNorm(norm)
+, mScale(0)
 , mRefMin(MAX_VALUE)
 , mRefMax(MAX_VALUE)
 , mRefLast(MAX_VALUE)
@@ -36,7 +35,6 @@ PE::CCalibrationScale::CCalibrationScale(CNormalisation& norm)
 , mInstSenCnt(0)
 , mSenDeltaAcc(0.0)
 , mSenDeltaCnt(0)
-, mScale(0)
 {
 }
 
@@ -111,6 +109,18 @@ void PE::CCalibrationScale::DoCalibration()
       mNorm.AddSensor(mScale);
       clearInst();
    }
+}
+
+
+void PE::CCalibrationScale::Reset()
+{
+   mRefMin  = MAX_VALUE;
+   mRefMax  = MAX_VALUE;
+   mRefLast = MAX_VALUE;
+   mSenMin  = MAX_VALUE;
+   mSenMax  = MAX_VALUE;
+   mSenLast = MAX_VALUE;
+   clearInst();
 }
 
 

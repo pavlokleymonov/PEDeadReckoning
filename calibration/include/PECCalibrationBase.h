@@ -2,7 +2,7 @@
  * Position Engine provides dead reckoning engine to obtain position
  * information based on fusion of different kind of sensors.
  *
- * Copyright 2017 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
+ * Copyright 2018 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
  *
  * Distributed under the OSI-approved BSD License (the "License");
  * see accompanying file LICENSE.txt for details.
@@ -19,8 +19,6 @@
 namespace PE
 {
 /**
- *  All sensors data have to be adjusted to reference value frequancy
- *  Mean value has to be calculated from all sensors data in a time range between two referenc values
  *
  */
 class CCalibrationBase
@@ -36,29 +34,32 @@ public:
    /**
     * Adds new reference value to the calibration
     *
-    * @param  value      values of reference value
+    * @param  value      reference value
     */
    void AddReference(const TValue& value);
    /**
     * Adds new sensor raw value to the calibration
     *
-    * @param  value     raw sensor value, zero offset has to be adjusted before
+    * @param  value     raw sensor value
     */
    void AddSensor(const TValue& value);
    /**
     * Adds new scale to the sensor
     *
-    * @param  value     scale value of the sensor
+    * @param  value     latest scale value of the sensor
     */
    void AddScale(const TValue& value);
    /**
-    * Returns sensor base which has to be substructed from scaled sensor value
+    * Returns sensor base which has to be substructed from scaled sensor value 
+    *            (reference = raw_sens * scale - base)
     *
     * @return    sensor base
     */
    const TValue GetBase() const;
    /**
     * Returns sensor base which has to be substructed from scaled sensor value
+    *         (reference = raw_sens * scale - base)
+    *         More accurate then simple GetBase.
     *
     * @return    sensor base
     */
@@ -79,6 +80,11 @@ public:
     * Does calibration calculation based on internal accumulated reference and sensor values
     */
    void DoCalibration();
+   /**
+    * Resets internal state to be able to process new data without dependencies for previouse one.
+    * It would be usefull after gap detection in any income data.
+    */
+   void Reset();
 
 private:
 
@@ -86,12 +92,31 @@ private:
     * Normalisation instance for Scale calibration
     */
    PE::CNormalisation& mNorm;
-   PE::TValue mBase;
+   /**
+    * Latest simple average of delta between sensor and reference values
+    */
    PE::TValue mScale;
+   /**
+    * Letest sensor base which has to be substructed from scaled sensor value 
+    *            (reference = raw_sens * scale - base)
+    *
+    */
+   PE::TValue mBase;
+
+   PE::TValue mInstRefAcc;
+   uint32_t mInstRefCnt;
    PE::TValue mRefAcc;
    uint32_t mRefCnt;
+
+   PE::TValue mInstSenAcc;
+   uint32_t mInstSenCnt;
    PE::TValue mSenAcc;
    uint32_t mSenCnt;
+
+   /**
+    * Clear all intermediate instant values of sensors and references
+    */
+   void clearInst();
 };
 
 
