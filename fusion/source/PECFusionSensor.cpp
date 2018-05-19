@@ -53,10 +53,6 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
       SPosition& oldPosition = m_SensorsList.back().position;
       oldPosition = MergePosition(oldPosition, position);
    }
-   else
-   {
-      return;
-   }
 }
 
 
@@ -74,10 +70,6 @@ void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSens
    {
       SBasicSensor& oldHeading = m_SensorsList.back().heading;
       oldHeading = MergeHeading(oldHeading, heading);
-   }
-   else
-   {
-      return;
    }
 }
 
@@ -97,10 +89,6 @@ void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor
       SBasicSensor& oldSpeed = m_SensorsList.back().speed;
       oldSpeed = MergeSensor(oldSpeed, speed);
    }
-   else
-   {
-      return;
-   }
 }
 
 
@@ -118,10 +106,6 @@ void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSen
    {
       SBasicSensor& oldAngSpeed = m_SensorsList.back().angSpeed;
       oldAngSpeed = MergeSensor(oldAngSpeed, angSpeed);
-   }
-   else
-   {
-      return;
    }
 }
 
@@ -156,40 +140,20 @@ const SBasicSensor& PE::CFusionSensor::GetAngSpeed() const
 }
 
 
-// SBasicSensor PE::CFusionSensor::GetAngSpeed(const TTimestamp& timestamp) const
-// {
-//    TTimestamp deltaTimestamp = timestamp - m_Timestamp;
-//    if      ( 0.0 == deltaTimestamp )
-//    {
-//       return m_AngSpeed;
-//    }
-//    else 
-//    {
-//       if ( 0.0 < deltaTimestamp )
-//       {
-//          if ( m_AngSpeed.IsValid() )
-//          {
-//             SBasicSensor newAngSpeed = m_AngSpeed;
-//             newAngSpeed.Value += (m_AngAcceleration * deltaTimestamp);
-//             newAngSpeed = PredictSensorAccuracy(deltaTimestamp, newAngSpeed);
-//             return newAngSpeed;
-//          }
-//          else
-//          {
-//             return SBasicSensor(); //invalid
-//          }
-//       }
-//       else
-//       {
-//          return SBasicSensor(); //invalid
-//       }
-//    }
-// }
-// 
-// 
+void PE::CFusionSensor::DoFusion()
+{
+   TSensorsList::const_iterator item = m_SensorsList.begin();
+   while ( m_SensorsList.end() != item )
+   {
+      DoOneItemFusion(item->timestamp, item->position, item->heading, item->speed, item->angSpeed);
+      ++item;
+   }
+   m_SensorsList.clear();
+}
+
+
 void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed)
 {
-   int err=0;
    if( m_Timestamp < timestamp )
    {
       TTimestamp deltaTimestamp = timestamp - m_Timestamp;
@@ -208,23 +172,11 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
             posAngSpeed = PredictAngSpeed(deltaTimestamp, m_Heading, posHeading);
             posSpeed    = PredictSpeed(deltaTimestamp, m_Position, position, posAngSpeed);
          }
-         else
-         {
-            ++err;
-         }
-      }
-      else
-      {
-         ++err;
       }
 
       if ( m_AngSpeed.IsValid() )
       {
          m_AngSpeed.Value += (m_AngAcceleration * deltaTimestamp);
-      }
-      else
-      {
-         ++err;
       }
       SBasicSensor newAngSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_AngSpeed),
@@ -234,10 +186,6 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
       if ( m_Speed.IsValid() )
       {
          m_Speed.Value += (m_LineAcceleration * deltaTimestamp);
-      }
-      else
-      {
-         ++err;
       }
       SBasicSensor newSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_Speed),
@@ -263,14 +211,6 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
          {
             m_AngAcceleration  = (newAngSpeed.Value - m_AngSpeed.Value) / deltaTimestamp;
          }
-         else
-         {
-            ++err;
-         }
-      }
-      else
-      {
-         ++err;
       }
       m_AngSpeed         = newAngSpeed;
 
@@ -281,14 +221,6 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
          {
             m_LineAcceleration = (newSpeed.Value - m_Speed.Value) / deltaTimestamp;
          }
-         else
-         {
-            ++err;
-         }
-      }
-      else
-      {
-         ++err;
       }
       m_Speed            = newSpeed;
 
@@ -296,20 +228,4 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
 
       m_Position         = newPosition;
    }
-   else
-   {
-      return;
-   }
-}
-
-
-void PE::CFusionSensor::DoFusion()
-{
-   TSensorsList::const_iterator item = m_SensorsList.begin();
-   while ( m_SensorsList.end() != item )
-   {
-      DoOneItemFusion(item->timestamp, item->position, item->heading, item->speed, item->angSpeed);
-      ++item;
-   }
-   m_SensorsList.clear();
 }

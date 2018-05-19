@@ -107,18 +107,14 @@ public:
     */
    const SBasicSensor& GetAngSpeed() const;
    /**
-    * Returns predicted angular velocity concerning provided timestamp
-    *
-    * @param timestamp    timestamp of predicted value in seconds
-    * @return             angular velocity [deg/s].
-    */
-//    SBasicSensor GetAngSpeed(const TTimestamp& timestamp) const;
-   /**
-    *
+    * Fuses all available sensors into current position
     */
    void DoFusion();
 
 private:
+   /**
+    * Structure hold allbasic sensors information with the same timestamp
+    */
    struct SSensorItem
    {
       SSensorItem(const TTimestamp& ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& sp, const SBasicSensor& asp)
@@ -154,18 +150,24 @@ private:
     * The angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
     */
    SBasicSensor m_AngSpeed;
+   /**
+    * TODO: has to be removed
+    */
    TValue m_AngAcceleration;
    /**
     * The linear velocity in meter/seconds
     */
    SBasicSensor m_Speed;
+   /**
+    * TODO: has to be removed
+    */
    TValue m_LineAcceleration;
 
    TSensorsList m_SensorsList;
-
+   /**
+    * Fused position based on one sensor item information
+    */
    void DoOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
-
-
 };
 
 
