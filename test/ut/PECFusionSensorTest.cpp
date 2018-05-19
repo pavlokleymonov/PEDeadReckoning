@@ -1565,6 +1565,12 @@ TEST_F(PECFusionSensorTest, test_start_37_sec_dr_or_only_hamburg_airport_b433_ri
    PE::TValue bias = -0.24552;
    fusion.AddSpeed   (6245.341, PE::SBasicSensor(20.193730606878,1.0));
    fusion.AddAngSpeed(6245.344, PE::SBasicSensor(-0.524395756929822+0.24552,0.01));
+
+   fusion.DoFusion();
+   EXPECT_NEAR( 6245.344000, fusion.GetTimestamp(), 0.00000001);
+   EXPECT_NEAR(  1.19375674, fusion.GetPosition().HorizontalAcc, 0.00000001);
+
+
    fusion.AddSpeed   (6245.391, PE::SBasicSensor(20.5976052190156,1.0));
    fusion.AddAngSpeed(6245.404, PE::SBasicSensor(-0.832863849241482+0.24552,0.01));
    fusion.AddSpeed   (6245.441, PE::SBasicSensor(21.0553297794381,1.0));
@@ -1589,9 +1595,11 @@ TEST_F(PECFusionSensorTest, test_start_37_sec_dr_or_only_hamburg_airport_b433_ri
    fusion.AddAngSpeed(6245.944, PE::SBasicSensor(-0.71975888206054+0.24552,0.01));
    fusion.AddSpeed   (6245.991, PE::SBasicSensor(20.193730606878,1.0));
    fusion.DoFusion();
-//    EXPECT_NEAR( 6245.991000, fusion.GetTimestamp(), 0.00000001);
-//    EXPECT_NEAR( 53.63659561, fusion.GetPosition().Latitude , 0.00000001);
-//    EXPECT_NEAR( 10.00937737, fusion.GetPosition().Longitude, 0.00000001);
+   EXPECT_NEAR( 6245.991000, fusion.GetTimestamp(), 0.00000001);
+   EXPECT_NEAR( 53.63659561, fusion.GetPosition().Latitude , 0.00000001);
+   EXPECT_NEAR( 10.00937765, fusion.GetPosition().Longitude, 0.00000001);
+   EXPECT_NEAR(  1.87500646, fusion.GetPosition().HorizontalAcc, 0.00000001);
+
    fusion.AddAngSpeed(6246.004, PE::SBasicSensor(-0.699194342573096+0.24552,0.01));
    fusion.AddSpeed   (6246.040, PE::SBasicSensor(21.0179645091995,1.0));
    fusion.AddAngSpeed(6246.064, PE::SBasicSensor(-0.709476612316818+0.24552,0.01));
@@ -3000,6 +3008,7 @@ TEST_F(PECFusionSensorTest, test_start_37_sec_dr_or_only_hamburg_airport_b433_ri
    EXPECT_NEAR( 6282.339000, fusion.GetTimestamp(), 0.00000001);
    EXPECT_NEAR( 53.63343818, fusion.GetPosition().Latitude , 0.00000001);
    EXPECT_NEAR( 10.00645053, fusion.GetPosition().Longitude, 0.00000001);
+   EXPECT_NEAR( 41.12824469, fusion.GetPosition().HorizontalAcc, 0.00000001);
 }
 
 int main(int argc, char *argv[])
