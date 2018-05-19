@@ -1569,6 +1569,9 @@ TEST_F(PECFusionSensorTest, test_start_37_sec_dr_or_only_hamburg_airport_b433_ri
    fusion.DoFusion();
    EXPECT_NEAR( 6245.344000, fusion.GetTimestamp(), 0.00000001);
    EXPECT_NEAR(  1.19375674, fusion.GetPosition().HorizontalAcc, 0.00000001);
+   EXPECT_NEAR(  0.15137999, fusion.GetHeading().Accuracy, 0.00000001);
+   EXPECT_NEAR(  1.00299999, fusion.GetSpeed().Accuracy, 0.00000001);
+   EXPECT_NEAR(  0.01000000, fusion.GetAngSpeed().Accuracy, 0.00000001);
 
 
    fusion.AddSpeed   (6245.391, PE::SBasicSensor(20.5976052190156,1.0));
@@ -1599,6 +1602,13 @@ TEST_F(PECFusionSensorTest, test_start_37_sec_dr_or_only_hamburg_airport_b433_ri
    EXPECT_NEAR( 53.63659561, fusion.GetPosition().Latitude , 0.00000001);
    EXPECT_NEAR( 10.00937765, fusion.GetPosition().Longitude, 0.00000001);
    EXPECT_NEAR(  1.87500646, fusion.GetPosition().HorizontalAcc, 0.00000001);
+   EXPECT_NEAR(  0.15831223, fusion.GetHeading().Accuracy, 0.00000001);
+   EXPECT_NEAR(  1.04400326, fusion.GetSpeed().Accuracy, 0.00000001);
+   EXPECT_NEAR(  0.01100663, fusion.GetAngSpeed().Accuracy, 0.00000001);
+
+//    EXPECT_NEAR(  0.54907593, fusion.GetHeading().Accuracy, 0.00000001);
+//    EXPECT_NEAR(  1.04377674, fusion.GetSpeed().Accuracy, 0.00000001);
+//    EXPECT_NEAR(  0.01085993, fusion.GetAngSpeed().Accuracy, 0.00000001);
 
    fusion.AddAngSpeed(6246.004, PE::SBasicSensor(-0.699194342573096+0.24552,0.01));
    fusion.AddSpeed   (6246.040, PE::SBasicSensor(21.0179645091995,1.0));
@@ -3009,6 +3019,9 @@ TEST_F(PECFusionSensorTest, test_start_37_sec_dr_or_only_hamburg_airport_b433_ri
    EXPECT_NEAR( 53.63343818, fusion.GetPosition().Latitude , 0.00000001);
    EXPECT_NEAR( 10.00645053, fusion.GetPosition().Longitude, 0.00000001);
    EXPECT_NEAR( 41.12824469, fusion.GetPosition().HorizontalAcc, 0.00000001);
+   EXPECT_NEAR(  0.54907593, fusion.GetHeading().Accuracy, 0.00000001);
+   EXPECT_NEAR(  1.04377674, fusion.GetSpeed().Accuracy, 0.00000001);
+   EXPECT_NEAR(  0.01085993, fusion.GetAngSpeed().Accuracy, 0.00000001);
 }
 
 int main(int argc, char *argv[])
