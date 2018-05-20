@@ -134,9 +134,36 @@ const SBasicSensor& PE::CFusionSensor::GetSpeed() const
 }
 
 
+const SBasicSensor PE::CFusionSensor::GetSpeed(const TTimestamp& timestamp) const
+{
+   if ( m_Timestamp > timestamp )
+   {
+      return SBasicSensor();
+   }
+   else
+   {
+      return PredictSensorAccuracy( timestamp - m_Timestamp, m_Speed);
+   }
+}
+
+
 const SBasicSensor& PE::CFusionSensor::GetAngSpeed() const
 {
    return m_AngSpeed;
+}
+
+
+const SBasicSensor PE::CFusionSensor::GetAngSpeed(const TTimestamp& timestamp) const
+{
+   if ( m_Timestamp > timestamp )
+   {
+      return SBasicSensor();
+   }
+   else
+   {
+      return PredictSensorAccuracy( timestamp - m_Timestamp, m_AngSpeed);
+   }
+
 }
 
 

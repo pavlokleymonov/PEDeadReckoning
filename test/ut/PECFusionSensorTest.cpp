@@ -85,6 +85,88 @@ TEST_F(PECFusionSensorTest, test_create )
 }
 
 
+TEST_F(PECFusionSensorTest, test_predict_speed )
+{
+   PE::SPosition pos = PE::SPosition(50.0,10.0,0.1);//lat=50 lon=10
+   PE::SBasicSensor heading = PE::SBasicSensor(90.0,5.0);//90deg
+   PE::SBasicSensor speed = PE::SBasicSensor(5.0,0.1); //5m/s
+   PE::SBasicSensor angSpeed = PE::SBasicSensor(10.0,0.1);//10deg/s
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, pos, heading, angSpeed, speed);
+
+   fusion.AddSpeed(1000.5, PE::SBasicSensor(7.0, 0.1));
+   fusion.DoFusion();
+   EXPECT_NEAR(1000.5000000, fusion.GetTimestamp(),0.0000001);
+   EXPECT_NEAR(   6.3846153, fusion.GetSpeed().Value,0.0000001);
+   EXPECT_NEAR(   0.1153846, fusion.GetSpeed().Accuracy,0.0000001);
+   EXPECT_NEAR(   6.3846153, fusion.GetSpeed(1001.0).Value,0.0000001);
+   EXPECT_NEAR(   0.1730769, fusion.GetSpeed(1001.0).Accuracy,0.0000001);
+   EXPECT_NEAR(   6.3846153, fusion.GetSpeed(1001.5).Value,0.0000001);
+   EXPECT_NEAR(   0.2307692, fusion.GetSpeed(1001.5).Accuracy,0.0000001);
+}
+
+
+TEST_F(PECFusionSensorTest, test_predict_speed_old_and_same_timestamp )
+{
+   PE::SPosition pos = PE::SPosition(50.0,10.0,0.1);//lat=50 lon=10
+   PE::SBasicSensor heading = PE::SBasicSensor(90.0,5.0);//90deg
+   PE::SBasicSensor speed = PE::SBasicSensor(5.0,0.1); //5m/s
+   PE::SBasicSensor angSpeed = PE::SBasicSensor(10.0,0.1);//10deg/s
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, pos, heading, angSpeed, speed);
+
+   fusion.AddSpeed(1000.5, PE::SBasicSensor(7.0, 0.1));
+   fusion.DoFusion();
+   EXPECT_NEAR(1000.5000000, fusion.GetTimestamp(),0.0000001);
+   EXPECT_NEAR(   6.3846153, fusion.GetSpeed().Value,0.0000001);
+   EXPECT_NEAR(   0.1153846, fusion.GetSpeed().Accuracy,0.0000001);
+   //same timestamp
+   EXPECT_NEAR(   6.3846153, fusion.GetSpeed(1000.5).Value,0.0000001);
+   EXPECT_NEAR(   0.1153846, fusion.GetSpeed(1000.5).Accuracy,0.0000001);
+   //old timestamp
+   EXPECT_FALSE(fusion.GetSpeed(1000.0).IsValid());
+}
+
+
+TEST_F(PECFusionSensorTest, test_predict_angular_speed )
+{
+   PE::SPosition pos = PE::SPosition(50.0,10.0,0.1);//lat=50 lon=10
+   PE::SBasicSensor heading = PE::SBasicSensor(90.0,5.0);//90deg
+   PE::SBasicSensor speed = PE::SBasicSensor(5.0,0.1); //5m/s
+   PE::SBasicSensor angSpeed = PE::SBasicSensor(10.0,0.1);//10deg/s
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, pos, heading, angSpeed, speed);
+
+   fusion.AddAngSpeed(1000.5, PE::SBasicSensor(12.0, 0.1));
+   fusion.DoFusion();
+   EXPECT_NEAR(1000.5000000, fusion.GetTimestamp(),0.0000001);
+   EXPECT_NEAR(  11.3846153, fusion.GetAngSpeed().Value,0.0000001);
+   EXPECT_NEAR(   0.1153846, fusion.GetAngSpeed().Accuracy,0.0000001);
+   EXPECT_NEAR(  11.3846153, fusion.GetAngSpeed(1001.0).Value,0.0000001);
+   EXPECT_NEAR(   0.1730769, fusion.GetAngSpeed(1001.0).Accuracy,0.0000001);
+   EXPECT_NEAR(  11.3846153, fusion.GetAngSpeed(1001.5).Value,0.0000001);
+   EXPECT_NEAR(   0.2307692, fusion.GetAngSpeed(1001.5).Accuracy,0.0000001);
+}
+
+
+TEST_F(PECFusionSensorTest, test_predict_angular_speed_old_and_same_timestamp )
+{
+   PE::SPosition pos = PE::SPosition(50.0,10.0,0.1);//lat=50 lon=10
+   PE::SBasicSensor heading = PE::SBasicSensor(90.0,5.0);//90deg
+   PE::SBasicSensor speed = PE::SBasicSensor(5.0,0.1); //5m/s
+   PE::SBasicSensor angSpeed = PE::SBasicSensor(10.0,0.1);//10deg/s
+   PE::CFusionSensor fusion = PE::CFusionSensor(1000.0, pos, heading, angSpeed, speed);
+
+   fusion.AddAngSpeed(1000.5, PE::SBasicSensor(12.0, 0.1));
+   fusion.DoFusion();
+   EXPECT_NEAR(1000.5000000, fusion.GetTimestamp(),0.0000001);
+   EXPECT_NEAR(  11.3846153, fusion.GetAngSpeed().Value,0.0000001);
+   EXPECT_NEAR(   0.1153846, fusion.GetAngSpeed().Accuracy,0.0000001);
+   //same timestamp
+   EXPECT_NEAR(  11.3846153, fusion.GetAngSpeed(1000.5).Value,0.0000001);
+   EXPECT_NEAR(   0.1153846, fusion.GetAngSpeed(1000.5).Accuracy,0.0000001);
+   //old timestamp
+   EXPECT_FALSE(fusion.GetAngSpeed(1000.0).IsValid());
+}
+
+
 TEST_F(PECFusionSensorTest, test_incorrect_first_timestamp )
 {
    PE::SPosition pos = PE::SPosition(50.0, 10.0, 1);//lat=50 lon=10

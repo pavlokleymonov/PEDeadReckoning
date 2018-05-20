@@ -101,11 +101,25 @@ public:
     */
    const SBasicSensor& GetSpeed() const;
    /**
+    * Returns latest fusioned speed.
+    *
+    * @param timestamp    timestamp of predicted speed in seconds
+    * @return             predicted speed in m/s.
+    */
+   const SBasicSensor GetSpeed(const TTimestamp& timestamp) const;
+   /**
     * Returns latest fusioned angular velocity.
     *
     * @return         angSpeed.
     */
    const SBasicSensor& GetAngSpeed() const;
+   /**
+    * Returns latest fusioned angular velocity.
+    *
+    * @param timestamp    timestamp of predicted speed in seconds
+    * @return             predicted angSpeed in degree/second turning left("+") - positive, turning right("-") - negative.
+    */
+   const SBasicSensor GetAngSpeed(const TTimestamp& timestamp) const;
    /**
     * Fuses all available sensors into current position
     */
