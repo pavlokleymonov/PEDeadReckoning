@@ -32,9 +32,9 @@ namespace PE {
       SENSOR_ANGULAR_VELOCITY = 5,
       SENSOR_ACCELERATION     = 6,
       
-   } TSensorID;
+   } TSensorTypeID;
 
-   typedef uint8_t TSetID;
+   typedef uint32_t TSensorID;
 
    typedef double TTimestamp;
 

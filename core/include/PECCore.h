@@ -15,10 +15,9 @@
 #define __PE_CCore_H__
 
 #include "PETypes.h"
-#include "PESGnss.h"
-#include "PESOdometer.h"
-#include "PESGyro.h"
-#include "PECCalibration.h"
+#include "PECNormalisation.h"
+#include "PECCalibrationScale.h"
+#include "PECCalibrationBase.h"
 #include "PECFusionSensor.h"
 
 
@@ -27,6 +26,15 @@ class PECCoreTest; //to get possibility for test class
 
 namespace PE
 {
+
+struct CSensorEntity
+{
+   TSensorTypeID type;
+   CNormalisation normScale;
+   CNormalisation normBase;
+   CCalibrationScale calScale;
+   CCalibrationBase  calBase;
+};
 /**
  * 
  * Preconditions:
@@ -40,49 +48,30 @@ friend class ::PECCoreTest;
 
 public:
    /**
-    * Constructor calibartion will create from the scratch
+    * Constructor
     */
    CCore();
    /**
     * Destructor 
     */
    virtual ~CCore();
-   virtual bool SetCfg();
-   virtual bool LoadPersistency();
-   virtual bool StorePersistency();
-   virtual void AddPositionObserver();
-   virtual 
-   /**
-    * Returns calibration data.
-    *
-    * @return       calibration information
-    */
-   virtual SCalibration GetCalibration() const;
-   /**
-    * Set new GNSS data information.
-    *
-    * @param timestamp    timestamp in seconds
-    * @param gnss         GNSS data information
-    */
-   virtual void SetGnss(const TTimestamp& timestamp, const SGnss& gnss);
-   /**
-    * Set new RAW odometer information with driving dirrection
-    *
-    * @param timestamp    timestamp in seconds
-    * @param odo          Odometer data information
-    */
-   virtual void SetOdometer(const TTimestamp& timestamp, const SOdometer& odo);
-   /**
-    * Set new RAW gyroscope information
-    *
-    * @param timestamp    timestamp in seconds
-    * @param gyro         Gyroscope data information
-    */
-   virtual void SetGyro(const TTimestamp& timestamp, const SGyro& gyro);
-private:
 
-   CCalibration   m_Calibration;
-   CFusionSensor  m_Fusion;
+   virtual bool SetSensorCfg(TSensorTypeID type, TSensorID id, const CNormalisation& norm);
+
+   virtual const CNormalisation& GetSensorCfg(TSensorTypeID type, TSensorID id);
+
+   virtual bool AddSensorValue(TSensorTypeID type, TSensorID id, TTimestamp timestamp, TValue value);
+
+   virtual TTimestamp   GetTimestamp();
+
+   virtual SPosition    GetPosition(TTimestamp timestap);
+
+   virtual SBasicSensor GetHeading(TTimestamp timestap);
+
+   virtual SBasicSensor GetSpeed(TTimestamp timestap);
+
+private:
+   std::map<TSensorID,>
 };
 
 
