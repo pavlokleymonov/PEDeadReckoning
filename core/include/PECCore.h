@@ -27,6 +27,52 @@ class PECCoreTest; //to get possibility for test class
 namespace PE
 {
 
+struct CNormCfg
+{
+   CNormCfg()
+      : mAccValue(0.0)
+      , mAccMld(0.0)
+      , mAccRel(0.0)
+      , mCount(0)
+      {}
+
+   CNormCfg( const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount )
+      : mAccValue(accumulatedValue)
+      , mAccMld(accumulatedMld)
+      , mAccRel(accumulatedReliable)
+      , mCount(sampleCount)
+      {}
+
+   TValue mAccValue;
+   TValue mAccMld;
+   TValue mAccRel;
+   std::size_t mCount;
+};
+
+
+struct CSensorCfg
+{
+   CSensorCfg()
+      : mType(SENSOR_UNKNOWN)
+      , mBase()
+      , mScale()
+      , mValid(false)
+      {}
+
+   CSensorCfg(TSensorTypeID type, const CNormCfg& base, const CNormCfg& scale)
+      : mType(type)
+      , mBase(base)
+      , mScale(scale)
+      , mValid(true)
+      {}
+
+   TSensorTypeID mType;
+   CNormCfg mBase;
+   CNormCfg mScale;
+   const bool mValid;
+};
+
+
 struct CSensorEntity
 {
    TSensorTypeID type;
@@ -55,12 +101,28 @@ public:
     * Destructor 
     */
    virtual ~CCore();
-
-   virtual bool SetSensorCfg(TSensorTypeID type, TSensorID id, const CNormalisation& norm);
-
-   virtual const CNormalisation& GetSensorCfg(TSensorTypeID type, TSensorID id);
-
-   virtual bool AddSensorValue(TSensorTypeID type, TSensorID id, TTimestamp timestamp, TValue value);
+   /**
+    * Adds sensors configuration
+    * does not add invalid configuration
+    */
+   void SetSensorCfg(TSensorID id, const CSensorCfg& cfg);
+   /**
+    * Returns sensor configuration
+    * if configuration is not present - returns invalid sensor config
+    */
+   CSensorCfg GetSensorCfg(TSensorID id) const;
+   /**
+    * Adds new sensor raw value.
+    *
+    * Returns false if configuration of the sensor with provided id is not available
+    */
+   virtual bool AddSensor(TSensorID id, TTimestamp timestamp, const TValue& sensor, const TAccuracy& accuracy);
+   /**
+    * Adds new position.
+    *
+    * Returns false if position with provided id and timestamp already existed
+    */
+   virtual bool AddPosition(TSensorID id, TTimestamp timestamp, const SPosition& position);
 
    virtual TTimestamp   GetTimestamp();
 

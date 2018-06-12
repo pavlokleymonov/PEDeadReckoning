@@ -24,14 +24,13 @@
 namespace PE {
 
    typedef enum {
-      SENSOR_BASIC            = 0,
+      SENSOR_UNKNOWN          = 0,
       SENSOR_LATITUDE         = 1,
       SENSOR_LONGITUDE        = 2,
-      SENSOR_ALTITUDE         = 3,
-      SENSOR_VELOCITY         = 4,
-      SENSOR_ANGULAR_VELOCITY = 5,
-      SENSOR_ACCELERATION     = 6,
-      
+      SENSOR_SPEED            = 1,
+      SENSOR_HEADING          = 2,
+      SENSOR_ODOMETER_AXIS    = 3,
+      SENSOR_GYRO_Z           = 4,
    } TSensorTypeID;
 
    typedef uint32_t TSensorID;
