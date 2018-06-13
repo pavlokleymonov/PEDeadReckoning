@@ -27,10 +27,17 @@ namespace PE {
       SENSOR_UNKNOWN          = 0,
       SENSOR_LATITUDE         = 1,
       SENSOR_LONGITUDE        = 2,
-      SENSOR_SPEED            = 1,
-      SENSOR_HEADING          = 2,
-      SENSOR_ODOMETER_AXIS    = 3,
-      SENSOR_GYRO_Z           = 4,
+      SENSOR_HEADING          = 3,
+      SENSOR_SPEED            = 4,
+      SENSOR_ODOMETER_AXIS    = 5,
+      SENSOR_GYRO_Z           = 6,
+      SENSOR_ODOMETER_WHEEL   = 7, //Not supported
+      SENSOR_GYRO_X           = 8, //Not supported
+      SENSOR_GYRO_Y           = 9, //Not supported
+      SENSOR_ACCELEROMETER_X  = 10,//Not supported
+      SENSOR_ACCELEROMETER_Y  = 11,//Not supported
+      SENSOR_ACCELEROMETER_Z  = 12,//Not supported
+      SENSOR_STEERING_ANGLE   = 13 //Not supported
    } TSensorTypeID;
 
    typedef uint32_t TSensorID;

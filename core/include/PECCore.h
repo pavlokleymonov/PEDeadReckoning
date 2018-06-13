@@ -15,6 +15,7 @@
 #define __PE_CCore_H__
 
 #include "PETypes.h"
+#include "PESPosition.h"
 #include "PECNormalisation.h"
 #include "PECCalibrationScale.h"
 #include "PECCalibrationBase.h"
@@ -110,30 +111,53 @@ public:
     * Returns sensor configuration
     * if configuration is not present - returns invalid sensor config
     */
-   CSensorCfg GetSensorCfg(TSensorID id) const;
+   const CSensorCfg GetSensorCfg(TSensorID id) const;
    /**
     * Adds new sensor raw value.
     *
-    * Returns false if configuration of the sensor with provided id is not available
+    * Returns false if configuration of the sensor with provided id is not available or there is no new position
     */
-   virtual bool AddSensor(TSensorID id, TTimestamp timestamp, const TValue& sensor, const TAccuracy& accuracy);
+   bool AddSensor(TSensorID id, TTimestamp timestamp, const TValue& sensor, const TAccuracy& accuracy);
    /**
-    * Adds new position.
-    *
-    * Returns false if position with provided id and timestamp already existed
+    * Returns timestamp of fusion position
     */
-   virtual bool AddPosition(TSensorID id, TTimestamp timestamp, const SPosition& position);
-
-   virtual TTimestamp   GetTimestamp();
-
-   virtual SPosition    GetPosition(TTimestamp timestap);
-
-   virtual SBasicSensor GetHeading(TTimestamp timestap);
-
-   virtual SBasicSensor GetSpeed(TTimestamp timestap);
+   const TTimestamp& GetTimestamp() const;
+   /**
+    * Returns Position of fusion position
+    */
+   const SPosition& GetPosition() const;
+   /**
+    * Returns Heading of fusion position
+    */
+   const SBasicSensor& GetHeading() const;
+   /**
+    * Returns Speed of fusion position
+    */
+   const SBasicSensor& GetSpeed() const;
 
 private:
-   std::map<TSensorID,>
+
+   std::map<TSensorID,CSensorEntity> mSensors;
+
+   CFusionSensor mFusion;
+
+   bool mReadyToFusion;
+
+   SPosition mPositionToFusion;
+
+   SBasicSensor mHeadingToFusion;
+
+   SBasicSensor mSpeedToFusion;
+
+   SBasicSensor mAngSpeedToFusion;
+
+   bool BuildPosition(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
+
+   bool BuildHeading(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
+
+   bool BuildSpeed(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
+
+   bool BuildAngSpeed(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
 };
 
 
