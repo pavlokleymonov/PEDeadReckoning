@@ -28,8 +28,9 @@ class PECCoreTest; //to get possibility for test class
 namespace PE
 {
 
-struct CNormCfg
+class CNormCfg
 {
+public:
    CNormCfg()
       : mAccValue(0.0)
       , mAccMld(0.0)
@@ -51,36 +52,46 @@ struct CNormCfg
 };
 
 
-struct CSensorCfg
+class CSensorCfg
 {
+public:
    CSensorCfg()
       : mType(SENSOR_UNKNOWN)
-      , mBase()
       , mScale()
+      , mBase()
       , mValid(false)
       {}
 
-   CSensorCfg(TSensorTypeID type, const CNormCfg& base, const CNormCfg& scale)
+   CSensorCfg(TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base)
       : mType(type)
-      , mBase(base)
       , mScale(scale)
+      , mBase(base)
       , mValid(true)
       {}
 
    TSensorTypeID mType;
-   CNormCfg mBase;
    CNormCfg mScale;
+   CNormCfg mBase;
    const bool mValid;
 };
 
 
-struct CSensorEntity
+class CSensorEntity
 {
-   TSensorTypeID type;
-   CNormalisation normScale;
-   CNormalisation normBase;
-   CCalibrationScale calScale;
-   CCalibrationBase  calBase;
+public:
+   CSensorEntity(TSensorTypeID type, const PE::CSensorCfg& cfg)
+      : mType(type)
+      , mNormScale(CNormalisation(cfg.mScale.mAccValue, cfg.mScale.mAccMld, cfg.mScale.mAccRel, cfg.mScale.mCount))
+      , mNormBase (CNormalisation(cfg.mBase.mAccValue,  cfg.mBase.mAccMld,  cfg.mBase.mAccRel,  cfg.mBase.mCount ))
+      , mCalScale (mNormScale)
+      , mCalBase  (mNormBase)
+      {}
+
+   TSensorTypeID mType;
+   CNormalisation mNormScale;
+   CNormalisation mNormBase;
+   CCalibrationScale mCalScale;
+   CCalibrationBase  mCalBase;
 };
 /**
  * 
@@ -99,6 +110,10 @@ public:
     */
    CCore();
    /**
+    * Constructor with start position and heading
+    */
+   CCore( const SPosition& position, const SBasicSensor& heading, const TValue& reliableLimit);
+   /**
     * Destructor 
     */
    virtual ~CCore();
@@ -115,7 +130,7 @@ public:
    /**
     * Adds new sensor raw value.
     *
-    * Returns false if configuration of the sensor with provided id is not available or there is no new position
+    * Returns false if configuration of the sensor with provided id is not available or there is no new position available
     */
    bool AddSensor(TSensorID id, TTimestamp timestamp, const TValue& sensor, const TAccuracy& accuracy);
    /**
@@ -139,9 +154,13 @@ private:
 
    std::map<TSensorID,CSensorEntity> mSensors;
 
+   const TValue mReliableLimit;
+
    CFusionSensor mFusion;
 
-   bool mReadyToFusion;
+   bool mDistanceReadyToFusion;
+
+   bool mHeadingReadyToFusion;
 
    SPosition mPositionToFusion;
 
@@ -150,6 +169,35 @@ private:
    SBasicSensor mSpeedToFusion;
 
    SBasicSensor mAngSpeedToFusion;
+   /**
+    * Returns true if new sensor information is enought to call fusie new position.
+    *    For instance new speed and heading were received or coordinates were received
+    */
+   inline bool IsReadyToFusion() const;
+   /**
+    * Cleans distance and heading readiness flags
+    */
+   inline void ClearReadyToFusion();
+   /**
+    * Returns true if configuration for sensors id is available and valid
+    */
+   inline bool IsSensorCongfigured(TSensorID id) const;
+
+
+
+
+   inline const TValue GetScale(TSensorID id) const;
+
+   inline const TValue GetScaleReliable(TSensorID id) const;
+
+   inline const TValue GetBase(TSensorID id) const;
+
+   inline const TValue GetScaleReliable(TSensorID id) const;
+
+
+
+
+
 
    bool BuildPosition(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
 
