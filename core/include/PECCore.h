@@ -105,6 +105,11 @@ class CCore
 friend class ::PECCoreTest;
 
 public:
+
+   typedef bool (PE::CCore::*TBuildCall)(PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy);
+
+   typedef std::map<PE::TSensorID, std::pair< PE::CSensorEntity, PE::TBuildCall > > TSensorHandlerList;
+   
    /**
     * Constructor
     */
@@ -152,15 +157,21 @@ public:
 
 private:
 
-   std::map<TSensorID,CSensorEntity> mSensors;
+   TSensorHandlerList mSensors;
 
    const TValue mReliableLimit;
 
    CFusionSensor mFusion;
 
+   bool mPositionReadyToFusion;
+
    bool mDistanceReadyToFusion;
 
    bool mHeadingReadyToFusion;
+
+   SBasicSensor mLatitudeToFusion;
+
+   SBasicSensor mLongitudeToFusion;
 
    SPosition mPositionToFusion;
 

@@ -65,36 +65,7 @@ bool PE::CCore::AddSensor(PE::TSensorID id, PE::TTimestamp timestamp, const PE::
 {
    if ( IsSensorCongfigured(id) )
    {
-      if      ( BuildPosition(id,sensor,accuracy) )
-      {
-         mFusion.AddPosition( timestamp, mPositionToFusion );
-      }
-      else if ( BuildHeading(id,sensor,accuracy) )
-      {
-         mFusion.AddHeading( timestamp, mHeadingToFusion );
-      }
-      else if ( BuildSpeed(id,sensor,accuracy) )
-      {
-         mFusion.AddSpeed( timestamp, mSpeedToFusion );
-      }
-      else if ( BuildAngSpeed(id,sensor,accuracy) )
-      {
-         mFusion.AddAngSpeed( timestamp, mAngSpeedToFusion );
-      }
-      else
-      {
-         return false;
-      }
-      if ( IsReadyToFusion() )
-      {
-         ClearReadyToFusion();
-         mFusion.DoFusion();
-         return true;
-      }
-      else
-      {
-         return false;
-      }
+      return (this->*(mSensors[id].second))(timestamp, sensor, accuracy, mSensors[id].first);
    }
    else
    {
@@ -171,10 +142,17 @@ inline const PE::TValue PE::CCore::GetScaleReliable(PE::TSensorID id) const
 }
 
 
-bool PE::CCore::BuildPosition(PE::TSensorID id, const PE::TValue& sensor, const PE::TAccuracy& accuracy)
+bool PE::CCore::BuildPositionByLatitude(PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy, PE::CSensorEntity& ent)
 {
-   
-   return false;
+   mLatitudeToFusion = calcValue(ent, sensor, accuracy);
+   processPosition(timestamp);
+}
+
+
+bool PE::CCore::BuildPositionByLongitude(PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy, PE::CSensorEntity& ent)
+{
+   mLongitudeToFusion = calcValue(ent, sensor, accuracy);
+   processPosition(timestamp);
 }
 
 
