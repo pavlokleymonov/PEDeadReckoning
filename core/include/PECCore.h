@@ -55,43 +55,172 @@ public:
 class CSensorCfg
 {
 public:
-   CSensorCfg()
-      : mType(SENSOR_UNKNOWN)
-      , mScale()
-      , mBase()
-      , mValid(false)
-      {}
 
-   CSensorCfg(TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base)
+   CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit = DEFAULT_RELIABLE_LIMIT )
       : mType(type)
       , mScale(scale)
       , mBase(base)
-      , mValid(true)
+      , mReliableLimit(reliableLimit)
       {}
 
+   const TSensorTypeID& GetType() const
+      {
+         return mType;
+      }
+
+   bool IsValid() const
+      {
+         return ( SENSOR_UNKNOWN != mType );
+      }
+
+   const CNormCfg& GetScale() const
+      {
+         return mScale;
+      }
+
+   const CNormCfg& GetBase() const
+      {
+         return mBase;
+      }
+
+   const TValue& GetLimit() const
+      {
+         return mReliableLimit;
+      }
+
+private:
    TSensorTypeID mType;
    CNormCfg mScale;
    CNormCfg mBase;
-   const bool mValid;
+   TValue mReliableLimit;
 };
 
 
 class CSensorEntity
 {
 public:
-   CSensorEntity(TSensorTypeID type, const PE::CSensorCfg& cfg)
-      : mType(type)
-      , mNormScale(CNormalisation(cfg.mScale.mAccValue, cfg.mScale.mAccMld, cfg.mScale.mAccRel, cfg.mScale.mCount))
-      , mNormBase (CNormalisation(cfg.mBase.mAccValue,  cfg.mBase.mAccMld,  cfg.mBase.mAccRel,  cfg.mBase.mCount ))
+   CSensorEntity( const CSensorCfg& cfg )
+      : referenceIsReady(false)
+      , sensorIsReady(false)
+      , mType(cfg.GetType())
+      , mLimit(cfg.GetLimit())
+      , mNormScale(CNormalisation(cfg.GetScale().mAccValue, cfg.GetScale().mAccMld, cfg.GetScale().mAccRel, cfg.GetScale().mCount))
+      , mNormBase (CNormalisation(cfg.GetBase().mAccValue,  cfg.GetBase().mAccMld,  cfg.GetBase().mAccRel,  cfg.GetBase().mCount ))
       , mCalScale (mNormScale)
       , mCalBase  (mNormBase)
       {}
 
-   TSensorTypeID mType;
+   //maybe accumulated data has to be reduced
+   CSensorCfg GetCfg() const
+      {
+         return CSensorCfg(
+            mType,
+            CNormCfg(mNormScale.GetAccumulatedValue(), mNormScale.GetAccumulatedMld(), mNormScale.GetAccumulatedReliable(), mNormScale.GetSampleCount()),
+            CNormCfg(mNormBase.GetAccumulatedValue(), mNormBase.GetAccumulatedMld(), mNormBase.GetAccumulatedReliable(), mNormBase.GetSampleCount()),
+            mLimit
+         );
+      }
+
+   const TSensorTypeID& GetType() const
+      {
+         return mType;
+      }
+
+   bool IsReliable() const
+      {
+         return ( IsScaleReliable() && IsBaseReliable() );
+      }
+
+   TValue CalibartedTo() const
+      {
+         return (mNormScale.GetReliable() + mNormBase.GetReliable()) / 2;
+      }
+
+   const TValue& GetScale() const
+      {
+         return mCalScale.GetScale();
+      }
+
+   const TValue& GetBase() const
+      {
+         return mCalBase.GetBase();
+      }
+
+   TValue GetValue(const TValue& raw) const
+      {
+         return (raw - mCalBase.GetBase()) * mCalScale.GetScale();
+      }
+
+   void AddReference(const SBasicSensor& reference)
+      {
+         if ( reference.IsValid() )
+         {
+            referenceIsReady = true;
+            mCalScale.AddReference(value);
+            mCalBase.AddReference(value);
+            DoCalibration();
+         }
+      }
+
+   void AddSensor(const TValue& raw)
+      {
+         sensorIsReady = true;
+         mCalScale.AddSensor(raw);
+         mCalBase.AddSensor(raw);
+         DoCalibration();
+      }
+
+   void AddPredictedValue()
+
+   /**
+    * Resets internal state to be able to process new data without dependencies for previouse one.
+    * It would be usefull after gap detection in any income data.
+    */
+   void Reset()
+      {
+         mCalScale.Reset();
+         mCalBase.Reset();
+      }
+
+private:
+   bool referenceIsReady;
+   bool sensorIsReady;
+   const TSensorTypeID mType;
+   const TValue mLimit;
    CNormalisation mNormScale;
    CNormalisation mNormBase;
    CCalibrationScale mCalScale;
    CCalibrationBase  mCalBase;
+
+   inline bool IsScaleReliable() const
+      {
+         return mLimit <= mNormScale.GetReliable();
+      }
+
+   inline bool IsBaseReliable() const
+      {
+         return mLimit <= mNormBase.GetReliable();
+      }
+
+   inline void DoCalibration()
+      {
+         if ( sensorIsReady && referenceIsReady )
+         {
+            mCalScale.DoCalibration();
+            if ( IsScaleReliable() )
+            {
+               mCalBase.AddScale( mCalScale.GetScale() );
+               mCalBase.DoCalibration();
+            }
+            else
+            {
+               mCalBase.Reset();
+            }
+            sensorIsReady = false;
+            referenceIsReady = false;
+         }
+      }
+
 };
 /**
  * 
@@ -116,6 +245,10 @@ public:
    CCore();
    /**
     * Constructor with start position and heading
+    *
+    * @param position       started position
+    * @param heading        started heading
+    * @param reliableLimit  calibration limit which will be only used for sensors position fusion
     */
    CCore( const SPosition& position, const SBasicSensor& heading, const TValue& reliableLimit);
    /**
@@ -123,15 +256,20 @@ public:
     */
    virtual ~CCore();
    /**
-    * Adds sensors configuration
-    * does not add invalid configuration
+    * Writes sensors configuration
+    * Does not add invalid configuration and does not overwrite existed one.
+    *
+    * @param id      unique identificator of sensor
+    * @param cfg     configuration information which will be binded to sensor identificator
+    *
+    * Returns false if configuration was not written
     */
-   void SetSensorCfg(TSensorID id, const CSensorCfg& cfg);
+   bool WriteSensorCfg(TSensorID id, const CSensorCfg& cfg);
    /**
-    * Returns sensor configuration
+    * Reads sensor configuration
     * if configuration is not present - returns invalid sensor config
     */
-   const CSensorCfg GetSensorCfg(TSensorID id) const;
+   bool ReadSensorCfg(TSensorID id, CSensorCfg& cfg) const;
    /**
     * Adds new sensor raw value.
     *

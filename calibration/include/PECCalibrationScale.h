@@ -49,26 +49,7 @@ public:
     *
     * @return    scale factor
     */
-   const TValue GetScale() const;
-   /**
-    * Returns scale factor based on normalisation of each scale.
-    *         More accurate then simple GetScale.
-    *
-    * @return    scale factor
-    */
-   const TValue GetMean() const;
-   /**
-    * Returns mean linear deviation of the scale factor(from the GetMean)
-    *
-    * @return    mld of scale factor(ecvivalent 1 sigma)
-    */
-   const TValue GetMld() const;
-   /**
-    * Returns reliable status of the scale
-    *
-    * @return    reliable status. range [0..100] percent.
-    */
-   const TValue GetReliable() const;
+   const TValue& GetScale() const;
    /**
     * Does calibration calculation based on internal accumulated reference and sensor values
     */

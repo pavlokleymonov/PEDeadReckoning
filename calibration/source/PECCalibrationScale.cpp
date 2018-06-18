@@ -53,27 +53,9 @@ void PE::CCalibrationScale::AddSensor(const TValue& value)
 }
 
 
-const TValue PE::CCalibrationScale::GetScale() const
+const TValue& PE::CCalibrationScale::GetScale() const
 {
    return mScale;
-}
-
-
-const TValue PE::CCalibrationScale::GetMean() const
-{
-   return mNorm.GetMean();
-}
-
-
-const TValue PE::CCalibrationScale::GetMld() const
-{
-   return mNorm.GetMld();
-}
-
-
-const TValue PE::CCalibrationScale::GetReliable() const
-{
-   return mNorm.GetReliable();
 }
 
 

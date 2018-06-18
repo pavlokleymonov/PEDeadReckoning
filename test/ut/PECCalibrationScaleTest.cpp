@@ -44,9 +44,9 @@ TEST_F(PECCalibrationScaleTest, test_create)
    PE::CCalibrationScale   calib(scale);
 
    EXPECT_NEAR(0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(0.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR(0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR(0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR(0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(0.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -64,9 +64,9 @@ TEST_F(PECCalibrationScaleTest, test_not_empty_normalisation)
    EXPECT_NEAR(10.000000, scale.GetMean(), 0.000001);
    PE::CCalibrationScale   calib(scale);
    EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(10.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(75.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR(10.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(75.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -89,9 +89,9 @@ TEST_F(PECCalibrationScaleTest, test_do_calibration_no_sensors_no_reference)
    calib.DoCalibration();
    calib.DoCalibration();
    EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(10.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(75.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR(10.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(75.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -124,9 +124,9 @@ TEST_F(PECCalibrationScaleTest, test_same_ref_data)
 
    //sensors data without changed reference data is not considered
    EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -159,9 +159,9 @@ TEST_F(PECCalibrationScaleTest, test_same_sen_data)
 
    //reference data without changed sensors data is not considered
    EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -194,9 +194,9 @@ TEST_F(PECCalibrationScaleTest, test_same_sen_and_ref_data)
 
    //no differences in sensors and reference data will not be considered
    EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -225,9 +225,9 @@ TEST_F(PECCalibrationScaleTest, test_sen_and_ref_data_scale_1)
 
    //no differences in sensors and reference data will not be considered
    EXPECT_NEAR( 1.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 1.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(66.666667, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 1.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(66.666667, scale.GetReliable(), 0.000001);
 }
 
 
@@ -255,9 +255,9 @@ TEST_F(PECCalibrationScaleTest, test_sen_minus10_to_plus90_ref_0_to_100)
    calib.AddSensor(90);
    calib.DoCalibration();
    EXPECT_NEAR(  1.0, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(  1.0, calib.GetMean(), 0.000001);
-   EXPECT_NEAR(  0.0, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 75.0, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR(  1.0, scale.GetMean(), 0.000001);
+   EXPECT_NEAR(  0.0, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 75.0, scale.GetReliable(), 0.000001);
 }
 
 
@@ -285,9 +285,9 @@ TEST_F(PECCalibrationScaleTest, test_sen_90_to_30_ref_100_to_40)
    calib.AddSensor(30);
    calib.DoCalibration();
    EXPECT_NEAR(  1.0, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(  1.0, calib.GetMean(), 0.000001);
-   EXPECT_NEAR(  0.0, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 75.0, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR(  1.0, scale.GetMean(), 0.000001);
+   EXPECT_NEAR(  0.0, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 75.0, scale.GetReliable(), 0.000001);
 }
 
 
@@ -327,9 +327,9 @@ TEST_F(PECCalibrationScaleTest, test_sen_minus100_to_plus100_ref_0_to_20)
    calib.AddSensor(50);
    calib.DoCalibration();
    EXPECT_NEAR(  0.1, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(  0.1, calib.GetMean(), 0.000001);
-   EXPECT_NEAR(  0.0, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 40.0, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR(  0.1, scale.GetMean(), 0.000001);
+   EXPECT_NEAR(  0.0, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 40.0, scale.GetReliable(), 0.000001);
 }
 
 
@@ -358,9 +358,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference(-11.38860539); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( -1118);
    calib.AddSensor( -1101);
@@ -381,9 +381,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference(-10.61061662); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.003360, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( -830);
    calib.AddSensor( -849);
@@ -405,9 +405,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference(-8.699997); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.010793, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.007076, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.003716, calib.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.007076, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.003716, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( -1047);
    calib.AddSensor( -1043);
@@ -429,9 +429,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference(-10.599991); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.010688, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008280, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.003062, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(20.226010, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.008280, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.003062, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(20.226010, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( -1052);
    calib.AddSensor( -1021);
@@ -452,9 +452,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference(-10.400009); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.008414, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008314, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.002074, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(39.766723, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.008314, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.002074, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(39.766723, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( -910);
    calib.AddSensor( -914);
@@ -476,9 +476,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference(-8.999985); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.008637, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008378, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001620, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(51.014668, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.008378, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001620, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(51.014668, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( -469);
    calib.AddSensor( -399);
@@ -500,9 +500,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( -4.100006); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.007721, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008269, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001406, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(57.879011, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.008269, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001406, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(57.879011, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( 127);
    calib.AddSensor( 126);
@@ -523,9 +523,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 1.299988); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009956, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008510, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001413, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(61.459420, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.008510, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001413, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(61.459420, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( 198);
    calib.AddSensor( 190);
@@ -547,9 +547,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 1.600006); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009802, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008671, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001373, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(64.805970, calib.GetReliable(), 0.000001);
+   EXPECT_NEAR( 0.008671, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001373, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(64.805970, scale.GetReliable(), 0.000001);
 
    calib.AddSensor( 258 );
    calib.AddSensor( 243 );
@@ -571,9 +571,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 2.497502498 ); //hAcc=0.15[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009588, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008773, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001303, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(67.85    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.008773, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001303, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(67.85    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 428 );
    calib.AddSensor( 438 );
@@ -594,9 +594,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 4.704701702 ); //hAcc=0.15[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009666, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008863, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001247, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(70.35    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.008863, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001247, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(70.35    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 652 );
    calib.AddSensor( 669 );
@@ -618,9 +618,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 6.900009 ); //hAcc=0.15[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009916, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.008958, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001218, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(72.33    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.008958, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001218, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(72.33    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 714 );
    calib.AddSensor( 719 );
@@ -642,9 +642,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 7.399994 ); //hAcc=0.15[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009889, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009036, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001185, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(74.09    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009036, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001185, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(74.09    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 808 );
    calib.AddSensor( 837 );
@@ -665,9 +665,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 8.399994 ); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.010041, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009113, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001164, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(75.57    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009113, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001164, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(75.57    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 726 );
    calib.AddSensor( 716 );
@@ -689,9 +689,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 7.800003 ); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.010010, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009177, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001138, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(76.91    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009177, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001138, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(76.91    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 725 );
    calib.AddSensor( 727 );
@@ -713,9 +713,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 7.400009 ); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009935, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009228, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001108, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(78.15    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009228, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001108, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(78.15    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 714 );
    calib.AddSensor( 699 );
@@ -736,9 +736,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 6.793194805 ); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009974, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009275, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001080, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(79.25    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009275, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001080, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(79.25    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( 660 );
    calib.AddSensor( 658 );
@@ -760,9 +760,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( 6.80680981 ); //hAcc=0.3[deg]
    calib.DoCalibration();
    EXPECT_NEAR( 0.009916, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009312, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001051, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(80.25    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009312, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001051, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(80.25    , scale.GetReliable(), 0.01);
 
    //reset internal states of calibratiopn to be able to calibrate it even with data before last sensors
    calib.Reset();
@@ -788,9 +788,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.DoCalibration();
    //after reset this data would be the same as before
    EXPECT_NEAR( 0.009916, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009312, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001051, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(80.25    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009312, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001051, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(80.25    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( -86 );
    calib.AddSensor( -81 );
@@ -811,9 +811,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( -0.800003 );
    calib.DoCalibration();
    EXPECT_NEAR( 0.009982, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009349, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001026, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(81.15    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009349, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001026, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(81.15    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( -51 );
    calib.AddSensor( -81 );
@@ -835,9 +835,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( -1.300003 );
    calib.DoCalibration();
    EXPECT_NEAR( 0.010261, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009397, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001017, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(81.89    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009397, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001017, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(81.89    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( -84 );
    calib.AddSensor( -89 );
@@ -859,9 +859,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( -0.799988 );
    calib.DoCalibration();
    EXPECT_NEAR( 0.010364, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009446, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001012, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(82.56    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009446, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001012, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(82.56    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( -37 );
    calib.AddSensor( -42 );
@@ -881,9 +881,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddSensor( 11 );
    calib.AddReference( -0.400009 );
    EXPECT_NEAR( 0.010364, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009446, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001012, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(82.56    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009446, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001012, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(82.56    , scale.GetReliable(), 0.01);
 
    calib.DoCalibration();
    calib.AddSensor( 14 );
@@ -905,9 +905,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddSensor( -79 );
    calib.AddReference( 0.199997 );
    EXPECT_NEAR( 0.010271, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009485, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.001000, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(83.20    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009485, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.001000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(83.20    , scale.GetReliable(), 0.01);
 
    calib.DoCalibration();
    calib.AddSensor( -111 );
@@ -929,9 +929,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddSensor( -677 );
    calib.AddReference( -2.099991 );
    EXPECT_NEAR( 0.010440, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009528, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000996, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(83.77    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009528, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000996, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(83.77    , scale.GetReliable(), 0.01);
 
    calib.DoCalibration();
    calib.AddSensor( -692 );
@@ -953,9 +953,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( -7.199997 );
    calib.DoCalibration();
    EXPECT_NEAR( 0.009989, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009558, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000939, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(84.99    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009558, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000939, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(84.99    , scale.GetReliable(), 0.01);
 
    calib.AddSensor( -1005 );
    calib.AddSensor( -1013 );
@@ -977,9 +977,9 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    calib.AddReference( -10.200012 );
    calib.DoCalibration();
    EXPECT_NEAR( 0.010343, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.009590, calib.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000931, calib.GetMld(), 0.000001);
-   EXPECT_NEAR(85.46    , calib.GetReliable(), 0.01);
+   EXPECT_NEAR( 0.009590, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000931, scale.GetMld(), 0.000001);
+   EXPECT_NEAR(85.46    , scale.GetReliable(), 0.01);
 }
 
 

@@ -37,16 +37,21 @@ PE::CCore::~CCore()
 }
 
 
-void PE::CCore::SetSensorCfg(PE::TSensorID id, const PE::CSensorCfg& cfg)
+bool PE::CCore::WriteSensorCfg(PE::TSensorID id, const PE::CSensorCfg& cfg)
 {
-   if ( cfg.mValid )
+   if ( true == cfg.mValid )
    {
-      mSensors[id] = CSensorEntity(id, cfg);
+      if ( false == IsSensorCongfigured( id ) )
+      {
+         mSensors[id] = CSensorEntity(id, cfg);
+         return true;
+      }
    }
+   return false;
 }
 
 
-const PE::CSensorCfg PE::CCore::GetSensorCfg(PE::TSensorID id) const
+bool PE::CCore::ReadSensorCfg(PE::TSensorID id, PE::CSensorCfg& cfg) const
 {
    CSensorCfg result;
    if ( IsSensorCongfigured(id) )

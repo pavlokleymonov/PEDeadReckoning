@@ -54,27 +54,9 @@ void PE::CCalibrationBase::AddScale(const TValue& value)
 }
 
 
-const TValue PE::CCalibrationBase::GetBase() const
+const TValue& PE::CCalibrationBase::GetBase() const
 {
    return mBase;
-}
-
-
-const TValue PE::CCalibrationBase::GetMean() const
-{
-   return mNorm.GetMean();
-}
-
-
-const TValue PE::CCalibrationBase::GetMld() const
-{
-   return mNorm.GetMld();
-}
-
-
-const TValue PE::CCalibrationBase::GetReliable() const
-{
-   return mNorm.GetReliable();
 }
 
 

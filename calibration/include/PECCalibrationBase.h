@@ -55,27 +55,7 @@ public:
     *
     * @return    sensor base
     */
-   const TValue GetBase() const;
-   /**
-    * Returns sensor base which has to be substructed from scaled sensor value
-    *         (reference = raw_sens * scale - base)
-    *         More accurate then simple GetBase.
-    *
-    * @return    sensor base
-    */
-   const TValue GetMean() const;
-   /**
-    * Returns mean linear deviation of the sensor base
-    *
-    * @return    mld of sensor base(ecvivalent 1 sigma)
-    */
-   const TValue GetMld() const;
-   /**
-    * Returns reliable status of the sensor base
-    *
-    * @return    reliable status. range [0..100] percent.
-    */
-   const TValue GetReliable() const;
+   const TValue& GetBase() const;
    /**
     * Does calibration calculation based on internal accumulated reference and sensor values
     */

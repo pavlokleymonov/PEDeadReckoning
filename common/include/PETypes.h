@@ -62,6 +62,8 @@ namespace PE {
 
    static const TAccuracy MAX_ACCURACY = std::numeric_limits<TAccuracy>::max();
 
+   static const TValue DEFAULT_RELIABLE_LIMIT = 99.5;
+
 } // namespace PE
 
 #endif //__PE_Types_H__
