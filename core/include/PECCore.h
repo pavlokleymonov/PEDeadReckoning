@@ -68,7 +68,7 @@ public:
          return mType;
       }
 
-   bool IsValid() const
+   inline bool IsValid() const
       {
          return ( SENSOR_UNKNOWN != mType );
       }
@@ -100,10 +100,8 @@ class CSensorEntity
 {
 public:
    CSensorEntity( const CSensorCfg& cfg )
-      : referenceIsReady(false)
-      , sensorIsReady(false)
-      , mType(cfg.GetType())
-      , mLimit(cfg.GetLimit())
+      : mType(cfg.GetType())
+      : mLimit(cfg.GetLimit())
       , mNormScale(CNormalisation(cfg.GetScale().mAccValue, cfg.GetScale().mAccMld, cfg.GetScale().mAccRel, cfg.GetScale().mCount))
       , mNormBase (CNormalisation(cfg.GetBase().mAccValue,  cfg.GetBase().mAccMld,  cfg.GetBase().mAccRel,  cfg.GetBase().mCount ))
       , mCalScale (mNormScale)
@@ -111,7 +109,7 @@ public:
       {}
 
    //maybe accumulated data has to be reduced
-   CSensorCfg GetCfg() const
+   inline CSensorCfg GetCfg() const
       {
          return CSensorCfg(
             mType,
@@ -124,11 +122,6 @@ public:
    const TSensorTypeID& GetType() const
       {
          return mType;
-      }
-
-   bool IsReliable() const
-      {
-         return ( IsScaleReliable() && IsBaseReliable() );
       }
 
    TValue CalibartedTo() const
@@ -146,45 +139,36 @@ public:
          return mCalBase.GetBase();
       }
 
-   TValue GetValue(const TValue& raw) const
+   SBasicSensor Calculate(const TValue& raw, const SBasicSensor& ref)
       {
-         return (raw - mCalBase.GetBase()) * mCalScale.GetScale();
-      }
-
-   void AddReference(const SBasicSensor& reference)
-      {
-         if ( reference.IsValid() )
-         {
-            referenceIsReady = true;
-            mCalScale.AddReference(value);
-            mCalBase.AddReference(value);
-            DoCalibration();
-         }
-      }
-
-   void AddSensor(const TValue& raw)
-      {
-         sensorIsReady = true;
          mCalScale.AddSensor(raw);
-         mCalBase.AddSensor(raw);
-         DoCalibration();
-      }
+         mCalScale.AddReference(ref.Value);
+         mCalScale.DoCalibration();
 
-   void AddPredictedValue()
+         if ( IsScaleReliable() )
+         {
+            mCalBase.AddScale(mCalScale.GetScale());
+            mCalBase.AddSensor(raw);
+            mCalBase.AddReference(ref.Value);
+            mCalBase.DoCalibration();
 
-   /**
-    * Resets internal state to be able to process new data without dependencies for previouse one.
-    * It would be usefull after gap detection in any income data.
-    */
-   void Reset()
-      {
-         mCalScale.Reset();
-         mCalBase.Reset();
+            if ( IsBaseReliable() )
+            {
+               SBasicSensor sen(GetValue(raw), GetAccuracy(mNormBase.GetMld()));
+
+               TValue deltaAccuracy = fabs(ref.Value - sen.Value);
+
+               if ( deltaAccuracy > ref.Accuracy )
+               {
+                  sen = deltaAccuracy;
+               }
+               return sen;
+            }
+         }
+         return SBasicSensor(); //invalid sensor
       }
 
 private:
-   bool referenceIsReady;
-   bool sensorIsReady;
    const TSensorTypeID mType;
    const TValue mLimit;
    CNormalisation mNormScale;
@@ -202,23 +186,14 @@ private:
          return mLimit <= mNormBase.GetReliable();
       }
 
-   inline void DoCalibration()
+   inline TValue GetValue(const TValue& raw) const
       {
-         if ( sensorIsReady && referenceIsReady )
-         {
-            mCalScale.DoCalibration();
-            if ( IsScaleReliable() )
-            {
-               mCalBase.AddScale( mCalScale.GetScale() );
-               mCalBase.DoCalibration();
-            }
-            else
-            {
-               mCalBase.Reset();
-            }
-            sensorIsReady = false;
-            referenceIsReady = false;
-         }
+         return TValue(raw * mCalScale.GetScale() - mCalBase.GetBase());
+      }
+
+   inline TAccuracy GetAccuracy(const TValue& mld) const
+      {
+         return TAccuracy(mld * 3);
       }
 
 };
