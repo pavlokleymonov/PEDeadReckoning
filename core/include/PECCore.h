@@ -20,6 +20,7 @@
 #include "PECCalibrationScale.h"
 #include "PECCalibrationBase.h"
 #include "PECFusionSensor.h"
+#include "PETools.h"
 
 
 
@@ -55,6 +56,43 @@ public:
 class CSensorCfg
 {
 public:
+   static const std::string CFG_MARKER = "CFGSENSOR";
+
+   static const std::size_t CFG_NUMBER_ELEMENTS = 11;
+
+   static std::string ToSTR(const CSensorCfg& cfg)
+      {
+         std::stringstream st;
+         st << CFG_MARKER << "," << int(mType) << ",";
+         st << int(mScale.mAccValue) << "," << int(mScale.mAccMld) << "," << int(mScale.mAccRel) << "," << int(mScale.mCount) << ","; //store scale configuration
+         st << int(mBase.mAccValue) << "," << int(mBase.mAccMld) << "," << int(mBase.mAccRel) << "," << int(mBase.mCount) << ","; //store base configuration
+         st << std::setprecision(1) << double(mReliableLimit);
+         return st.str();
+      }
+
+   static CSensorCfg ToCFG(const std::string& str)
+      {
+         std::vector<std::string> list = PE::TOOLS::Split();
+         if ( CFG_NUMBER_ELEMENTS == list.size() )
+         {
+            if ( CFG_MARKER == list[0] )
+            {
+               return CSensorCfg(
+                  atoi(list[1]), //load sensor type
+                  CNormCfg(atoi(list[2]), atoi(list[3]), atoi(list[4]), atoi(list[5])), //load scale configuration
+                  CNormCfg(atoi(list[6]), atoi(list[7]), atoi(list[8]), atoi(list[9])), //load base configuration
+                  atof(list[10]) //load reliable limit
+            }
+         }
+         return CSensorCfg();
+      }
+
+   CSensorCfg()
+      : mType(SENSOR_UNKNOWN)
+      , mScale(1,0,100,1) //Scale = 1
+      , mBase (0,0,100,1) //Base  = 0
+      , mReliableLimit(DEFAULT_RELIABLE_LIMIT)
+      {}
 
    CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit = DEFAULT_RELIABLE_LIMIT )
       : mType(type)
@@ -108,8 +146,7 @@ public:
       , mCalBase  (mNormBase)
       {}
 
-   //maybe accumulated data has to be reduced
-   inline CSensorCfg GetCfg() const
+   CSensorCfg GetCfg() const
       {
          return CSensorCfg(
             mType,
@@ -160,7 +197,7 @@ public:
 
                if ( deltaAccuracy > ref.Accuracy )
                {
-                  sen = deltaAccuracy;
+                  sen.Accuracy = deltaAccuracy;
                }
                return sen;
             }
@@ -195,8 +232,8 @@ private:
       {
          return TAccuracy(mld * 3);
       }
-
 };
+
 /**
  * 
  * Preconditions:
@@ -210,47 +247,53 @@ friend class ::PECCoreTest;
 
 public:
 
-   typedef bool (PE::CCore::*TBuildCall)(PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy);
-
-   typedef std::map<PE::TSensorID, std::pair< PE::CSensorEntity, PE::TBuildCall > > TSensorHandlerList;
-   
-   /**
-    * Constructor
-    */
-   CCore();
    /**
     * Constructor with start position and heading
     *
     * @param position       started position
     * @param heading        started heading
-    * @param reliableLimit  calibration limit which will be only used for sensors position fusion
     */
-   CCore( const SPosition& position, const SBasicSensor& heading, const TValue& reliableLimit);
+   CCore( const SPosition& position, const SBasicSensor& heading);
    /**
     * Destructor 
     */
    virtual ~CCore();
    /**
-    * Writes sensors configuration
+    * Sets sensors configuration
     * Does not add invalid configuration and does not overwrite existed one.
     *
     * @param id      unique identificator of sensor
     * @param cfg     configuration information which will be binded to sensor identificator
     *
-    * Returns false if configuration was not written
+    * Returns false if configuration was invalid or already set
     */
-   bool WriteSensorCfg(TSensorID id, const CSensorCfg& cfg);
+   bool SetSensorCfg(TSensorID id, const CSensorCfg& cfg);
    /**
-    * Reads sensor configuration
-    * if configuration is not present - returns invalid sensor config
+    * Gets sensor configuration
+    * Does not change cfg parapeter if configuration is invalid or not present
+    *
+    * @param id      unique identificator of sensor
+    * @param cfg     configuration information which will be updated
+    *
+    * Returns false if configuration was invalid or not present
     */
-   bool ReadSensorCfg(TSensorID id, CSensorCfg& cfg) const;
+   bool GetSensorCfg(TSensorID id, CSensorCfg& cfg) const;
    /**
     * Adds new sensor raw value.
     *
-    * Returns false if configuration of the sensor with provided id is not available or there is no new position available
+    * @param id   unique identificator of sensor
+    * @param ts   timestamp of the sensor
+    * @param raw  raw data of the sensor
+    * @param acc  accuracy of the sensor
+    *
     */
-   bool AddSensor(TSensorID id, TTimestamp timestamp, const TValue& sensor, const TAccuracy& accuracy);
+   void AddSensor(TSensorID id, TTimestamp ts, const TValue& raw, const TAccuracy& acc);
+   /**
+    * Calculates position based on current sensors data
+    *
+    * Returns true if new position has been calculated
+    */
+   bool CalculatePosition();
    /**
     * Returns timestamp of fusion position
     */
@@ -269,67 +312,66 @@ public:
    const SBasicSensor& GetSpeed() const;
 
 private:
-
-   TSensorHandlerList mSensors;
-
-   const TValue mReliableLimit;
-
-   CFusionSensor mFusion;
-
-   bool mPositionReadyToFusion;
-
-   bool mDistanceReadyToFusion;
-
-   bool mHeadingReadyToFusion;
-
-   SBasicSensor mLatitudeToFusion;
-
-   SBasicSensor mLongitudeToFusion;
-
-   SPosition mPositionToFusion;
-
-   SBasicSensor mHeadingToFusion;
-
-   SBasicSensor mSpeedToFusion;
-
-   SBasicSensor mAngSpeedToFusion;
    /**
-    * Returns true if new sensor information is enought to call fusie new position.
-    *    For instance new speed and heading were received or coordinates were received
+    * Type name definition for class method which processed specific sensor
     */
-   inline bool IsReadyToFusion() const;
+   typedef bool (PE::CCore::*TBuildCall)(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
    /**
-    * Cleans distance and heading readiness flags
+    * Type definition for map which binds sensor type to specific handler
     */
-   inline void ClearReadyToFusion();
+   typedef std::map<TSensorTypeID, TBuildCall> TSensorHandlersList;
+   /**
+    * Type definition for map which binds sensor identificator to specific sensor environment
+    */
+   typedef std::map<TSensorID, std::pair< CSensorEntity, TBuildCall > > TSensorList;
+   /**
+    * List of all possible sensor handlers
+    */
+   TSensorHandlersList mHandlers;
+   /**
+    * List of all configurated sensors
+    */
+   TSensorList mSensors;
    /**
     * Returns true if configuration for sensors id is available and valid
     */
    inline bool IsSensorCongfigured(TSensorID id) const;
-
-
-
-
-   inline const TValue GetScale(TSensorID id) const;
-
-   inline const TValue GetScaleReliable(TSensorID id) const;
-
-   inline const TValue GetBase(TSensorID id) const;
-
-   inline const TValue GetScaleReliable(TSensorID id) const;
-
-
-
-
-
-
-   bool BuildPosition(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
-
-   bool BuildHeading(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
-
-   bool BuildSpeed(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
-
-   bool BuildAngSpeed(TSensorID id, const TValue& sensor, const TAccuracy& accuracy);
+   /**
+    * Returns true if sensors typed has proper handler
+    */
+   inline bool IsSensorTypeHandled(TSensorTypeID type) const;
+   /**
+    * Position fusion stuff
+    */
+   CFusionSensor mFusion;
+   /**
+    * Service variable to prepare income position for fusion
+    */
+   SPosition mPositionToFusion;
+   /**
+    *
+    */
+   void Latitude(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
+   /**
+    *
+    */
+   void Longitude(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
+   /**
+    *
+    */
+   void Heading(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
+   /**
+    *
+    */
+   void Speed(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
+   /**
+    *
+    */
+   void OdoAxis(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
+   /**
+    *
+    */
+   void GyroZ(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent);
 };
 
 

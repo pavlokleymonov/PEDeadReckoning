@@ -14,21 +14,15 @@
 #include "PECCore.h"
 
 
-PE::CCore::CCore()
-: mReliableLimit(99.5) //99.5% - Default limit
-, mFusion(0, SPosition(), SBasicSensor(), SBasicSensor(), SBasicSensor())
-, mDistanceReadyToFusion(false)
-, mHeadingReadyToFusion(false)
+PE::CCore::CCore( const SPosition& position, const SBasicSensor& heading )
+: mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
 {
-}
-
-
-PE::CCore::CCore( const PE::SPosition& position, const PE::SBasicSensor& heading, const PE::TValue& reliableLimit )
-: mReliableLimit(reliableLimit)
-, mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
-, mDistanceReadyToFusion(false)
-, mHeadingReadyToFusion(false)
-{
+   mHandlers[SENSOR_LATITUDE]      = &PE::CCore::Latitude;
+   mHandlers[SENSOR_LONGITUDE]     = &PE::CCore::Longitude;
+   mHandlers[SENSOR_HEADING]       = &PE::CCore::Heading;
+   mHandlers[SENSOR_SPEED]         = &PE::CCore::Speed;
+   mHandlers[SENSOR_ODOMETER_AXIS] = &PE::CCore::OdoAxis;
+   mHandlers[SENSOR_GYRO_Z]        = &PE::CCore::GyroZ;
 }
 
 
@@ -37,45 +31,48 @@ PE::CCore::~CCore()
 }
 
 
-bool PE::CCore::WriteSensorCfg(PE::TSensorID id, const PE::CSensorCfg& cfg)
+bool PE::CCore::SetSensorCfg(TSensorID id, const CSensorCfg& cfg)
 {
-   if ( true == cfg.mValid )
+   if ( true == cfg.IsValid() )
    {
-      if ( false == IsSensorCongfigured( id ) )
+      if ( true == IsSensorTypeHandled( cfg.GetType() ) )
       {
-         mSensors[id] = CSensorEntity(id, cfg);
-         return true;
+         if ( false == IsSensorCongfigured( id ) )
+         {
+            mSensors[id] = std::make_pair(CSensorEntity(cfg), mHandlers[cfg.GetType()]);
+            return true;
+         }
       }
    }
    return false;
 }
 
 
-bool PE::CCore::ReadSensorCfg(PE::TSensorID id, PE::CSensorCfg& cfg) const
+bool PE::CCore::GetSensorCfg(TSensorID id, CSensorCfg& cfg) const
 {
-   CSensorCfg result;
    if ( IsSensorCongfigured(id) )
    {
-      result = CSensorCfg(
-            mSensors[id].mType,
-            CNormCfg(mSensors[id].mNormScale.GetAccumulatedValue(), mSensors[id].mNormScale.GetAccumulatedMld(), mSensors[id].mNormScale.GetAccumulatedReliable(), mSensors[id].mNormScale.GetSampleCount()),
-            CNormCfg(mSensors[id].mNormBase.GetAccumulatedValue(),  mSensors[id].mNormBase.GetAccumulatedMld(),  mSensors[id].mNormBase.GetAccumulatedReliable(),  mSensors[id].mNormBase.GetSampleCount() )
-         )
+      cfg = mSensors[id].first.GetCfg();
+      return true;
    }
-   return result;
+   return false;
 }
 
 
-bool PE::CCore::AddSensor(PE::TSensorID id, PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy)
+void PE::CCore::AddSensor(TSensorID id, TTimestamp timestamp, const TValue& sensor, const TAccuracy& accuracy)
 {
    if ( IsSensorCongfigured(id) )
    {
-      return (this->*(mSensors[id].second))(timestamp, sensor, accuracy, mSensors[id].first);
+      (this->*(mSensors[id].second))(timestamp, sensor, accuracy, mSensors[id].first);
    }
-   else
-   {
-      return false;
-   }
+}
+
+
+bool PE::CCore::CalculatePosition()
+{
+   TTimestamp prevTS = mFusion.GetTimestamp();
+   mFusion.DoFusion();
+   return (prevTS != mFusion.GetTimestamp());
 }
 
 
@@ -103,77 +100,104 @@ const PE::SBasicSensor& PE::CCore::GetSpeed() const
 }
 
 
-inline bool PE::CCore::IsReadyToFusion() const
+inline bool PE::CCore::IsSensorCongfigured(TSensorID id) const
 {
-   return ( mDistanceReadyToFusion && mHeadingReadyToFusion );
+   return ( mSensors.end() != mSensors.find(id) );
 }
 
 
-inline void PE::CCore::ClearReadyToFusion()
+inline bool PE::CCore::IsSensorTypeHandled(TSensorTypeID type) const
 {
-   mDistanceReadyToFusion = false;
-   mHeadingReadyToFusion = false;
+   return ( mHandlers.end() != mHandlers.find(type) );
 }
 
 
-inline bool PE::CCore::IsSensorCongfigured(PE::TSensorID id) const
+void PE::CCore::Latitude(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent)
 {
-   bool isPresent = mSensors.end() != mSensors.find(id);
-   return ( isPresent ? mSensors[id].mValid : false );
+   if (SENSOR_LATITUDE == ent.GetType())
+   {
+      mPositionToFusion.Latitude = raw;
+      mPositionToFusion.HorizontalAcc = acc;
+      if ( mPositionToFusion.IsValid() )
+      {
+         mFusion.AddPosition(ts, mPositionToFusion);
+         mPositionToFusion = SPosition(); //reset position
+      }
+   }
 }
 
 
-inline const PE::TValue PE::CCore::GetScale(PE::TSensorID id) const
+void PE::CCore::Longitude(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent)
 {
-   return mSensors[id].mCalScale.GetScale();
+   if (SENSOR_LONGITUDE == ent.GetType())
+   {
+      mPositionToFusion.Longitude = raw;
+      mPositionToFusion.HorizontalAcc = acc;
+      if ( mPositionToFusion.IsValid() )
+      {
+         mFusion.AddPosition(ts, mPositionToFusion);
+         mPositionToFusion = SPosition(); //reset position
+      }
+   }
 }
 
 
-inline const PE::TValue PE::CCore::GetScaleReliable(PE::TSensorID id) const
+void PE::CCore::Heading(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent)
 {
-   return mSensors[id].mCalScale.GetReliable();
+   if (SENSOR_HEADING == ent.GetType())
+   {
+      SBasicSensor head( raw, acc );
+      if ( head.IsValid() )
+      {
+         mFusion.AddHeading( ts, head );
+      }
+   }
 }
 
 
-inline const PE::TValue PE::CCore::GetBase(PE::TSensorID id) const
+void PE::CCore::Speed(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent)
 {
-   return mSensors[id].mCalBase.GetScale();
+   if (SENSOR_SPEED == ent.GetType())
+   {
+      SBasicSensor speed( raw, acc );
+      if ( speed.IsValid() )
+      {
+         mFusion.AddSpeed( ts, speed );
+      }
+   }
 }
 
 
-inline const PE::TValue PE::CCore::GetScaleReliable(PE::TSensorID id) const
+void PE::CCore::OdoAxis(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent)
 {
-   return mSensors[id].mCalScale.GetReliable();
+   if (SENSOR_ODOMETER_AXIS == ent.GetType())
+   {
+      SBasicSensor predictedSpeed = mFusion.GetSpeed(ts);
+      if ( predictedSpeed.IsValid() )
+      {
+         SBasicSensor speed = ent.Calculate(raw, predictedSpeed);
+         if ( speed.IsValid() )
+         {
+            mFusion.AddSpeed( ts, speed );
+         }
+      }
+   }
 }
 
 
-bool PE::CCore::BuildPositionByLatitude(PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy, PE::CSensorEntity& ent)
+void PE::CCore::GyroZ(TTimestamp ts, const TValue& raw, const TAccuracy& acc, CSensorEntity& ent)
 {
-   mLatitudeToFusion = calcValue(ent, sensor, accuracy);
-   processPosition(timestamp);
+   if (SENSOR_GYRO_Z == ent.GetType())
+   {
+      SBasicSensor predictedAngSpeed = mFusion.GetAngSpeed(ts);
+      if ( predictedAngSpeed.IsValid() )
+      {
+         SBasicSensor angSpeed = ent.Calculate(raw, predictedAngSpeed);
+         if ( angSpeed.IsValid() )
+         {
+            mFusion.AddAngSpeed( ts, angSpeed );
+         }
+      }
+   }
 }
 
-
-bool PE::CCore::BuildPositionByLongitude(PE::TTimestamp timestamp, const PE::TValue& sensor, const PE::TAccuracy& accuracy, PE::CSensorEntity& ent)
-{
-   mLongitudeToFusion = calcValue(ent, sensor, accuracy);
-   processPosition(timestamp);
-}
-
-
-bool PE::CCore::BuildHeading(PE::TSensorID id, const PE::TValue& sensor, const PE::TAccuracy& accuracy)
-{
-   return false;
-}
-
-
-bool PE::CCore::BuildSpeed(PE::TSensorID id, const PE::TValue& sensor, const PE::TAccuracy& accuracy)
-{
-   return false;
-}
-
-
-bool PE::CCore::BuildAngSpeed(PE::TSensorID id, const PE::TValue& sensor, const PE::TAccuracy& accuracy)
-{
-   return false;
-}

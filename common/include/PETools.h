@@ -102,6 +102,15 @@ SPosition ToPosition(const SPosition& start, const TValue& distance, const TValu
 void Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot );
 void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );
 
+/**
+ * Splits string by delimiter
+ * 
+ * @param str        string which will be splitted by delimiter
+ * @param delimiter  simbol which separated parts of the string
+ * @return vector of strings
+ */
+std::vector<std::string> Split(const std::string& str, char delimiter);
+
 } // namespace TOOLS
 } // namespace PE
 

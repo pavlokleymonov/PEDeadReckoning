@@ -370,6 +370,39 @@ TEST_F(PEToolsTest, coordinate_vX1_vY2_vZ3_x90_y90_z90_deg_transform_3d_test)
    EXPECT_NEAR(-1,z,0.001);
 }
 
+TEST_F(PEToolsTest, split_string_test)
+{
+   //Empty string test
+   EXPECT_EQ(0, PE::TOOLS::Split("",',').size());
+
+   //no delimiter test
+   EXPECT_EQ(1, PE::TOOLS::Split("12345",',').size());
+   EXPECT_EQ("12345", PE::TOOLS::Split("12345",',')[0]);
+
+   //no content test
+   EXPECT_EQ(2, PE::TOOLS::Split(",",',').size());
+   EXPECT_TRUE(PE::TOOLS::Split(",",',')[0].empty());
+   EXPECT_TRUE(PE::TOOLS::Split(",",',')[1].empty());
+
+   //CASE: "111,222,333"
+   EXPECT_EQ(3, PE::TOOLS::Split("111,222,333",',').size());
+   EXPECT_EQ("111", PE::TOOLS::Split("111,222,333",',')[0]);
+   EXPECT_EQ("222", PE::TOOLS::Split("111,222,333",',')[1]);
+   EXPECT_EQ("333", PE::TOOLS::Split("111,222,333",',')[2]);
+
+   //CASE: ",222,333"
+   EXPECT_EQ(3, PE::TOOLS::Split(",222,333",',').size());
+   EXPECT_EQ("",    PE::TOOLS::Split(",222,333",',')[0]);
+   EXPECT_EQ("222", PE::TOOLS::Split(",222,333",',')[1]);
+   EXPECT_EQ("333", PE::TOOLS::Split(",222,333",',')[2]);
+
+   //CASE: "111,222,"
+   EXPECT_EQ(3, PE::TOOLS::Split("111,222,",',').size());
+   EXPECT_EQ("111", PE::TOOLS::Split("111,222,",',')[0]);
+   EXPECT_EQ("222", PE::TOOLS::Split("111,222,",',')[1]);
+   EXPECT_EQ("",    PE::TOOLS::Split("111,222,",',')[2]);
+}
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);

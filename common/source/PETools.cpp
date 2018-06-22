@@ -15,6 +15,7 @@
 
 #include "PETools.h"
 #include <math.h>
+#include <sstream>
 
 using namespace PE;
 
@@ -102,5 +103,22 @@ void PE::TOOLS::Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot )
    TValue fi = PE::TOOLS::ToRadians(zRot);
    xValue = x*cos(fi) - y*sin(fi);
    yValue = y*cos(fi) + x*sin(fi);
+}
+
+
+std::vector<std::string> PE::TOOLS::Split(const std::string& str, char delimiter)
+{
+   std::vector<std::string> result;
+   std::stringstream ss(str);
+   std::string item;
+   while (std::getline(ss, item, delimiter))
+   {
+      result.push_back(item);
+   }
+   if ( (false == str.empty()) && (delimiter == str[str.size()-1]) )
+   {
+      result.push_back("");
+   }
+   return result;
 }
 
