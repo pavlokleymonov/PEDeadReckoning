@@ -95,6 +95,65 @@ TEST_F(PECCalibrationScaleTest, test_do_calibration_no_sensors_no_reference)
 }
 
 
+
+/**
+ * tests  
+ */
+TEST_F(PECCalibrationScaleTest, test_do_calibration_after_each_new_sensor_and_after_each_ref)
+{
+   PE::CNormalisation scale;
+
+   PE::CCalibrationScale   calib(scale);
+   calib.AddSensor(10);
+   calib.DoCalibration();
+   calib.AddSensor(20);
+   calib.DoCalibration();
+   calib.AddSensor(30);
+   calib.DoCalibration();
+   calib.AddSensor(40);
+   calib.DoCalibration();
+   calib.AddSensor(40);
+   calib.DoCalibration();
+   calib.AddSensor(30);
+   calib.DoCalibration();
+   calib.AddSensor(20);
+   calib.DoCalibration();
+   calib.AddSensor(10);
+   calib.DoCalibration();
+   calib.AddReference(20); //ref
+   calib.DoCalibration();
+
+   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
+
+   calib.AddSensor(10);
+   calib.DoCalibration();
+   calib.AddSensor(20);
+   calib.DoCalibration();
+   calib.AddReference(15); //ref
+   calib.DoCalibration();
+
+   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
+
+   calib.AddSensor(2);
+   calib.DoCalibration();
+   calib.AddSensor(1);
+   calib.DoCalibration();
+   calib.AddReference(1.5); //ref
+   calib.DoCalibration();
+
+   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
+   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
+}
+
+
 /**
  * tests
  */
