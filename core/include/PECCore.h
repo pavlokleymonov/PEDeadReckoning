@@ -279,6 +279,7 @@ public:
     */
    bool GetSensorCfg(TSensorID id, CSensorCfg& cfg) const;
    /**
+    * DEPRICATED
     * Adds new sensor raw value.
     *
     * @param id   unique identificator of sensor
@@ -288,6 +289,12 @@ public:
     *
     */
    void AddSensor(TSensorID id, TTimestamp ts, const TValue& raw, const TAccuracy& acc);
+   bool AddGNSS    (const TSensorID& id, const TTimestamp& ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed);
+   bool AddOdoAxis (const TSensorID& id, const TTimestamp& ts, const TValue& odo);
+   bool AddGyroZ   (const TSensorID& id, const TTimestamp& ts, const TValue& gyro);
+   bool AddPosition(const TSensorID& id, const TTimestamp& ts, const SPosition& pos);
+   bool AddHead    (const TSensorID& id, const TTimestamp& ts, const SBasicSensor& head);
+   bool AddSpeed   (const TSensorID& id, const TTimestamp& ts, const SBasicSensor& speed);
    /**
     * Calculates position based on current sensors data
     *

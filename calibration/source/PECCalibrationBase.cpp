@@ -66,10 +66,10 @@ void PE::CCalibrationBase::DoCalibration()
           0 < mInstRefCnt &&
           0 < mInstSenCnt)
    {
-      mRefAcc += mInstRefAcc / mInstRefCnt;
-      ++mRefCnt;
-      mSenAcc += mInstSenAcc / mInstSenCnt;
-      ++mSenCnt;
+      mRefAcc += mInstRefAcc;
+      mRefCnt += mInstRefCnt;
+      mSenAcc += mInstSenAcc;
+      mSenCnt += mInstSenCnt;
       mBase = (mSenAcc / mSenCnt) * mScale - (mRefAcc / mRefCnt);
       mNorm.AddSensor(mBase);
       clearInst();

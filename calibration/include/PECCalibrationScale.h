@@ -16,6 +16,8 @@
 
 #include "PETypes.h"
 #include "PECNormalisation.h"
+#include "PESBasicSensor.h"
+
 namespace PE
 {
 /**
@@ -27,74 +29,89 @@ public:
    /**
     * Constructor of calibration
     *
-    * @param  norm    instance of normalisation class for the scale
-    *
+    * @param  norm       instance of normalisation class for the scale
+    * @param  ratio      ration between reference and raw values
+    *                        e.g.: 10 means 10 raw values for one reference
+    * @param  threshold  threshold for ratio
+    *                        e.g.: valid ratio is ratio +/- threshold
     */
-   CCalibrationScale(PE::CNormalisation& norm);
+   CCalibrationScale( CNormalisation& norm, TValue ratio, TValue threshold );
    /**
     * Adds new reference value to the calibration
     *
-    * @param  value      value of reference source
+    * @param  ref      reference sensor data
     */
-   void AddReference(const TValue& value);
+   void AddReference( const SBasicSensor& ref );
    /**
     * Adds new sensor raw value to the calibration
     *
-    * @param  value     raw sensor value
+    * @param  raw     raw sensor data
     */
-   void AddSensor(const TValue& value);
+   void AddSensor( const SBasicSensor& raw );
    /**
-    * Returns scale factor between sensor and reference values based on simple average
-    *         of delta between them
+    * Converts raw sansor according to calibartion status
+    * returns sensor based on converted raw value and valid accuracy
     *
-    * @return    scale factor
+    * @param  raw     raw sensor data
+    * @return         Scaled sensor data or invalid sensor if convertion is not possible
     */
-   const TValue& GetScale() const;
+   SBasicSensor GetSensor( const SBasicSensor& raw ) const;
    /**
-    * Does calibration calculation based on internal accumulated reference and sensor values
+    * Returns current persantage of calibartion
+    *
+    * @return         calibration status in %
     */
-   void DoCalibration();
-   /**
-    * Resets internal state to be able to process new data without dependencies for previouse one.
-    * It would be usefull after gap detection in any income data.
-    */
-   void Reset();
+   const TValue& CalibratedTo() const;
 
 private:
 
    /**
-    * Normalisation instance for Scale calibration
+    * Normalisation instance for scale calibration
     */
-   PE::CNormalisation& mNorm;
+   CNormalisation& mNorm;
    /**
-    * Latest simple average of delta between sensor and reference values
+    * Ration between reference and raw values
+    *    e.g.: 10 means 10 raw values for one reference
     */
-   PE::TValue mScale;
+   TValue mRatio;
+   /**
+    * threshold for ratio
+    *    e.g.: valid ratio is ratio +/- threshold
+    */
+   TValue mThreshold;
 
-   PE::TValue mRefMin;
-   PE::TValue mRefMax;
-   PE::TValue mRefLast;
-   PE::TValue mInstRefAcc;
-   uint32_t mInstRefCnt;
-   PE::TValue mRefDelatAcc;
-   uint32_t mRefDeltaCnt;
+   TValue mRefMin;
+   TValue mRefMax;
+   TValue mRefLast;
+   TValue mRefInstAcc;
+   TValue mRefInstCnt;
+   TValue mRefDeltaAcc;
+   TValue mRefDeltaCnt;
 
-   PE::TValue mSenMin;
-   PE::TValue mSenMax;
-   PE::TValue mSenLast;
-   PE::TValue mInstSenAcc;
-   uint32_t mInstSenCnt;
-   PE::TValue mSenDeltaAcc;
-   uint32_t mSenDeltaCnt;
+   TValue mRawMin;
+   TValue mRawMax;
+   TValue mRawLast;
+   TValue mRawInstAcc;
+   TValue mRawInstCnt;
+   TValue mRawDeltaAcc;
+   TValue mRawDeltaCnt;
 
    /**
     * Calculate new max, min values, returns delta between max and min values
     */
    TValue processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
    /**
-    * Clear all intermediate instant values of sensors and references
+    * Clear all intermediate instant values of raw and references
     */
    void clearInst();
+   /**
+    * Returns true if ration between raw and reference samples number more then ration
+    */
+   bool IsOverRatio();
+   /**
+    * Does calibration calculation based on internal accumulated reference and raw values
+    */
+   void DoCalibration();
 };
 
 

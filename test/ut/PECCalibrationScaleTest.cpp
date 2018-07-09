@@ -41,34 +41,238 @@ public:
 TEST_F(PECCalibrationScaleTest, test_create)
 {
    PE::CNormalisation scale;
-   PE::CCalibrationScale   calib(scale);
+   PE::CCalibrationScale   calib(scale, 10, 1);
 
-   EXPECT_NEAR(0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(0.000000, scale.GetMean(), 0.000001);
-   EXPECT_NEAR(0.000000, scale.GetMld(), 0.000001);
-   EXPECT_NEAR(0.000000, scale.GetReliable(), 0.000001);
+   EXPECT_FALSE( calib.GetSensor(PE::SBasicSensor()).IsValid() );
+   EXPECT_NEAR(0.00, calib.CalibratedTo(), 0.01);
 }
 
 
 /**
  * tests  
  */
-TEST_F(PECCalibrationScaleTest, test_not_empty_normalisation)
+TEST_F(PECCalibrationScaleTest, test_no_reference)
 {
    PE::CNormalisation scale;
+   PE::CCalibrationScale   calib(scale, 10, 1);
 
-   scale.AddSensor(10);
-   scale.AddSensor(10);
-   scale.AddSensor(10);
-   scale.AddSensor(10);
-   EXPECT_NEAR(10.000000, scale.GetMean(), 0.000001);
-   PE::CCalibrationScale   calib(scale);
-   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR(10.000000, scale.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
-   EXPECT_NEAR(75.000000, scale.GetReliable(), 0.000001);
+   calib.AddSensor(PE::SBasicSensor(10,0.1));
+   calib.AddSensor(PE::SBasicSensor(11,0.1));
+   calib.AddSensor(PE::SBasicSensor(12,0.1));
+   calib.AddSensor(PE::SBasicSensor(13,0.1));
+   calib.AddSensor(PE::SBasicSensor(14,0.1));
+   calib.AddSensor(PE::SBasicSensor(15,0.1));
+   EXPECT_FALSE( calib.GetSensor(PE::SBasicSensor(15,0.1)).IsValid() );
+   EXPECT_NEAR(0.00, calib.CalibratedTo(), 0.01);
 }
 
+
+/**
+ * tests  
+ */
+TEST_F(PECCalibrationScaleTest, test_no_sensor)
+{
+   PE::CNormalisation scale;
+   PE::CCalibrationScale   calib(scale, 3, 1);
+
+   calib.AddReference(PE::SBasicSensor(10,0.1));
+   calib.AddReference(PE::SBasicSensor(20,0.1));
+   calib.AddReference(PE::SBasicSensor(30,0.1));
+   calib.AddReference(PE::SBasicSensor(40,0.1));
+   calib.AddReference(PE::SBasicSensor(50,0.1));
+   EXPECT_FALSE( calib.GetSensor(PE::SBasicSensor(0.0,0.1)).IsValid() );
+   EXPECT_NEAR(0.00, calib.CalibratedTo(), 0.01);
+}
+
+
+/**
+ * tests  
+ */
+TEST_F(PECCalibrationScaleTest, test_simple_calibartion)
+{
+   PE::CNormalisation ok;
+   PE::CCalibrationScale   calib_ok(  ok, 3, 1);
+
+   calib_ok.AddSensor(PE::SBasicSensor(90,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(110,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(10,0.1));
+   EXPECT_FALSE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
+   EXPECT_NEAR( 0.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(130,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(140,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(13,0.1));
+   EXPECT_FALSE( calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).IsValid() );
+   EXPECT_NEAR( 0.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(140,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(12,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
+   EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(50.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(90,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(70,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(8,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
+   EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(66.66, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(60,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(30,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor( 0,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(3,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
+   EXPECT_NEAR(11.00, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(75.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(10,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(20,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(30,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(2,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).IsValid() );
+   EXPECT_NEAR(14.00, calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(80.00, calib_ok.CalibratedTo(), 0.01);
+}
+
+
+/**
+ * tests  
+ */
+TEST_F(PECCalibrationScaleTest, test_calibartion_within_threshold_limit)
+{
+   PE::CNormalisation ok;
+   PE::CCalibrationScale   calib_ok(  ok, 3, 1);
+
+   calib_ok.AddSensor(PE::SBasicSensor(90,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(110,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1)); //sensors still in a threshold limit
+   calib_ok.AddReference(PE::SBasicSensor(10,0.1));
+   EXPECT_FALSE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
+   EXPECT_NEAR( 0.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(130,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(130,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(140,0.1)); //sensors still in a threshold limit
+   calib_ok.AddReference(PE::SBasicSensor(13,0.1));
+   EXPECT_FALSE( calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).IsValid() );
+   EXPECT_NEAR( 0.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(140,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1)); //sensors still in a threshold limit
+   calib_ok.AddReference(PE::SBasicSensor(12,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
+   EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(50.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(90,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(70,0.1)); //sensors still in a threshold limit
+   calib_ok.AddReference(PE::SBasicSensor(8,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
+   EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(66.66, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(60,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(30,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(30,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor( 0,0.1)); //sensors still in a threshold limit
+   calib_ok.AddReference(PE::SBasicSensor(3,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
+   EXPECT_NEAR(11.00, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(75.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(10,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(20,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(20,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(30,0.1)); //sensors still in a threshold limit
+   calib_ok.AddReference(PE::SBasicSensor(2,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).IsValid() );
+   EXPECT_NEAR(14.00, calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(80.00, calib_ok.CalibratedTo(), 0.01);
+}
+
+
+/**
+ * tests  
+ */
+TEST_F(PECCalibrationScaleTest, test_calibartion_over_ratio)
+{
+   PE::CNormalisation ok;
+   PE::CCalibrationScale   calib_ok(  ok, 3, 1);
+
+   calib_ok.AddSensor(PE::SBasicSensor(90,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(110,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(10,0.1));
+   EXPECT_FALSE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
+   EXPECT_NEAR( 0.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(130,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(140,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(13,0.1));
+   EXPECT_FALSE( calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).IsValid() );
+   EXPECT_NEAR( 0.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(140,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(120,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(100,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(12,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
+   EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(50.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(90,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(70,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1)); //sensors still in a threshold limit
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1)); //sensors over ration +/-threshold limit and will be rejected
+   calib_ok.AddReference(PE::SBasicSensor(8,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
+   EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(50.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddReference(PE::SBasicSensor(3,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(3,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor( 0,0.1)); //sensors over ration +/-threshold limit and will be rejected
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
+   EXPECT_NEAR(11.00, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(50.00, calib_ok.CalibratedTo(), 0.01);
+
+   calib_ok.AddSensor(PE::SBasicSensor(10,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(20,0.1));
+   calib_ok.AddSensor(PE::SBasicSensor(30,0.1));
+   calib_ok.AddReference(PE::SBasicSensor(2,0.1));
+   EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).IsValid() );
+   EXPECT_NEAR(14.00, calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).Value,0.01);
+   EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(140,0.1)).Accuracy,0.01);
+   EXPECT_NEAR(33.33, calib_ok.CalibratedTo(), 0.01);
+}
+
+
+#ifdef OFF
 
 /**
  * tests  
@@ -92,65 +296,6 @@ TEST_F(PECCalibrationScaleTest, test_do_calibration_no_sensors_no_reference)
    EXPECT_NEAR(10.000000, scale.GetMean(), 0.000001);
    EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
    EXPECT_NEAR(75.000000, scale.GetReliable(), 0.000001);
-}
-
-
-
-/**
- * tests  
- */
-TEST_F(PECCalibrationScaleTest, test_do_calibration_after_each_new_sensor_and_after_each_ref)
-{
-   PE::CNormalisation scale;
-
-   PE::CCalibrationScale   calib(scale);
-   calib.AddSensor(10);
-   calib.DoCalibration();
-   calib.AddSensor(20);
-   calib.DoCalibration();
-   calib.AddSensor(30);
-   calib.DoCalibration();
-   calib.AddSensor(40);
-   calib.DoCalibration();
-   calib.AddSensor(40);
-   calib.DoCalibration();
-   calib.AddSensor(30);
-   calib.DoCalibration();
-   calib.AddSensor(20);
-   calib.DoCalibration();
-   calib.AddSensor(10);
-   calib.DoCalibration();
-   calib.AddReference(20); //ref
-   calib.DoCalibration();
-
-   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
-
-   calib.AddSensor(10);
-   calib.DoCalibration();
-   calib.AddSensor(20);
-   calib.DoCalibration();
-   calib.AddReference(15); //ref
-   calib.DoCalibration();
-
-   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
-
-   calib.AddSensor(2);
-   calib.DoCalibration();
-   calib.AddSensor(1);
-   calib.DoCalibration();
-   calib.AddReference(1.5); //ref
-   calib.DoCalibration();
-
-   EXPECT_NEAR( 0.000000, calib.GetScale(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMean(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetMld(), 0.000001);
-   EXPECT_NEAR( 0.000000, scale.GetReliable(), 0.000001);
 }
 
 
@@ -1040,7 +1185,7 @@ TEST_F(PECCalibrationScaleTest, test_gyro_hamburg_airport_b433_18_plus_9sec_befo
    EXPECT_NEAR( 0.000931, scale.GetMld(), 0.000001);
    EXPECT_NEAR(85.46    , scale.GetReliable(), 0.01);
 }
-
+#endif //OFF
 
 int main(int argc, char *argv[])
 {
