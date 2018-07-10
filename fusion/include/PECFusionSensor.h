@@ -45,10 +45,6 @@ public:
     */
    CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SBasicSensor& speed);
    /**
-    * Destructor 
-    */
-   virtual ~CFusionSensor();
-   /**
     * Adds new position.
     *
     * @param timestamp    timestamp in seconds

@@ -55,7 +55,7 @@ public:
     * @param  raw     raw sensor data
     * @return         Scaled sensor data or invalid sensor if convertion is not possible
     */
-   SBasicSensor GetSensor( const SBasicSensor& raw ) const;
+   virtual SBasicSensor GetSensor( const SBasicSensor& raw ) const;
    /**
     * Returns current persantage of calibartion
     *
@@ -63,7 +63,7 @@ public:
     */
    const TValue& CalibratedTo() const;
 
-private:
+protected:
 
    /**
     * Normalisation instance for scale calibration
@@ -111,7 +111,7 @@ private:
    /**
     * Does calibration calculation based on internal accumulated reference and raw values
     */
-   void DoCalibration();
+   virtual void DoCalibration();
 };
 
 

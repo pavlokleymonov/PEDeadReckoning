@@ -34,10 +34,6 @@ PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& p
 }
 
 
-PE::CFusionSensor::~CFusionSensor()
-{
-}
-
 void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position)
 {
    if ( m_SensorsList.empty() )

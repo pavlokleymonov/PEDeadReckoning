@@ -135,7 +135,7 @@ bool PE::CCalibrationScale::IsOverRatio()
 
 void PE::CCalibrationScale::DoCalibration()
 {
-   if ( 0.0 < mRefInstCnt && 0.0 < mRawInstCnt )
+   if ( 0.0 != mRefInstCnt && 0.0 != mRawInstCnt )
    {
       if ( !IsOverRatio() )
       {

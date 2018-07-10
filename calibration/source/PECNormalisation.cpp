@@ -40,10 +40,6 @@ PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue&
 {
 }
 
-PE::CNormalisation::~CNormalisation()
-{
-}
-
 void PE::CNormalisation::AddSensor(const TValue& value)
 {
    if ( 0    < mSampleCount && 

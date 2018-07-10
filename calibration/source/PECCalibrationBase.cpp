@@ -18,75 +18,39 @@
 using namespace PE;
 
 
-PE::CCalibrationBase::CCalibrationBase(CNormalisation& norm)
-: mNorm(norm)
-, mScale(0)
-, mBase(0)
-, mInstRefAcc(0.0)
-, mInstRefCnt(0)
-, mRefAcc(0.0)
-, mRefCnt(0)
-, mInstSenAcc(0.0)
-, mInstSenCnt(0)
-, mSenAcc(0.0)
-, mSenCnt(0)
+PE::CCalibrationBase::CCalibrationBase( CNormalisation& norm, TValue ratio, TValue threshold )
+: PE::CCalibrationScale(norm,ratio,threshold)
 {
 }
 
 
-void PE::CCalibrationBase::AddReference(const TValue& value)
+SBasicSensor PE::CCalibrationBase::GetSensor( const SBasicSensor& raw ) const
 {
-   mInstRefAcc += value;
-   ++mInstRefCnt;
-}
-
-
-void PE::CCalibrationBase::AddSensor(const TValue& value)
-{
-   mInstSenAcc += value;
-   ++mInstSenCnt;
-}
-
-
-void PE::CCalibrationBase::AddScale(const TValue& value)
-{
-   mScale = value;
-}
-
-
-const TValue& PE::CCalibrationBase::GetBase() const
-{
-   return mBase;
+   if ( raw.IsValid() && 0.0 != mNorm.GetMean() )
+   {
+      return SBasicSensor( raw.Value - mNorm.GetMean(), raw.Accuracy + mNorm.GetMld() );
+   }
+   else
+   {
+      return SBasicSensor();
+   }
 }
 
 
 void PE::CCalibrationBase::DoCalibration()
 {
-   if ( 0.0 < mScale  &&
-          0 < mInstRefCnt &&
-          0 < mInstSenCnt)
+   if ( 0.0 != mRefInstCnt && 0.0 != mRawInstCnt )
    {
-      mRefAcc += mInstRefAcc;
-      mRefCnt += mInstRefCnt;
-      mSenAcc += mInstSenAcc;
-      mSenCnt += mInstSenCnt;
-      mBase = (mSenAcc / mSenCnt) * mScale - (mRefAcc / mRefCnt);
-      mNorm.AddSensor(mBase);
+      if ( !IsOverRatio() )
+      {
+         mRefAcc += mRefInstAcc / mRefInstCnt;
+         mRefCnt += 1.0;
+
+         mRawAcc += mRawInstAcc / mRawInstCnt;
+         mRawCnt += 1.0;
+
+         mNorm.AddSensor( mRawAcc / mRawCnt - mRefAcc / mRefCnt );
+      }
       clearInst();
    }
-}
-
-
-void PE::CCalibrationBase::Reset()
-{
-   clearInst();
-}
-
-
-void PE::CCalibrationBase::clearInst()
-{
-   mInstRefAcc = 0.0;
-   mInstRefCnt = 0;
-   mInstSenAcc = 0.0;
-   mInstSenCnt = 0;
 }

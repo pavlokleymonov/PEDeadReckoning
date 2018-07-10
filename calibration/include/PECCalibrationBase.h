@@ -16,87 +16,47 @@
 
 #include "PETypes.h"
 #include "PECNormalisation.h"
+#include "PESBasicSensor.h"
+//todo move common functionality into parent class
+#include "PECCalibrationScale.h"
+
 namespace PE
 {
 /**
  *
  */
-class CCalibrationBase
+class CCalibrationBase: public CCalibrationScale
 {
 public:
    /**
     * Constructor of calibration
     *
-    * @param  norm    instance of normalisation class for the scale
+    * @param  norm       instance of normalisation class for the scale
+    * @param  ratio      ration between reference and raw values
+    *                        e.g.: 10 means 10 raw values for one reference
+    * @param  threshold  threshold for ratio
+    *                        e.g.: valid ratio is ratio +/- threshold
+    */
+   CCalibrationBase( CNormalisation& norm, TValue ratio, TValue threshold );
+   /**
+    * Converts raw sansor according to calibartion status
+    * returns sensor based on converted raw value and valid accuracy
     *
+    * @param  raw     raw sensor data
+    * @return         Scaled sensor data or invalid sensor if convertion is not possible
     */
-   CCalibrationBase(PE::CNormalisation& norm);
-   /**
-    * Adds new reference value to the calibration
-    *
-    * @param  value      reference value
-    */
-   void AddReference(const TValue& value);
-   /**
-    * Adds new sensor raw value to the calibration
-    *
-    * @param  value     raw sensor value
-    */
-   void AddSensor(const TValue& value);
-   /**
-    * Adds new scale to the sensor
-    *
-    * @param  value     latest scale value of the sensor
-    */
-   void AddScale(const TValue& value);
-   /**
-    * Returns sensor base which has to be substructed from scaled sensor value 
-    *            (reference = raw_sens * scale - base)
-    *
-    * @return    sensor base
-    */
-   const TValue& GetBase() const;
-   /**
-    * Does calibration calculation based on internal accumulated reference and sensor values
-    */
-   void DoCalibration();
-   /**
-    * Resets internal state to be able to process new data without dependencies for previouse one.
-    * It would be usefull after gap detection in any income data.
-    */
-   void Reset();
+   virtual SBasicSensor GetSensor( const SBasicSensor& raw ) const;
 
-private:
+protected:
+   TValue mRefAcc;
+   TValue mRefCnt;
+   TValue mRawAcc;
+   TValue mRawCnt;
 
    /**
-    * Normalisation instance for Scale calibration
+    * Does calibration calculation based on internal accumulated reference and raw values
     */
-   PE::CNormalisation& mNorm;
-   /**
-    * Latest simple average of delta between sensor and reference values
-    */
-   PE::TValue mScale;
-   /**
-    * Letest sensor base which has to be substructed from scaled sensor value 
-    *            (reference = raw_sens * scale - base)
-    *
-    */
-   PE::TValue mBase;
-
-   PE::TValue mInstRefAcc;
-   uint32_t mInstRefCnt;
-   PE::TValue mRefAcc;
-   uint32_t mRefCnt;
-
-   PE::TValue mInstSenAcc;
-   uint32_t mInstSenCnt;
-   PE::TValue mSenAcc;
-   uint32_t mSenCnt;
-
-   /**
-    * Clear all intermediate instant values of sensors and references
-    */
-   void clearInst();
+   virtual void DoCalibration();
 };
 
 
