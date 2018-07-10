@@ -120,12 +120,10 @@ bool PE::CCalibrationScale::IsOverRatio()
 {
    if      ( mRatio + mThreshold < mRawInstCnt / mRefInstCnt )
    {
-      //printf("< mRatio=%.f mThreshold=%.f mRawInstCnt=%.f mRefInstCnt=%.f\n", mRatio, mThreshold, mRawInstCnt, mRefInstCnt);
       return true;
    }
    else if ( mRatio - mThreshold > mRawInstCnt / mRefInstCnt )
    {
-      //printf("> mRatio=%.f mThreshold=%.f mRawInstCnt=%.f mRefInstCnt=%.f\n", mRatio, mThreshold, mRawInstCnt, mRefInstCnt);
       return true;
    }
    else
@@ -142,22 +140,22 @@ void PE::CCalibrationScale::DoCalibration()
       if ( !IsOverRatio() )
       {
          TValue deltaRef = processValue( mRefLast, mRefMax, mRefMin, mRefInstAcc / mRefInstCnt );
-         if ( 0.0 < deltaRef )
+         if ( 0.0 != deltaRef )
          {
             mRefDeltaAcc += deltaRef;
             mRefDeltaCnt += 1.0;
          }
          
          TValue deltaRaw = processValue( mRawLast, mRawMax, mRawMin, mRawInstAcc / mRawInstCnt );
-         if ( 0.0 < deltaRaw )
+         if ( 0.0 != deltaRaw )
          {
             mRawDeltaAcc += deltaRaw;
             mRawDeltaCnt += 1.0;
          }
          
-         if ( 0.0 < deltaRef || 0.0 < deltaRaw )
+         if ( 0.0 != deltaRef || 0.0 != deltaRaw )
          {
-            if ( 0.0 < mRefDeltaCnt && 0.0 < mRawDeltaCnt )
+            if ( 0.0 != mRefDeltaCnt && 0.0 != mRawDeltaCnt )
             {
                mNorm.AddSensor( ( mRefDeltaAcc / mRefDeltaCnt ) / ( mRawDeltaAcc / mRawDeltaCnt ) );
             }

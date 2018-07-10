@@ -15,9 +15,13 @@ Setup unittest
     cd cmake-3.2.2
     ./configure
     make
-- Install gcovr
+- OLD way to install gcovr
     sudo apt-get install gcovr
     download gcovr 3.3
     https://github.com/gcovr/gcovr/releases
     just update old one find the place by command: 
     which gcovr
+- NEW way to install gcovr
+    pip install gcovr
+    --version has to be 4.1 or higher
+ 

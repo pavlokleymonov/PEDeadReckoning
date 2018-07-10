@@ -34,17 +34,16 @@ if (DEFINED ENABLE_COVERAGE)
                           COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}/coverage.xml"
                           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                           COMMAND ${CMAKE_MAKE_PROGRAM} all
-                          COMMAND ${CTEST_PATH} --timeout 60 --output-on-failure
-                          COMMAND ${GCOVR_PATH} --root=${CMAKE_CURRENT_SOURCE_DIR}/../.. --branches --print-summary --xml --exclude='test-utils/.*' --exclude='test/.*' --exclude='doc/.*' --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.xml
+                          COMMAND ${CTEST_PATH} --timeout 30 --output-on-failure
+                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --print-summary --xml --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.xml
                          )
         # HTML coverage for developers
         add_custom_target(coverage-html
                           COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}/coverage.html"
                           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                           COMMAND ${CMAKE_MAKE_PROGRAM} all
-                          COMMAND ${CTEST_PATH} --timeout 60 --output-on-failure
-
-                          COMMAND ${GCOVR_PATH} --root=${CMAKE_CURRENT_SOURCE_DIR}/../.. --branches --print-summary --html --html-details --exclude='test-utils/.*' --exclude='test/.*' --exclude='doc/.*' --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
+                          COMMAND ${CTEST_PATH} --timeout 30 --output-on-failure
+                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --print-summary --html-details --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
                          )
     endif (NOT TARGET coverage)
 endif (DEFINED ENABLE_COVERAGE)
