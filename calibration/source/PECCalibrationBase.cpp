@@ -20,6 +20,10 @@ using namespace PE;
 
 PE::CCalibrationBase::CCalibrationBase( CNormalisation& norm, TValue ratio, TValue threshold )
 : PE::CCalibrationScale(norm,ratio,threshold)
+, mRefAcc(0.0)
+, mRefCnt(0.0)
+, mRawAcc(0.0)
+, mRawCnt(0.0)
 {
 }
 
