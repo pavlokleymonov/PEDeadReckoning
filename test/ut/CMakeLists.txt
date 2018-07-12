@@ -16,6 +16,7 @@ include_directories(
    ${REPOSITORY_ROOT}/common/include
    ${REPOSITORY_ROOT}/fusion/include
    ${REPOSITORY_ROOT}/calibration/include
+   ${REPOSITORY_ROOT}/core/include
    ${CMAKE_CURRENT_SOURCE_DIR}/mock
 )
 
@@ -40,6 +41,10 @@ add_library ( pe_calibration STATIC
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp
+)
+
+add_library ( pe_core STATIC
+   ${REPOSITORY_ROOT}/core/source/PECSensorCfg.cpp
 )
 
 ##########################
@@ -105,3 +110,11 @@ add_executable(test_pe_calibration_base
 )
 target_link_libraries(test_pe_calibration_base pe_common pe_calibration gtest pthread )
 add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
+
+#################################
+#Test class PE::CSensorCfg
+add_executable(test_pe_sensor_cfg
+   PECSensorCfgTest.cpp
+)
+target_link_libraries(test_pe_sensor_cfg pe_core pe_common gtest pthread )
+add_test(NAME test_pe_sensor_cfg COMMAND test_pe_sensor_cfg)
