@@ -24,9 +24,7 @@ using namespace PE;
 
 const std::string PE::CSensorCfg::CFG_MARKER = "CFGSENSOR";
 
-
 const std::size_t PE::CSensorCfg::CFG_NUMBER_ELEMENTS = 12;
-
 
 std::string PE::CSensorCfg::ToSTR(const CSensorCfg& cfg)
 {
@@ -39,24 +37,21 @@ std::string PE::CSensorCfg::ToSTR(const CSensorCfg& cfg)
    return st.str();
 }
 
+
 CSensorCfg PE::CSensorCfg::ToCFG(const std::string& str)
 {
    std::vector<std::string> list = PE::TOOLS::Split(str, ',');
-   if ( CFG_NUMBER_ELEMENTS == list.size() )
+   if ( CFG_NUMBER_ELEMENTS == list.size() &&
+        CFG_MARKER == list[0])
    {
-      if ( CFG_MARKER == list[0] )
-      {
-         return 
-         CSensorCfg(
-            TSensorTypeID(atoi(list[1].c_str())), //load sensor type
-            CNormCfg(atof(list[2].c_str()), atof(list[3].c_str()), atof(list[4].c_str()), atof(list[5].c_str())), //load scale configuration
-            CNormCfg(atof(list[6].c_str()), atof(list[7].c_str()), atof(list[8].c_str()), atof(list[9].c_str())), //load base configuration
-            atof(list[10].c_str()) //load reliable limit
-         );
-      }
+      return CSensorCfg( TSensorTypeID(atoi(list[1].c_str())), //load sensor type
+                         CNormCfg(atof(list[2].c_str()), atof(list[3].c_str()), atof(list[4].c_str()), atof(list[5].c_str())), //load scale configuration
+                         CNormCfg(atof(list[6].c_str()), atof(list[7].c_str()), atof(list[8].c_str()), atof(list[9].c_str())), //load base configuration
+                         atof(list[10].c_str()) ); //load reliable limit
    }
    return CSensorCfg();
 }
+
 
 PE::CSensorCfg::CSensorCfg()
 : mType(SENSOR_UNKNOWN)
@@ -65,6 +60,7 @@ PE::CSensorCfg::CSensorCfg()
 , mReliableLimit(DEFAULT_RELIABLE_LIMIT)
 {}
 
+
 PE::CSensorCfg::CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit)
 : mType(type)
 , mScale(scale)
@@ -72,25 +68,30 @@ PE::CSensorCfg::CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNo
 , mReliableLimit(reliableLimit)
 {}
 
+
 const TSensorTypeID& PE::CSensorCfg::GetType() const
 {
    return mType;
 }
+
 
 bool PE::CSensorCfg::IsValid() const
 {
    return ( SENSOR_UNKNOWN != mType );
 }
 
+
 const CNormCfg& PE::CSensorCfg::GetScale() const
 {
    return mScale;
 }
 
+
 const CNormCfg& PE::CSensorCfg::GetBase() const
 {
    return mBase;
 }
+
 
 const TValue& PE::CSensorCfg::GetLimit() const
 {
