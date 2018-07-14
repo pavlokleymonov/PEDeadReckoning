@@ -49,12 +49,6 @@ public:
    {
    }
    /**
-    * Destructor 
-    */
-   virtual ~CCoreSimple()
-   {
-   }
-   /**
     *
     */
    bool SetOdoCfg(const CSensorCfg& cfg)

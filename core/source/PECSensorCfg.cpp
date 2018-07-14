@@ -53,12 +53,18 @@ CSensorCfg PE::CSensorCfg::ToCFG(const std::string& str)
 }
 
 
+CNormalisation PE::CSensorCfg::ToNormalisation(const CNormCfg& normCfg)
+{
+   return CNormalisation(normCfg.mAccValue, normCfg.mAccMld, normCfg.mAccRel, normCfg.mCount );
+}
+
 PE::CSensorCfg::CSensorCfg()
 : mType(SENSOR_UNKNOWN)
 , mScale(1,0,100,1) //Scale = 1
 , mBase (0,0,100,1) //Base  = 0
 , mReliableLimit(DEFAULT_RELIABLE_LIMIT)
-{}
+{
+}
 
 
 PE::CSensorCfg::CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit)
@@ -66,7 +72,8 @@ PE::CSensorCfg::CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNo
 , mScale(scale)
 , mBase(base)
 , mReliableLimit(reliableLimit)
-{}
+{
+}
 
 
 const TSensorTypeID& PE::CSensorCfg::GetType() const

@@ -16,6 +16,7 @@
 
 #include "PETypes.h"
 #include "PECNormCfg.h"
+#include "PECNormalisation.h"
 
 class PECSensorCfgTest; //to get possibility for test class
 
@@ -33,6 +34,8 @@ public:
    static std::string ToSTR(const CSensorCfg& cfg);
 
    static CSensorCfg ToCFG(const std::string& str);
+
+   static CNormalisation ToNormalisation(const CNormCfg& normCfg);
 
    CSensorCfg();
 

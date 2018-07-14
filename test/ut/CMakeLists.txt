@@ -116,5 +116,5 @@ add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
 add_executable(test_pe_sensor_cfg
    PECSensorCfgTest.cpp
 )
-target_link_libraries(test_pe_sensor_cfg pe_core pe_common gtest pthread )
+target_link_libraries(test_pe_sensor_cfg pe_core pe_common pe_calibration gtest pthread )
 add_test(NAME test_pe_sensor_cfg COMMAND test_pe_sensor_cfg)

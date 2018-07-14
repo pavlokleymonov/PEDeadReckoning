@@ -112,7 +112,6 @@ TEST_F(PECSensorCfgTest, ToCFG_test )
 }
 
 
-
 /**
  * test
  */
@@ -141,6 +140,21 @@ TEST_F(PECSensorCfgTest, Wrong_cfg_length_test )
 {
    std::string cfg_str = "CFGSENSOR,1,1.01000000,20.01200000,300.0,4000,50000.01234500,600000.01234560,7000000.0,80000000,99.3,,XX";
    EXPECT_FALSE(PE::CSensorCfg::ToCFG(cfg_str).IsValid());
+}
+
+
+/**
+ * test
+ */
+TEST_F(PECSensorCfgTest, ToNormalisation_test )
+{
+   std::string cfg_str = "CFGSENSOR,1,1.01000000,20.01200000,300.0,4000,50000.01234500,600000.01234560,7000000.0,80000000,99.3,XX";
+   
+   EXPECT_TRUE(PE::CSensorCfg::ToCFG(cfg_str).IsValid());
+   EXPECT_NEAR( 1.01000000,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetAccumulatedValue()   , 0.00000001);
+   EXPECT_NEAR(20.01200000,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetAccumulatedMld()     , 0.00000001);
+   EXPECT_NEAR(      300.0,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetAccumulatedReliable(), 0.00000001);
+   EXPECT_NEAR(     4000.0,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetSampleCount()        , 0.00000001);
 }
 
 
