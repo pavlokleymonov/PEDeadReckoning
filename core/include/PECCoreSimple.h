@@ -44,84 +44,32 @@ public:
     * @param position       started position
     * @param heading        started heading
     */
-   CCoreSimple( const SPosition& position, const SBasicSensor& heading)
-   : mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
-   {
-   }
+   CCoreSimple( const SPosition& position, const SBasicSensor& heading);
    /**
-    *
+    * Set configuration for Odometer sensor
     */
-   bool SetOdoCfg(const CSensorCfg& cfg)
-   {
-      if ( !mOdo.GetCfg().IsValid() )
-      {
-         mOdo = CSensorEntity(cfg);
-         return mOdo.GetCfg().IsValid();
-      }
-      return false;
-   }
+   bool SetOdoCfg(const CSensorCfg& cfg);
    /**
-    *
+    * Returns Odometer sensor configuration
     */
-   const CSensorCfg& GetOdoCfg() const
-   {
-      return mOdo.GetCfg();
-   }
+   const CSensorCfg& GetOdoCfg() const;
    /**
-    *
+    * Set configuration for Gyroscope sensor Z-axe
     */
-   bool SetGyroCfg(const CSensorCfg& cfg)
-   {
-      if ( !mGyro.GetCfg().IsValid() )
-      {
-         mGyro = CSensorEntity(cfg);
-         return mGyro.GetCfg().IsValid();
-      }
-      return false;
-   }
+   bool SetGyroCfg(const CSensorCfg& cfg);
    /**
-    *
+    * Returns Gyroscope sensor configuration
     */
-   const CSensorCfg& GetGyroCfg() const
-   {
-      return mGyro.GetCfg();
-   }
+   const CSensorCfg& GetGyroCfg() const;
    /**
-    *
     * Returns true if new position has been calculated
     */
-   bool AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed)
-   {
-      mFusion.AddPosition(ts, pos);
-      mFusion.AddHeading(ts, head);
-      mFusion.AddSpeed(ts, speed);
-      mFusion.DoFusion();
-      return true;
-   }
+   bool AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed);
    /**
-    *
     * Returns true if new position has been calculated
     */
-   bool AddOdo(TTimestamp ts, const SBasicSensor& odo)
-      {
-         if ( mOdo.GetCfg().IsValid() )
-         {
-            if ( odo.IsValid() )
-            {
-               if ( mOdo.AddRaw(odo.Value) )
-               {
-                  mFusion.AddSpeed(ts, mOdo.GetSpeed())
-               }
-            }
-            else
-            {
-               mOdo.Reset();
-            }
-         }
-         return false;
-      }
+   bool AddOdo(TTimestamp ts, const SBasicSensor& odo);
    /**
-    *
     * Returns true if new position has been calculated
     */
    bool AddGyro(TTimestamp ts, const SBasicSensor& gyro);

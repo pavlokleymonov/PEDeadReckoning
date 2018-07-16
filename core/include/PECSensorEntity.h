@@ -15,6 +15,7 @@
 #define __PE_CSensorEntity_H__
 
 #include "PETypes.h"
+#include "PECSensorCfg.h"
 
 
 class PECSensorEntityTest; //to get possibility for test class
