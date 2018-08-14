@@ -37,7 +37,7 @@ public:
     * @param  accumulatedReliable accumulated all reliables before
     * @param  sampleCount         sampels count before
     */
-   CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount); //sample count may be more then 4 billion
+   CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount);
    /**
     * Adds new raw value of the sensor to the normalization
     *
@@ -77,7 +77,7 @@ public:
    /**
     * Returns sensors sample count
     */
-   const std::size_t& GetSampleCount() const;
+   const TValue& GetSampleCount() const;
 
 protected:
    TValue      mMean;
@@ -87,7 +87,7 @@ protected:
    TValue      mAccumulatedValue;
    TValue      mAccumulatedMld;
    TValue      mAccumulatedReliable;
-   std::size_t mSampleCount;
+   TValue      mSampleCount;
 };
 
 

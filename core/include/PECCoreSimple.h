@@ -14,9 +14,10 @@
 #ifndef __PE_CCoreSimple_H__
 #define __PE_CCoreSimple_H__
 
-#include "PECNormCfg.h"
 #include "PECSensorCfg.h"
-#include "PECSensorEntity.h"
+#include "PECFusionSensor.h"
+#include "PECCalibrationScale.h"
+#include "PECCalibrationBase.h"
 
 
 
@@ -44,90 +45,32 @@ public:
     * @param position       started position
     * @param heading        started heading
     */
-   CCoreSimple( const SPosition& position, const SBasicSensor& heading)
-   : mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
-   {
-   }
+   CCoreSimple( const SPosition& position, const SBasicSensor& heading);
    /**
-    * Destructor 
+    * Sets configuration for Odometer sensor 100ms interval
     */
-   virtual ~CCoreSimple()
-   {
-   }
+   bool SetOdoCfg(const CSensorCfg& cfg);
    /**
-    *
+    * Gets configuration for Odometer sensor
     */
-   bool SetOdoCfg(const CSensorCfg& cfg)
-   {
-      if ( !mOdo.GetCfg().IsValid() )
-      {
-         mOdo = CSensorEntity(cfg);
-         return mOdo.GetCfg().IsValid();
-      }
-      return false;
-   }
+   bool GetOdoCfg(CSensorCfg& cfg) const;
    /**
-    *
+    * Sets configuration for Gyroscope sensor Z-axe 100ms interval
     */
-   const CSensorCfg& GetOdoCfg() const
-   {
-      return mOdo.GetCfg();
-   }
+   bool SetGyroCfg(const CSensorCfg& cfg);
    /**
-    *
+    * Gets configuration for Gyroscope sensor Z-axe
     */
-   bool SetGyroCfg(const CSensorCfg& cfg)
-   {
-      if ( !mGyro.GetCfg().IsValid() )
-      {
-         mGyro = CSensorEntity(cfg);
-         return mGyro.GetCfg().IsValid();
-      }
-      return false;
-   }
+   bool GetGyroCfg(CSensorCfg& cfg) const;
    /**
-    *
-    */
-   const CSensorCfg& GetGyroCfg() const
-   {
-      return mGyro.GetCfg();
-   }
-   /**
-    *
     * Returns true if new position has been calculated
     */
-   bool AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed)
-   {
-      mFusion.AddPosition(ts, pos);
-      mFusion.AddHeading(ts, head);
-      mFusion.AddSpeed(ts, speed);
-      mFusion.DoFusion();
-      return true;
-   }
+   bool AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed);
    /**
-    *
     * Returns true if new position has been calculated
     */
-   bool AddOdo(TTimestamp ts, const SBasicSensor& odo)
-      {
-         if ( mOdo.GetCfg().IsValid() )
-         {
-            if ( odo.IsValid() )
-            {
-               if ( mOdo.AddRaw(odo.Value) )
-               {
-                  mFusion.AddSpeed(ts, mOdo.GetSpeed())
-               }
-            }
-            else
-            {
-               mOdo.Reset();
-            }
-         }
-         return false;
-      }
+   bool AddOdo(TTimestamp ts, const SBasicSensor& odo);
    /**
-    *
     * Returns true if new position has been calculated
     */
    bool AddGyro(TTimestamp ts, const SBasicSensor& gyro);
@@ -149,14 +92,9 @@ public:
    const SBasicSensor& GetSpeed() const;
 
 private:
-   /**
-    *
-    */
-   CSensorEntity mOdo;
-   /**
-    *
-    */
-   CSensorEntity mGyro;
+
+   std::map<TSensorTypeID, CSensorEntity> mSensors;
+
    /**
     * Position fusion stuff
     */

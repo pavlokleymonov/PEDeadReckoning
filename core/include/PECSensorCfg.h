@@ -15,6 +15,8 @@
 #define __PE_CSensorCfg_H__
 
 #include "PETypes.h"
+#include "PECNormCfg.h"
+#include "PECNormalisation.h"
 
 class PECSensorCfgTest; //to get possibility for test class
 
@@ -24,75 +26,32 @@ namespace PE
 class CSensorCfg
 {
 public:
-   static const std::string CFG_MARKER = "CFGSENSOR";
 
-   static const std::size_t CFG_NUMBER_ELEMENTS = 11;
+   static const std::string CFG_MARKER;
 
-   static std::string ToSTR(const CSensorCfg& cfg)
-      {
-         std::stringstream st;
-         st << CFG_MARKER << "," << int(mType) << ",";
-         st << int(mScale.mAccValue) << "," << int(mScale.mAccMld) << "," << int(mScale.mAccRel) << "," << int(mScale.mCount) << ","; //store scale configuration
-         st << int(mBase.mAccValue) << "," << int(mBase.mAccMld) << "," << int(mBase.mAccRel) << "," << int(mBase.mCount) << ","; //store base configuration
-         st << std::setprecision(1) << double(mReliableLimit);
-         return st.str();
-      }
+   static const std::size_t CFG_NUMBER_ELEMENTS;
 
-   static CSensorCfg ToCFG(const std::string& str)
-      {
-         std::vector<std::string> list = PE::TOOLS::Split();
-         if ( CFG_NUMBER_ELEMENTS == list.size() )
-         {
-            if ( CFG_MARKER == list[0] )
-            {
-               return CSensorCfg(
-                  atoi(list[1]), //load sensor type
-                  CNormCfg(atoi(list[2]), atoi(list[3]), atoi(list[4]), atoi(list[5])), //load scale configuration
-                  CNormCfg(atoi(list[6]), atoi(list[7]), atoi(list[8]), atoi(list[9])), //load base configuration
-                  atof(list[10]) //load reliable limit
-            }
-         }
-         return CSensorCfg();
-      }
+   static std::string ToSTR(const CSensorCfg& cfg);
 
-   CSensorCfg()
-      : mType(SENSOR_UNKNOWN)
-      , mScale(1,0,100,1) //Scale = 1
-      , mBase (0,0,100,1) //Base  = 0
-      , mReliableLimit(DEFAULT_RELIABLE_LIMIT)
-      {}
+   static CSensorCfg ToCFG(const std::string& str);
 
-   CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit = DEFAULT_RELIABLE_LIMIT)
-      : mType(type)
-      , mScale(scale)
-      , mBase(base)
-      , mReliableLimit(reliableLimit)
-      {}
+   static CNormalisation ToNormalisation(const CNormCfg& normCfg);
 
-   const TSensorTypeID& GetType() const
-      {
-         return mType;
-      }
+   static CNormCfg ToNormCfg(const CNormalisation& norm);
 
-   inline bool IsValid() const
-      {
-         return ( SENSOR_UNKNOWN != mType );
-      }
+   CSensorCfg();
 
-   const CNormCfg& GetScale() const
-      {
-         return mScale;
-      }
+   CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit = DEFAULT_RELIABLE_LIMIT);
 
-   const CNormCfg& GetBase() const
-      {
-         return mBase;
-      }
+   const TSensorTypeID& GetType() const;
 
-   const TValue& GetLimit() const
-      {
-         return mReliableLimit;
-      }
+   bool IsValid() const;
+
+   const CNormCfg& GetScale() const;
+
+   const CNormCfg& GetBase() const;
+
+   const TValue& GetLimit() const;
 
 private:
    TSensorTypeID mType;

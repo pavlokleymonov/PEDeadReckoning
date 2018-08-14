@@ -16,8 +16,6 @@
 
 #include "PETypes.h"
 
-class PECNormCfgTest; //to get possibility for test class
-
 namespace PE
 {
 
@@ -28,10 +26,10 @@ public:
       : mAccValue(0.0)
       , mAccMld(0.0)
       , mAccRel(0.0)
-      , mCount(0)
+      , mCount(0.0)
       {}
 
-   CNormCfg( const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount )
+   CNormCfg( const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount )
       : mAccValue(accumulatedValue)
       , mAccMld(accumulatedMld)
       , mAccRel(accumulatedReliable)
@@ -41,7 +39,7 @@ public:
    TValue mAccValue;
    TValue mAccMld;
    TValue mAccRel;
-   std::size_t mCount;
+   TValue mCount;
 };
 
 } //namespace PE

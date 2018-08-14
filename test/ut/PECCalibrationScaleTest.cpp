@@ -246,7 +246,7 @@ TEST_F(PECCalibrationScaleTest, test_calibartion_over_ratio)
    calib_ok.AddSensor(PE::SBasicSensor(80,0.1));
    calib_ok.AddSensor(PE::SBasicSensor(70,0.1));
    calib_ok.AddSensor(PE::SBasicSensor(80,0.1)); //sensors still in a threshold limit
-   calib_ok.AddSensor(PE::SBasicSensor(80,0.1)); //sensors over ration +/-threshold limit and will be rejected
+   calib_ok.AddSensor(PE::SBasicSensor(80,0.1)); //sensors over ratio +/-threshold limit and will be rejected
    calib_ok.AddReference(PE::SBasicSensor(8,0.1));
    EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).IsValid() );
    EXPECT_NEAR( 9.00, calib_ok.GetSensor(PE::SBasicSensor(90,0.1)).Value,0.01);
@@ -255,7 +255,7 @@ TEST_F(PECCalibrationScaleTest, test_calibartion_over_ratio)
 
    calib_ok.AddReference(PE::SBasicSensor(3,0.1));
    calib_ok.AddReference(PE::SBasicSensor(3,0.1));
-   calib_ok.AddSensor(PE::SBasicSensor( 0,0.1)); //sensors over ration +/-threshold limit and will be rejected
+   calib_ok.AddSensor(PE::SBasicSensor( 0,0.1)); //sensors over ratio +/-threshold limit and will be rejected
    EXPECT_TRUE( calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).IsValid() );
    EXPECT_NEAR(11.00, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Value,0.01);
    EXPECT_NEAR( 0.10, calib_ok.GetSensor(PE::SBasicSensor(110,0.1)).Accuracy,0.01);

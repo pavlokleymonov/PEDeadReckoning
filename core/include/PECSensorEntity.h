@@ -15,6 +15,10 @@
 #define __PE_CSensorEntity_H__
 
 #include "PETypes.h"
+#include "PECSensorCfg.h"
+#include "PECNormalisation.h"
+#include "PECCalibrationScale.h"
+#include "PECCalibrationBase.h"
 
 
 class PECSensorEntityTest; //to get possibility for test class
@@ -24,103 +28,42 @@ namespace PE
 
 class CSensorEntity
 {
+   friend class ::PECSensorEntityTest;
+
 public:
-   CSensorEntity( const CSensorCfg& cfg )
-      : mType(cfg.GetType())
-      : mLimit(cfg.GetLimit())
-      , mNormScale(CNormalisation(cfg.GetScale().mAccValue, cfg.GetScale().mAccMld, cfg.GetScale().mAccRel, cfg.GetScale().mCount))
-      , mNormBase (CNormalisation(cfg.GetBase().mAccValue,  cfg.GetBase().mAccMld,  cfg.GetBase().mAccRel,  cfg.GetBase().mCount ))
-      , mCalScale (mNormScale)
-      , mCalBase  (mNormBase)
-      {}
 
-   CSensorCfg GetCfg() const
-      {
-         return CSensorCfg(
-            mType,
-            CNormCfg(mNormScale.GetAccumulatedValue(), mNormScale.GetAccumulatedMld(), mNormScale.GetAccumulatedReliable(), mNormScale.GetSampleCount()),
-            CNormCfg(mNormBase.GetAccumulatedValue(), mNormBase.GetAccumulatedMld(), mNormBase.GetAccumulatedReliable(), mNormBase.GetSampleCount()),
-            mLimit
-         );
-      }
+   CSensorEntity( const CSensorCfg& cfg, TValue ratio, TValue threshold );
 
-   const TSensorTypeID& GetType() const
-      {
-         return mType;
-      }
+   const CNormalisation& GetScale() const;
 
-   TValue CalibartedTo() const
-      {
-         return (mNormScale.GetReliable() + mNormBase.GetReliable()) / 2;
-      }
+   const CNormalisation& GetBase() const;
 
-   const TValue& GetScale() const
-      {
-         return mCalScale.GetScale();
-      }
+   const TValue& GetLimit() const;
 
-   const TValue& GetBase() const
-      {
-         return mCalBase.GetBase();
-      }
+   const TValue& GetRatio() const;
 
+   const TValue& GetThreshold() const;
 
-   SBasicSensor Calculate(const TValue& raw, const SBasicSensor& ref)
-      {
-         mCalScale.AddSensor(raw);
-         mCalScale.AddReference(ref.Value);
-         mCalScale.DoCalibration();
+   const TValue& CalibratedTo() const;
 
-         if ( IsScaleReliable() )
-         {
-            mCalBase.AddScale(mCalScale.GetScale());
-            mCalBase.AddSensor(raw);
-            mCalBase.AddReference(ref.Value);
-            mCalBase.DoCalibration();
+   void AddReference( const SBasicSensor& ref );
 
-            if ( IsBaseReliable() )
-            {
-               SBasicSensor sen(GetValue(raw), GetAccuracy(mNormBase.GetMld()));
+   void AddSensor( const SBasicSensor& raw );
 
-               TValue deltaAccuracy = fabs(ref.Value - sen.Value);
-
-               if ( deltaAccuracy > ref.Accuracy )
-               {
-                  sen.Accuracy = deltaAccuracy;
-               }
-               return sen;
-            }
-         }
-         return SBasicSensor(); //invalid sensor
-      }
+   SBasicSensor GetSensor( const SBasicSensor& raw ) const;
 
 private:
-   const TSensorTypeID mType;
-   const TValue mLimit;
-   CNormalisation mNormScale;
-   CNormalisation mNormBase;
-   CCalibrationScale mCalScale;
-   CCalibrationBase  mCalBase;
 
-   inline bool IsScaleReliable() const
-      {
-         return mLimit <= mNormScale.GetReliable();
-      }
+   TValue             mLimit;
+   TValue             mRatio;
+   TValue             mThreshold;
 
-   inline bool IsBaseReliable() const
-      {
-         return mLimit <= mNormBase.GetReliable();
-      }
+   CNormalisation     mScaleNorm;
+   CCalibrationScale  mScaleCalib;
 
-   inline TValue GetValue(const TValue& raw) const
-      {
-         return TValue(raw * mCalScale.GetScale() - mCalBase.GetBase());
-      }
+   CNormalisation     mBaseNorm;
+   CCalibrationBase   mBaseCalib;
 
-   inline TAccuracy GetAccuracy(const TValue& mld) const
-      {
-         return TAccuracy(mld * 3);
-      }
 };
 
 } //namespace PE

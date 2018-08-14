@@ -25,11 +25,11 @@ PE::CNormalisation::CNormalisation()
 , mAccumulatedValue(0.0)
 , mAccumulatedMld(0.0)
 , mAccumulatedReliable(0.0)
-, mSampleCount(0)
+, mSampleCount(0.0)
 {
 }
 
-PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const std::size_t& sampleCount)
+PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount)
 : mMean(0.0)
 , mMld(0.0)
 , mReliable(0.0)
@@ -42,11 +42,11 @@ PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue&
 
 void PE::CNormalisation::AddSensor(const TValue& value)
 {
-   if ( 0    < mSampleCount && 
+   if ( 0.0 < mSampleCount && 
         0.0 <= mAccumulatedReliable )
    {
       TValue oldMean = mAccumulatedValue / mSampleCount;
-      mMean = (mAccumulatedValue + value) / (mSampleCount + 1);
+      mMean = (mAccumulatedValue + value) / (mSampleCount + 1.0);
 
       mAccumulatedMld += fabs( mMean - value );
       mMld = mAccumulatedMld / mSampleCount;
@@ -66,7 +66,7 @@ void PE::CNormalisation::AddSensor(const TValue& value)
       }
 
       mAccumulatedValue += value;
-      mSampleCount += 1;
+      mSampleCount += 1.0;
       mReliable = mAccumulatedReliable / mSampleCount;
    }
    else
@@ -77,7 +77,7 @@ void PE::CNormalisation::AddSensor(const TValue& value)
       mAccumulatedValue = value;
       mAccumulatedMld = 0.0;
       mAccumulatedReliable = 0.0;
-      mSampleCount = 1;
+      mSampleCount = 1.0;
    }
 }
 
@@ -111,7 +111,7 @@ const TValue& PE::CNormalisation::GetAccumulatedReliable() const
    return mAccumulatedReliable;
 }
 
-const std::size_t& PE::CNormalisation::GetSampleCount() const
+const TValue& PE::CNormalisation::GetSampleCount() const
 {
    return mSampleCount;
 }
