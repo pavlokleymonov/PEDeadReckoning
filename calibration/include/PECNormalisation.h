@@ -37,11 +37,7 @@ public:
     * @param  accumulatedReliable accumulated all reliables before
     * @param  sampleCount         sampels count before
     */
-<<<<<<< HEAD
    CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount);
-=======
-   CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount); //sample count may be more then 4 billion
->>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
    /**
     * Adds new raw value of the sensor to the normalization
     *

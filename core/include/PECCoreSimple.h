@@ -47,7 +47,6 @@ public:
     */
    CCoreSimple( const SPosition& position, const SBasicSensor& heading);
    /**
-<<<<<<< HEAD
     * Sets configuration for Odometer sensor 100ms interval
     */
    bool SetOdoCfg(const CSensorCfg& cfg);
@@ -63,23 +62,6 @@ public:
     * Gets configuration for Gyroscope sensor Z-axe
     */
    bool GetGyroCfg(CSensorCfg& cfg) const;
-=======
-    * Set configuration for Odometer sensor
-    */
-   bool SetOdoCfg(const CSensorCfg& cfg);
-   /**
-    * Returns Odometer sensor configuration
-    */
-   const CSensorCfg& GetOdoCfg() const;
-   /**
-    * Set configuration for Gyroscope sensor Z-axe
-    */
-   bool SetGyroCfg(const CSensorCfg& cfg);
-   /**
-    * Returns Gyroscope sensor configuration
-    */
-   const CSensorCfg& GetGyroCfg() const;
->>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
    /**
     * Returns true if new position has been calculated
     */

@@ -17,7 +17,6 @@ using namespace PE;
 
 
 PE::CCoreSimple::CCoreSimple( const SPosition& position, const SBasicSensor& heading )
-<<<<<<< HEAD
 : mp_OdoCfg(0)
 , mp_OdoScale(0)
 , mp_OdoBase(0)
@@ -25,16 +24,12 @@ PE::CCoreSimple::CCoreSimple( const SPosition& position, const SBasicSensor& hea
 , mp_GyroScale(0)
 , mp_GyroBase(0)
 , mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
-=======
-: mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
->>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
 {
 }
 
 
 bool PE::CCoreSimple::SetOdoCfg(const CSensorCfg& cfg)
 {
-<<<<<<< HEAD
    if ( cfg.IsValid() )
    {
       if ( cfg.IsValid() )
@@ -44,12 +39,6 @@ bool PE::CCoreSimple::SetOdoCfg(const CSensorCfg& cfg)
       }
       
       return mOdoCfg.IsValid();
-=======
-   if ( !mOdo.GetCfg().IsValid() )
-   {
-      mOdo = CSensorEntity(cfg);
-      return mOdo.GetCfg().IsValid();
->>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
    }
    return false;
 }
@@ -57,11 +46,7 @@ bool PE::CCoreSimple::SetOdoCfg(const CSensorCfg& cfg)
 
 const CSensorCfg& PE::CCoreSimple::GetOdoCfg() const
 {
-<<<<<<< HEAD
    return mOdoCfg;
-=======
-   return mOdo.GetCfg();
->>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
 }
 
 
