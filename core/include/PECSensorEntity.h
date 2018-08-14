@@ -16,9 +16,12 @@
 
 #include "PETypes.h"
 #include "PECSensorCfg.h"
+<<<<<<< HEAD
 #include "PECNormalisation.h"
 #include "PECCalibrationScale.h"
 #include "PECCalibrationBase.h"
+=======
+>>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
 
 
 class PECSensorEntityTest; //to get possibility for test class

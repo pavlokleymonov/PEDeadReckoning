@@ -37,8 +37,11 @@ public:
 
    static CNormalisation ToNormalisation(const CNormCfg& normCfg);
 
+<<<<<<< HEAD
    static CNormCfg ToNormCfg(const CNormalisation& norm);
 
+=======
+>>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
    CSensorCfg();
 
    CSensorCfg( TSensorTypeID type, const CNormCfg& scale, const CNormCfg& base, TValue reliableLimit = DEFAULT_RELIABLE_LIMIT);

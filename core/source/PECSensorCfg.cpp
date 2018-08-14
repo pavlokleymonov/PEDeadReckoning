@@ -58,6 +58,7 @@ CNormalisation PE::CSensorCfg::ToNormalisation(const CNormCfg& normCfg)
    return CNormalisation(normCfg.mAccValue, normCfg.mAccMld, normCfg.mAccRel, normCfg.mCount );
 }
 
+<<<<<<< HEAD
 
 CNormCfg PE::CSensorCfg::ToNormCfg(const CNormalisation& norm)
 {
@@ -65,6 +66,8 @@ CNormCfg PE::CSensorCfg::ToNormCfg(const CNormalisation& norm)
 }
 
 
+=======
+>>>>>>> 6122ae5278dcd2e88f474ae363dfc06d42d03d30
 PE::CSensorCfg::CSensorCfg()
 : mType(SENSOR_UNKNOWN)
 , mScale(1,0,100,1) //Scale = 1
