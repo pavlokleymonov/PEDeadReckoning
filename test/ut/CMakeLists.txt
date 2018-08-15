@@ -45,6 +45,7 @@ add_library ( pe_calibration STATIC
 
 add_library ( pe_core STATIC
    ${REPOSITORY_ROOT}/core/source/PECSensorCfg.cpp
+   ${REPOSITORY_ROOT}/core/source/PECSensorEntity.cpp
 )
 
 ##########################
@@ -118,3 +119,11 @@ add_executable(test_pe_sensor_cfg
 )
 target_link_libraries(test_pe_sensor_cfg pe_core pe_common pe_calibration gtest pthread )
 add_test(NAME test_pe_sensor_cfg COMMAND test_pe_sensor_cfg)
+
+#################################
+#Test class PE::CSensorEntity
+add_executable(test_pe_sensor_entity
+   PECSensorEntityTest.cpp
+)
+target_link_libraries(test_pe_sensor_entity pe_core pe_common pe_calibration gtest pthread )
+add_test(NAME test_pe_sensor_entity COMMAND test_pe_sensor_entity)

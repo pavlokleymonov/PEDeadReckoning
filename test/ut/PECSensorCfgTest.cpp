@@ -115,10 +115,11 @@ TEST_F(PECSensorCfgTest, ToCFG_test )
 /**
  * test
  */
-TEST_F(PECSensorCfgTest, ToCFG_to_ToSTR_test )
+TEST_F(PECSensorCfgTest, Invariant_ToCFG_and_ToSTR_test )
 {
    std::string cfg_str = "CFGSENSOR,1,1.01000000,20.01200000,300.0,4000,50000.01234500,600000.01234560,7000000.0,80000000,99.3,XX";
-   PE::CSensorCfg cfg = PE::CSensorCfg::ToCFG(cfg_str);
+   PE::CSensorCfg cfg(PE::CSensorCfg::ToCFG(cfg_str));
+
    EXPECT_EQ(cfg_str, PE::CSensorCfg::ToSTR(cfg));
 }
 
@@ -155,6 +156,56 @@ TEST_F(PECSensorCfgTest, ToNormalisation_test )
    EXPECT_NEAR(20.01200000,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetAccumulatedMld()     , 0.00000001);
    EXPECT_NEAR(      300.0,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetAccumulatedReliable(), 0.00000001);
    EXPECT_NEAR(     4000.0,PE::CSensorCfg::ToNormalisation(PE::CSensorCfg::ToCFG(cfg_str).GetScale()).GetSampleCount()        , 0.00000001);
+}
+
+
+/**
+ * test
+ */
+TEST_F(PECSensorCfgTest, ToNormCfg_empty_normalisation_test )
+{
+   PE::CNormalisation norm_empty;
+
+   EXPECT_EQ(0.0, PE::CSensorCfg::ToNormCfg(norm_empty).mAccValue);
+   EXPECT_EQ(0.0, PE::CSensorCfg::ToNormCfg(norm_empty).mAccMld);
+   EXPECT_EQ(0.0, PE::CSensorCfg::ToNormCfg(norm_empty).mAccRel);
+   EXPECT_EQ(0.0, PE::CSensorCfg::ToNormCfg(norm_empty).mCount);
+}
+
+
+/**
+ * test
+ */
+TEST_F(PECSensorCfgTest, ToNormCfg_valid_normalisation_test )
+{
+   PE::CNormalisation norm(123.456,12.3456,1.23456,6.0);
+
+   EXPECT_EQ(123.456, PE::CSensorCfg::ToNormCfg(norm).mAccValue);
+   EXPECT_EQ(12.3456, PE::CSensorCfg::ToNormCfg(norm).mAccMld);
+   EXPECT_EQ(1.23456, PE::CSensorCfg::ToNormCfg(norm).mAccRel);
+   EXPECT_EQ(6.0, PE::CSensorCfg::ToNormCfg(norm).mCount);
+}
+
+
+/**
+ * test
+ */
+TEST_F(PECSensorCfgTest, Invariant_ToNormCfg_and_ToNormalisation_test )
+{
+   PE::CNormalisation norm(123.456,12.3456,1.23456,6.0);
+   PE::CNormCfg norm_cfg(123.456,12.3456,1.23456,6.0);
+
+   //ToNormCfg
+   EXPECT_EQ(norm_cfg.mAccValue, PE::CSensorCfg::ToNormCfg(norm).mAccValue);
+   EXPECT_EQ(norm_cfg.mAccMld,   PE::CSensorCfg::ToNormCfg(norm).mAccMld);
+   EXPECT_EQ(norm_cfg.mAccRel,   PE::CSensorCfg::ToNormCfg(norm).mAccRel);
+   EXPECT_EQ(norm_cfg.mCount,    PE::CSensorCfg::ToNormCfg(norm).mCount);
+   
+   //ToNormalisation
+   EXPECT_EQ(norm.GetAccumulatedValue(),    PE::CSensorCfg::ToNormalisation(norm_cfg).GetAccumulatedValue());
+   EXPECT_EQ(norm.GetAccumulatedMld(),      PE::CSensorCfg::ToNormalisation(norm_cfg).GetAccumulatedMld());
+   EXPECT_EQ(norm.GetAccumulatedReliable(), PE::CSensorCfg::ToNormalisation(norm_cfg).GetAccumulatedReliable());
+   EXPECT_EQ(norm.GetSampleCount(),         PE::CSensorCfg::ToNormalisation(norm_cfg).GetSampleCount());
 }
 
 
