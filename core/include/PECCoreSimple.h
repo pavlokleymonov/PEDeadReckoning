@@ -14,10 +14,10 @@
 #ifndef __PE_CCoreSimple_H__
 #define __PE_CCoreSimple_H__
 
+#include "PETypes.h"
 #include "PECSensorCfg.h"
+#include "PECSensorEntity.h"
 #include "PECFusionSensor.h"
-#include "PECCalibrationScale.h"
-#include "PECCalibrationBase.h"
 
 
 
@@ -44,24 +44,25 @@ public:
     *
     * @param position       started position
     * @param heading        started heading
+    * @param interval       interval for position generation in [s]
     */
-   CCoreSimple( const SPosition& position, const SBasicSensor& heading);
+   CCoreSimple( const SPosition& position, const SBasicSensor& heading, TTimestamp interval);
    /**
-    * Sets configuration for Odometer sensor 100ms interval
+    * Sets sensor configuration
     */
-   bool SetOdoCfg(const CSensorCfg& cfg);
+   void SetOdoCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold);
    /**
-    * Gets configuration for Odometer sensor
+    * Gets sensor configuration
     */
-   bool GetOdoCfg(CSensorCfg& cfg) const;
+   CSensorCfg GetOdoCfg() const;
    /**
-    * Sets configuration for Gyroscope sensor Z-axe 100ms interval
+    * Sets sensor configuration
     */
-   bool SetGyroCfg(const CSensorCfg& cfg);
+   void SetGyroCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold);
    /**
-    * Gets configuration for Gyroscope sensor Z-axe
+    * Gets sensor configuration
     */
-   bool GetGyroCfg(CSensorCfg& cfg) const;
+   CSensorCfg GetGyroCfg() const;
    /**
     * Returns true if new position has been calculated
     */
@@ -93,12 +94,23 @@ public:
 
 private:
 
-   std::map<TSensorTypeID, CSensorEntity> mSensors;
+   TTimestamp mInterval;
 
+   TTimestamp mOdoTs;
+
+   std::map<TSensorTypeID, CSensorEntity> mEntities;
    /**
     * Position fusion stuff
     */
    CFusionSensor mFusion;
+   /**
+    * Sets sensor configuration
+    */
+   void SetCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold);
+   /**
+    * Gets sensor configuration
+    */
+   CSensorCfg GetCfg(TSensorTypeID typeId) const;
 };
 
 
