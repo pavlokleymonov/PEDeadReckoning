@@ -18,7 +18,6 @@ using namespace PE;
 
 PE::CCoreSimple::CCoreSimple( const SPosition& position, const SBasicSensor& heading, TTimestamp interval)
 : mInterval(interval)
-, mOdoTs(0)
 , mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
 {
 }
@@ -60,47 +59,38 @@ bool PE::CCoreSimple::AddGnss(TTimestamp ts, const SPosition& pos, const SBasicS
    mFusion.AddHeading(ts, head);
    mFusion.AddSpeed(ts, speed);
    mFusion.DoFusion();
+
+   AddRef(SENSOR_ODOMETER_AXIS, mFusion.GetSpeed());
+   AddRef(SENSOR_GYRO_Z, mFusion.GetAngSpeed());
+
    return true;
 }
 
-//TODO!!!
-//TODO: very first odo value will be skipped!!! maybe has to be improved
+
 bool PE::CCoreSimple::AddOdo(TTimestamp ts, const SBasicSensor& odo)
 {
-   std::map<TSensorTypeID, CSensorEntity>::iterator it = mEntities.find(SENSOR_ODOMETER_AXIS);
+   SBasicSensor speed = CalculateSensor(SENSOR_ODOMETER_AXIS, odo);
 
-   if ( mEntities.end() != it )
+   if ( speed.IsValid() )
    {
-      TTimestamp delta = 0.0;
-      if ( 0.0 != mOdoTs )
-      {
-         delta = ts - mOdoTs;
-      }
-      mOdoTs = ts;
-      if ( 0.0 < delta )
-      {
-         SBasicSensor rawSpeed(odo.Value / delta , odo.Accuracy);
-         it->AddSensor(rawSpeed);
-         if ( it->GetLimit() < it->CalibratedTo() )
-         {
-            mFusion.AddSpeed(ts, it->GetSensor(rawSpeed));
-            if ( mInterval < delta )
-            {
-               mFusion.DoFusion();
-               return true;
-            }
-         }
-      }
+      mFusion.AddSpeed(ts, speed);
+      return UpdatePosition(ts);
    }
+
    return false;
 }
 
 
 bool PE::CCoreSimple::AddGyro(TTimestamp ts, const SBasicSensor& gyro)
 {
-   if ( mp_Gyro && 0 < mp_Gyro->CalibratedTo() )
+   SBasicSensor angSpeed = CalculateSensor(SENSOR_GYRO_Z, gyro);
+
+   if ( angSpeed.IsValid() )
    {
+      mFusion.AddAngSpeed(ts, angSpeed);
+      return UpdatePosition(ts);
    }
+
    return false;
 }
 
@@ -147,16 +137,50 @@ CSensorCfg PE::CCoreSimple::GetCfg(TSensorTypeID typeId) const
    {
       return CSensorCfg(
                 typeId,
-                CSensorCfg::ToNormCfg(it->GetScale()),
-                CSensorCfg::ToNormCfg(it->GetBase()),
-                it->GetLimit()
+                CSensorCfg::ToNormCfg(it->second.GetScale()),
+                CSensorCfg::ToNormCfg(it->second.GetBase()),
+                it->second.GetLimit()
              );
    }
-   else
+   return CSensorCfg();
+}
+
+
+void PE::CCoreSimple::AddRef(TSensorTypeID typeId, const SBasicSensor& ref)
+{
+   std::map<TSensorTypeID, CSensorEntity>::iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
    {
-      return CSensorCfg();
+      it->second.AddReference(ref);
    }
 }
 
 
+SBasicSensor PE::CCoreSimple::CalculateSensor(TSensorTypeID typeId, const SBasicSensor& raw)
+{
+   std::map<TSensorTypeID, CSensorEntity>::iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
+   {
+      it->second.AddSensor(raw);
+      if ( it->second.GetLimit() <= it->second.CalibratedTo() )
+      {
+         return it->second.GetSensor(raw);
+      }
+   }
+   return SBasicSensor();
+}
 
+
+bool PE::CCoreSimple::UpdatePosition(TTimestamp ts)
+{
+   if ( GetTimestamp() < ts )
+   {
+      TTimestamp delta = ts - GetTimestamp();
+      if ( mInterval <= delta )
+      {
+         mFusion.DoFusion();
+         return true;
+      }
+   }
+   return false;
+}

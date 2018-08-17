@@ -14,6 +14,7 @@
 #ifndef __PE_CCoreSimple_H__
 #define __PE_CCoreSimple_H__
 
+#include <map>
 #include "PETypes.h"
 #include "PECSensorCfg.h"
 #include "PECSensorEntity.h"
@@ -96,8 +97,6 @@ private:
 
    TTimestamp mInterval;
 
-   TTimestamp mOdoTs;
-
    std::map<TSensorTypeID, CSensorEntity> mEntities;
    /**
     * Position fusion stuff
@@ -111,6 +110,13 @@ private:
     * Gets sensor configuration
     */
    CSensorCfg GetCfg(TSensorTypeID typeId) const;
+
+   void AddRef(TSensorTypeID typeId, const SBasicSensor& ref);
+
+   SBasicSensor CalculateSensor(TSensorTypeID typeId, const SBasicSensor& raw);
+
+   bool UpdatePosition(TTimestamp ts);
+
 };
 
 
