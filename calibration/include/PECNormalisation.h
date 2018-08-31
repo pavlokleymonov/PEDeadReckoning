@@ -43,7 +43,7 @@ public:
     *
     * @param  value     Raw sensor measurement
     */
-   virtual void AddSensor(const TValue& value);
+   void AddSensor(const TValue& value);
    /**
     * Returns expected value of the sensor
     *

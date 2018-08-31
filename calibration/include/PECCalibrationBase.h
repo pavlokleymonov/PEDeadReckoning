@@ -38,6 +38,7 @@ public:
     *                        e.g.: valid ratio is ratio +/- threshold
     */
    CCalibrationBase( CNormalisation& norm, TValue ratio, TValue threshold );
+   virtual ~CCalibrationBase();
    /**
     * Converts raw sansor according to calibartion status
     * returns sensor based on converted raw value and valid accuracy

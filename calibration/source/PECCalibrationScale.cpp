@@ -40,6 +40,11 @@ PE::CCalibrationScale::CCalibrationScale( CNormalisation& norm, TValue ratio, TV
 }
 
 
+PE::CCalibrationScale::~CCalibrationScale()
+{
+}
+
+
 void PE::CCalibrationScale::AddReference(const SBasicSensor& ref)
 {
    if ( ref.IsValid() )

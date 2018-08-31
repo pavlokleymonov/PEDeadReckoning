@@ -45,9 +45,8 @@ public:
     *
     * @param position       started position
     * @param heading        started heading
-    * @param interval       interval for position generation in [s]
     */
-   CCoreSimple( const SPosition& position, const SBasicSensor& heading, TTimestamp interval);
+   CCoreSimple( const SPosition& position, const SBasicSensor& heading);
    /**
     * Sets sensor configuration
     */
@@ -56,6 +55,10 @@ public:
     * Gets sensor configuration
     */
    CSensorCfg GetOdoCfg() const;
+
+   TValue GetOdoScaleCalib() const;
+   TValue GetOdoBaseCalib() const;
+
    /**
     * Sets sensor configuration
     */
@@ -64,18 +67,22 @@ public:
     * Gets sensor configuration
     */
    CSensorCfg GetGyroCfg() const;
+
+   TValue GetGyroScaleCalib() const;
+   TValue GetGyroBaseCalib() const;
+
    /**
-    * Returns true if new position has been calculated
+    * Adds GNSS data. Always calls update position
     */
-   bool AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed);
+   void AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed);
    /**
-    * Returns true if new position has been calculated
+    * Adds odometer sensors. Update position has to be called additionally
     */
-   bool AddOdo(TTimestamp ts, const SBasicSensor& odo);
+   void AddOdo(TTimestamp ts, const SBasicSensor& odo);
    /**
-    * Returns true if new position has been calculated
+    * Adds gyroscope sensors. Update position has to be called additionally
     */
-   bool AddGyro(TTimestamp ts, const SBasicSensor& gyro);
+   void AddGyro(TTimestamp ts, const SBasicSensor& gyro);
    /**
     * Returns timestamp of fusion position
     */
@@ -92,10 +99,11 @@ public:
     * Returns Speed of fusion position
     */
    const SBasicSensor& GetSpeed() const;
-
+   /**
+    * Calculate position based on available sensors
+    */
+   void UpdatePosition();
 private:
-
-   TTimestamp mInterval;
 
    std::map<TSensorTypeID, CSensorEntity> mEntities;
    /**
@@ -111,12 +119,13 @@ private:
     */
    CSensorCfg GetCfg(TSensorTypeID typeId) const;
 
+   TValue GetScaleCalib(TSensorTypeID typeId) const;
+
+   TValue GetBaseCalib(TSensorTypeID typeId) const;
+
    void AddRef(TSensorTypeID typeId, const SBasicSensor& ref);
 
    SBasicSensor CalculateSensor(TSensorTypeID typeId, const SBasicSensor& raw);
-
-   bool UpdatePosition(TTimestamp ts);
-
 };
 
 

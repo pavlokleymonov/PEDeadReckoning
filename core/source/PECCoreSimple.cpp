@@ -16,9 +16,8 @@
 using namespace PE;
 
 
-PE::CCoreSimple::CCoreSimple( const SPosition& position, const SBasicSensor& heading, TTimestamp interval)
-: mInterval(interval)
-, mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
+PE::CCoreSimple::CCoreSimple( const SPosition& position, const SBasicSensor& heading)
+: mFusion(0, position, heading, SBasicSensor(), SBasicSensor())
 {
 }
 
@@ -38,6 +37,18 @@ CSensorCfg PE::CCoreSimple::GetOdoCfg() const
 }
 
 
+TValue PE::CCoreSimple::GetOdoScaleCalib() const
+{
+   return GetScaleCalib(SENSOR_ODOMETER_AXIS);
+}
+
+
+TValue PE::CCoreSimple::GetOdoBaseCalib() const
+{
+   return GetBaseCalib(SENSOR_ODOMETER_AXIS);
+}
+
+
 void PE::CCoreSimple::SetGyroCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold)
 {
    if ( SENSOR_GYRO_Z == cfg.GetType() )
@@ -53,7 +64,19 @@ CSensorCfg PE::CCoreSimple::GetGyroCfg() const
 }
 
 
-bool PE::CCoreSimple::AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed)
+TValue PE::CCoreSimple::GetGyroScaleCalib() const
+{
+   return GetScaleCalib(SENSOR_GYRO_Z);
+}
+
+
+TValue PE::CCoreSimple::GetGyroBaseCalib() const
+{
+   return GetBaseCalib(SENSOR_GYRO_Z);
+}
+
+
+void PE::CCoreSimple::AddGnss(TTimestamp ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& speed)
 {
    mFusion.AddPosition(ts, pos);
    mFusion.AddHeading(ts, head);
@@ -62,36 +85,18 @@ bool PE::CCoreSimple::AddGnss(TTimestamp ts, const SPosition& pos, const SBasicS
 
    AddRef(SENSOR_ODOMETER_AXIS, mFusion.GetSpeed());
    AddRef(SENSOR_GYRO_Z, mFusion.GetAngSpeed());
-
-   return true;
 }
 
 
-bool PE::CCoreSimple::AddOdo(TTimestamp ts, const SBasicSensor& odo)
+void PE::CCoreSimple::AddOdo(TTimestamp ts, const SBasicSensor& odo)
 {
-   SBasicSensor speed = CalculateSensor(SENSOR_ODOMETER_AXIS, odo);
-
-   if ( speed.IsValid() )
-   {
-      mFusion.AddSpeed(ts, speed);
-      return UpdatePosition(ts);
-   }
-
-   return false;
+   mFusion.AddSpeed(ts, CalculateSensor(SENSOR_ODOMETER_AXIS, odo));
 }
 
 
-bool PE::CCoreSimple::AddGyro(TTimestamp ts, const SBasicSensor& gyro)
+void PE::CCoreSimple::AddGyro(TTimestamp ts, const SBasicSensor& gyro)
 {
-   SBasicSensor angSpeed = CalculateSensor(SENSOR_GYRO_Z, gyro);
-
-   if ( angSpeed.IsValid() )
-   {
-      mFusion.AddAngSpeed(ts, angSpeed);
-      return UpdatePosition(ts);
-   }
-
-   return false;
+   mFusion.AddAngSpeed(ts, CalculateSensor(SENSOR_GYRO_Z, gyro));
 }
 
 
@@ -116,6 +121,12 @@ const SBasicSensor& PE::CCoreSimple::GetHeading() const
 const SBasicSensor& PE::CCoreSimple::GetSpeed() const
 {
    return mFusion.GetSpeed();
+}
+
+
+void PE::CCoreSimple::UpdatePosition()
+{
+   mFusion.DoFusion();
 }
 
 
@@ -146,6 +157,38 @@ CSensorCfg PE::CCoreSimple::GetCfg(TSensorTypeID typeId) const
 }
 
 
+TValue PE::CCoreSimple::GetScaleCalib(TSensorTypeID typeId) const
+{
+   if ( GetCfg(typeId).IsValid() )
+   {
+      if ( 0 < GetCfg(typeId).GetScale().mCount )
+      {
+         return GetCfg(typeId).GetScale().mAccRel / GetCfg(typeId).GetScale().mCount;
+      }
+   }
+   else
+   {
+      return 0.0;
+   }
+}
+
+
+TValue PE::CCoreSimple::GetBaseCalib(TSensorTypeID typeId) const
+{
+   if ( GetCfg(typeId).IsValid() )
+   {
+      if ( 0 < GetCfg(typeId).GetBase().mCount )
+      {
+         return GetCfg(typeId).GetBase().mAccRel / GetCfg(typeId).GetBase().mCount;
+      }
+   }
+   else
+   {
+      return 0.0;
+   }
+}
+
+
 void PE::CCoreSimple::AddRef(TSensorTypeID typeId, const SBasicSensor& ref)
 {
    std::map<TSensorTypeID, CSensorEntity>::iterator it = mEntities.find(typeId);
@@ -168,19 +211,4 @@ SBasicSensor PE::CCoreSimple::CalculateSensor(TSensorTypeID typeId, const SBasic
       }
    }
    return SBasicSensor();
-}
-
-
-bool PE::CCoreSimple::UpdatePosition(TTimestamp ts)
-{
-   if ( GetTimestamp() < ts )
-   {
-      TTimestamp delta = ts - GetTimestamp();
-      if ( mInterval <= delta )
-      {
-         mFusion.DoFusion();
-         return true;
-      }
-   }
-   return false;
 }

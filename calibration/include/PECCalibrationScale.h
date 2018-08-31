@@ -36,18 +36,19 @@ public:
     *                        e.g.: valid ratio is ratio +/- threshold
     */
    CCalibrationScale( CNormalisation& norm, TValue ratio, TValue threshold );
+   virtual ~CCalibrationScale();
    /**
     * Adds new reference value to the calibration
     *
     * @param  ref      reference sensor data
     */
-   void AddReference( const SBasicSensor& ref );
+   virtual void AddReference( const SBasicSensor& ref );
    /**
     * Adds new sensor raw value to the calibration
     *
     * @param  raw     raw sensor data
     */
-   void AddSensor( const SBasicSensor& raw );
+   virtual void AddSensor( const SBasicSensor& raw );
    /**
     * Converts raw sansor according to calibartion status
     * returns sensor based on converted raw value and valid accuracy
@@ -61,7 +62,7 @@ public:
     *
     * @return         calibration status in %
     */
-   const TValue& CalibratedTo() const;
+   virtual const TValue& CalibratedTo() const;
 
 protected:
 
@@ -99,15 +100,15 @@ protected:
    /**
     * Calculate new max, min values, returns delta between max and min values
     */
-   TValue processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
+   virtual TValue processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
    /**
     * Clear all intermediate instant values of raw and references
     */
-   void clearInst();
+   virtual void clearInst();
    /**
     * Returns true if ration between raw and reference samples number more then ration
     */
-   bool IsOverRatio();
+   virtual bool IsOverRatio();
    /**
     * Does calibration calculation based on internal accumulated reference and raw values
     */

@@ -28,6 +28,11 @@ PE::CCalibrationBase::CCalibrationBase( CNormalisation& norm, TValue ratio, TVal
 }
 
 
+PE::CCalibrationBase::~CCalibrationBase()
+{
+}
+
+
 SBasicSensor PE::CCalibrationBase::GetSensor( const SBasicSensor& raw ) const
 {
    if ( raw.IsValid() && 0.0 != mNorm.GetMean() )

@@ -36,6 +36,10 @@ PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& p
 
 void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position)
 {
+   if ( !position.IsValid() )
+   {
+      return;
+   }
    if ( m_SensorsList.empty() )
    {
       m_SensorsList.push_back(SSensorItem(timestamp, position, SBasicSensor(), SBasicSensor(), SBasicSensor()));
@@ -54,6 +58,10 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
 
 void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSensor& heading)
 {
+   if ( !heading.IsValid() )
+   {
+      return;
+   }
    if ( m_SensorsList.empty() )
    {
       m_SensorsList.push_back(SSensorItem(timestamp, SPosition(), heading, SBasicSensor(), SBasicSensor()));
@@ -72,6 +80,10 @@ void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSens
 
 void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor& speed)
 {
+   if ( !speed.IsValid() )
+   {
+      return;
+   }
    if ( m_SensorsList.empty() )
    {
       m_SensorsList.push_back(SSensorItem(timestamp, SPosition(), SBasicSensor(), speed, SBasicSensor()));
@@ -90,6 +102,10 @@ void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor
 
 void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSensor& angSpeed)
 {
+   if ( !angSpeed.IsValid() )
+   {
+      return;
+   }
    if ( m_SensorsList.empty() )
    {
       m_SensorsList.push_back(SSensorItem(timestamp, SPosition(), SBasicSensor(), SBasicSensor(), angSpeed));
