@@ -37,15 +37,9 @@ CSensorCfg PE::CCoreSimple::GetOdoCfg() const
 }
 
 
-TValue PE::CCoreSimple::GetOdoScaleCalib() const
+TValue PE::CCoreSimple::OdoCalibratedTo() const
 {
-   return GetScaleCalib(SENSOR_ODOMETER_AXIS);
-}
-
-
-TValue PE::CCoreSimple::GetOdoBaseCalib() const
-{
-   return GetBaseCalib(SENSOR_ODOMETER_AXIS);
+   return CalibratedTo(SENSOR_ODOMETER_AXIS);
 }
 
 
@@ -64,15 +58,9 @@ CSensorCfg PE::CCoreSimple::GetGyroCfg() const
 }
 
 
-TValue PE::CCoreSimple::GetGyroScaleCalib() const
+TValue PE::CCoreSimple::GyroCalibratedTo() const
 {
-   return GetScaleCalib(SENSOR_GYRO_Z);
-}
-
-
-TValue PE::CCoreSimple::GetGyroBaseCalib() const
-{
-   return GetBaseCalib(SENSOR_GYRO_Z);
+   return CalibratedTo(SENSOR_GYRO_Z);
 }
 
 
@@ -157,37 +145,18 @@ CSensorCfg PE::CCoreSimple::GetCfg(TSensorTypeID typeId) const
 }
 
 
-TValue PE::CCoreSimple::GetScaleCalib(TSensorTypeID typeId) const
+TValue PE::CCoreSimple::CalibratedTo(TSensorTypeID typeId) const
 {
-   if ( GetCfg(typeId).IsValid() )
+   std::map<TSensorTypeID, CSensorEntity>::const_iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
    {
-      if ( 0 < GetCfg(typeId).GetScale().mCount )
-      {
-         return GetCfg(typeId).GetScale().mAccRel / GetCfg(typeId).GetScale().mCount;
-      }
+//       return it->second.CalibratedTo();
+      
+      return it->second.GetScale().GetReliable();
+      //return it->second.GetBase().GetReliable();
    }
-   else
-   {
-      return 0.0;
-   }
+   return 0.0;
 }
-
-
-TValue PE::CCoreSimple::GetBaseCalib(TSensorTypeID typeId) const
-{
-   if ( GetCfg(typeId).IsValid() )
-   {
-      if ( 0 < GetCfg(typeId).GetBase().mCount )
-      {
-         return GetCfg(typeId).GetBase().mAccRel / GetCfg(typeId).GetBase().mCount;
-      }
-   }
-   else
-   {
-      return 0.0;
-   }
-}
-
 
 void PE::CCoreSimple::AddRef(TSensorTypeID typeId, const SBasicSensor& ref)
 {

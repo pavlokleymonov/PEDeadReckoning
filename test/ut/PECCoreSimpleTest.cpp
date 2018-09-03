@@ -118,7 +118,7 @@ TEST_F(PECCoreSimpleTest, valid_gyro_cfg_test )
    EXPECT_EQ(90.1, core.GetGyroCfg().GetLimit());
 }
 
-#ifdef TTT
+
 /**
  * test circle driving with the speed~98[km/h] distance 2[km]
  */
@@ -126,35 +126,29 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
 {
    PE::CCoreSimple core = PE::CCoreSimple(PE::SPosition(), PE::SBasicSensor());
 
-   PE::CSensorCfg cfgOdo =  PE::CSensorCfg::ToCFG("CFGSENSOR,5,0.0,0.0,0.0,0,0.0,0.0,0.0,0,1.5,XX");
+   PE::CSensorCfg cfgOdo =  PE::CSensorCfg::ToCFG("CFGSENSOR,5,0.0,0.0,0.0,0,0.0,0.0,0.0,0,99.5,XX");
    core.SetOdoCfg(cfgOdo, 2, 1); //SENSOR_ODOMETER_AXIS = 5, 2 times per one reference (5 sec)
-   PE::CSensorCfg cfgGyro =  PE::CSensorCfg::ToCFG("CFGSENSOR,6,0.0,0.0,0.0,0,0.0,0.0,0.0,0,1.5,XX");
+   PE::CSensorCfg cfgGyro =  PE::CSensorCfg::ToCFG("CFGSENSOR,6,0.0,0.0,0.0,0,0.0,0.0,0.0,0,99.5,XX");
    core.SetGyroCfg(cfgGyro, 3, 1); //SENSOR_GYRO_Z = 6,        3 times per one reference (3.33 sec)
 
-   //Circle #0
-   core.AddGnss( 1.00, PE::SPosition(49.99863456730125,9.996082730449409,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#0
+   core.AddGnss( 1.00, PE::SPosition(49.99863456730125,9.996082730449409,0.1), PE::SBasicSensor(332.00, 0.1), PE::SBasicSensor(27.78,0.1));
 
+   //1X
    core.AddOdo ( 1.10, PE::SBasicSensor(1000,1));
    core.AddGyro( 1.33, PE::SBasicSensor( 100,1));
    core.AddGyro( 4.66, PE::SBasicSensor( 100,1));
    core.AddOdo ( 6.10, PE::SBasicSensor(1000,1));
    core.AddGyro( 8.00, PE::SBasicSensor( 100,1));
-   core.AddGnss(10.00, PE::SPosition(50.00081217782849,9.995745334369854,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#1
+   core.AddGnss(10.00, PE::SPosition(50.00081217782849,9.995745334369854,0.1), PE::SBasicSensor(17.0, 0.1), PE::SBasicSensor(27.78,0.1));
    EXPECT_EQ(10.0, core.GetTimestamp());
-   EXPECT_TRUE( core.GetPosition().IsValid() );
-   EXPECT_NEAR( 50.000812, core.GetPosition().Latitude, 0.000001);
-   EXPECT_NEAR(  9.995745, core.GetPosition().Longitude, 0.000001);
-   EXPECT_NEAR(  0.10, core.GetPosition().Longitude, 0.01);
-   EXPECT_TRUE( core.GetHeading().IsValid() );
-   EXPECT_NEAR(  0.00, core.GetHeading().Value, 0.01);
-   EXPECT_NEAR(  0.00, core.GetHeading().Accuracy, 0.01);
-   EXPECT_TRUE( core.GetSpeed().IsValid() );
-   EXPECT_NEAR(  0.00, core.GetSpeed().Value, 0.01);
-   EXPECT_NEAR(  0.00, core.GetSpeed().Accuracy, 0.01);
-   EXPECT_NEAR(  0.00, core.GetOdoScaleCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetOdoBaseCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetGyroScaleCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetGyroBaseCalib(), 0.01);
+   EXPECT_NEAR( 50.00081, core.GetPosition().Latitude, 0.00001);
+   EXPECT_NEAR(  9.99574, core.GetPosition().Longitude, 0.00001);
+   EXPECT_NEAR( 17.00, core.GetHeading().Value, 0.5);
+   EXPECT_NEAR( 27.78, core.GetSpeed().Value, 0.5);
+   EXPECT_NEAR(  0.00, core.OdoCalibratedTo(), 0.01);
+   EXPECT_NEAR(  0.00, core.GyroCalibratedTo(), 0.01);
 
    //1x
    core.AddOdo (11.10, PE::SBasicSensor(1000,1));
@@ -162,7 +156,8 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddGyro(14.66, PE::SBasicSensor( 100,1));
    core.AddOdo (16.10, PE::SBasicSensor(1000,1));
    core.AddGyro(18.00, PE::SBasicSensor( 100,1));
-   core.AddGnss(19.00, PE::SPosition(50.00250531810699,9.997902372885799,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#2
+   core.AddGnss(19.00, PE::SPosition(50.00250531810699,9.997902372885799,0.1), PE::SBasicSensor(62.00,0.1), PE::SBasicSensor(27.78,0.1));
 
    //2X
    core.AddOdo (21.10, PE::SBasicSensor(2000,1));
@@ -170,32 +165,33 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddGyro(24.66, PE::SBasicSensor( 200,1));
    core.AddOdo (26.10, PE::SBasicSensor(2000,1));
    core.AddGyro(28.00, PE::SBasicSensor( 200,1));
-   core.AddGnss(28.00, PE::SPosition(50.00133548545172,10.00392433729531,0.1), PE::SBasicSensor(), PE::SBasicSensor());
-   EXPECT_NEAR( 50.001335, core.GetPosition().Latitude, 0.000001);
-   EXPECT_NEAR( 10.003924, core.GetPosition().Longitude, 0.000001);
+   //#3
+   core.AddGnss(28.00, PE::SPosition(50.00133548545172,10.00392433729531,0.1), PE::SBasicSensor(152.00,0.1), PE::SBasicSensor(55.56,0.1));
+   EXPECT_NEAR( 50.001335, core.GetPosition().Latitude, 0.00001);
+   EXPECT_NEAR( 10.003924, core.GetPosition().Longitude, 0.00001);
    EXPECT_NEAR(  0.10, core.GetPosition().HorizontalAcc, 0.01);
-   EXPECT_NEAR(  0.00, core.GetHeading().Value, 0.01);
-   EXPECT_NEAR(  0.00, core.GetHeading().Accuracy, 0.01);
-   EXPECT_NEAR(  0.00, core.GetSpeed().Value, 0.01);
-   EXPECT_NEAR(  0.00, core.GetSpeed().Accuracy, 0.01);
-   EXPECT_NEAR(  0.00, core.GetOdoScaleCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetOdoBaseCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetGyroScaleCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetGyroBaseCalib(), 0.01);
+   EXPECT_NEAR(152.00, core.GetHeading().Value, 0.1);
+   EXPECT_NEAR(  0.12, core.GetHeading().Accuracy, 0.1);
+   EXPECT_NEAR( 55.56, core.GetSpeed().Value, 0.2);
+   EXPECT_NEAR(  0.12, core.GetSpeed().Accuracy, 0.1);
+   EXPECT_NEAR(  0.00, core.OdoCalibratedTo(), 0.01);
+   EXPECT_NEAR(  0.00, core.GyroCalibratedTo(), 0.01);
 
    //1X
    core.AddOdo (31.10, PE::SBasicSensor(1000,1));
    core.AddGyro(31.33, PE::SBasicSensor( 100,1));
    core.AddGyro(34.66, PE::SBasicSensor( 100,1));
    core.AddOdo (36.10, PE::SBasicSensor(1000,1));
-   core.AddGnss(37.00, PE::SPosition(49.99915785122201,10.00426136658914,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#4
+   core.AddGnss(37.00, PE::SPosition(49.99915785122201,10.00426136658914,0.1), PE::SBasicSensor(197.00,0.1), PE::SBasicSensor(27.78,0.1));
 
    //1X
    core.AddGyro(38.00, PE::SBasicSensor( 100,1));
    core.AddOdo (41.10, PE::SBasicSensor(1000,1));
    core.AddGyro(41.33, PE::SBasicSensor( 100,1));
    core.AddGyro(44.66, PE::SBasicSensor( 100,1));
-   core.AddGnss(46.00, PE::SPosition(49.99746482882622,10.00210425432427,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#5
+   core.AddGnss(46.00, PE::SPosition(49.99746482882622,10.00210425432427,0.1), PE::SBasicSensor(242.00,0.1), PE::SBasicSensor(27.78,0.1));
 
    //1X
    core.AddOdo (46.10, PE::SBasicSensor(1000,1));
@@ -203,7 +199,8 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddOdo (51.10, PE::SBasicSensor(1000,1));
    core.AddGyro(51.33, PE::SBasicSensor( 100,1));
    core.AddGyro(54.66, PE::SBasicSensor( 100,1));
-   core.AddGnss(55.00, PE::SPosition(49.99724808447059,9.998716659729791,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#6
+   core.AddGnss(55.00, PE::SPosition(49.99724808447059,9.998716659729791,0.1), PE::SBasicSensor(287.00,0.1), PE::SBasicSensor(27.78,0.1));
 
    //Circle #1
    //1X
@@ -211,7 +208,8 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddGyro(58.00, PE::SBasicSensor( 100,1));
    core.AddOdo (61.10, PE::SBasicSensor(1000,1));
    core.AddGyro(61.33, PE::SBasicSensor( 100,1));
-   core.AddGnss(64.00, PE::SPosition(49.99863456730125,9.996082730449409,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#0
+   core.AddGnss(64.00, PE::SPosition(49.99863456730125,9.996082730449409,0.1), PE::SBasicSensor(332.00, 0.1), PE::SBasicSensor(27.78,0.1));
 
    //2X
    core.AddGyro(64.66, PE::SBasicSensor( 200,1));
@@ -219,7 +217,8 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddGyro(68.00, PE::SBasicSensor( 200,1));
    core.AddOdo (71.10, PE::SBasicSensor(2000,1));
    core.AddGyro(71.33, PE::SBasicSensor( 200,1));
-   core.AddGnss(73.00, PE::SPosition(50.00250531810699,9.997902372885799,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#2
+   core.AddGnss(73.00, PE::SPosition(50.00250531810699,9.997902372885799,0.1), PE::SBasicSensor(62.00,0.1), PE::SBasicSensor(55.56,0.1));
 
    //1X
    core.AddGyro(74.66, PE::SBasicSensor( 100,1));
@@ -227,13 +226,15 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddGyro(78.00, PE::SBasicSensor( 100,1));
    core.AddOdo (81.10, PE::SBasicSensor(1000,1));
    core.AddGyro(81.33, PE::SBasicSensor( 100,1));
-   core.AddGnss(82.00, PE::SPosition(50.00272208616509,10.00129033426604,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#7
+   core.AddGnss(82.00, PE::SPosition(50.00272208616509,10.00129033426604,0.1), PE::SBasicSensor(107.00,0.1), PE::SBasicSensor(27.78,0.1));
 
    //2X
    core.AddGyro(84.66, PE::SBasicSensor( 200,1));
    core.AddOdo (86.10, PE::SBasicSensor(2000,1));
    core.AddGyro(88.00, PE::SBasicSensor( 200,1));
-   core.AddGnss(91.00, PE::SPosition(49.99915785122201,10.00426136658914,0.1), PE::SBasicSensor(), PE::SBasicSensor());
+   //#4
+   core.AddGnss(91.00, PE::SPosition(49.99915785122201,10.00426136658914,0.1), PE::SBasicSensor(197.00,0.1), PE::SBasicSensor(27.78,0.1));
 
    //1X
    core.AddOdo (91.10, PE::SBasicSensor(1000,1));
@@ -241,18 +242,17 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
    core.AddGyro(94.66, PE::SBasicSensor( 100,1));
    core.AddOdo (96.10, PE::SBasicSensor(1000,1));
    core.AddGyro(98.00, PE::SBasicSensor( 100,1));
-   core.AddGnss(100.00, PE::SPosition(49.99746482882622,10.00210425432427,0.1), PE::SBasicSensor(), PE::SBasicSensor());
-   EXPECT_NEAR( 49.997464, core.GetPosition().Latitude, 0.000001);
-   EXPECT_NEAR( 10.002104, core.GetPosition().Longitude, 0.000001);
+   //#5
+   core.AddGnss(100.00, PE::SPosition(49.99746482882622,10.00210425432427,0.1), PE::SBasicSensor(242.00,0.1), PE::SBasicSensor(27.78,0.1));
+   EXPECT_NEAR( 49.997464, core.GetPosition().Latitude, 0.000011);
+   EXPECT_NEAR( 10.002104, core.GetPosition().Longitude, 0.00001);
    EXPECT_NEAR(  0.10, core.GetPosition().HorizontalAcc, 0.01);
-   EXPECT_NEAR(  0.00, core.GetHeading().Value, 0.01);
-   EXPECT_NEAR(  0.00, core.GetHeading().Accuracy, 0.01);
-   EXPECT_NEAR(  0.00, core.GetSpeed().Value, 0.01);
-   EXPECT_NEAR(  0.00, core.GetSpeed().Accuracy, 0.01);
-   EXPECT_NEAR(  0.00, core.GetOdoScaleCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetOdoBaseCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetGyroScaleCalib(), 0.01);
-   EXPECT_NEAR(  0.00, core.GetGyroBaseCalib(), 0.01);
+   EXPECT_NEAR(242.00, core.GetHeading().Value, 0.1);
+   EXPECT_NEAR(  0.12, core.GetHeading().Accuracy, 0.1);
+   EXPECT_NEAR( 27.78, core.GetSpeed().Value, 0.1);
+   EXPECT_NEAR(  0.12, core.GetSpeed().Accuracy, 0.1);
+   EXPECT_NEAR(  0.00, core.OdoCalibratedTo(), 0.01);
+   EXPECT_NEAR(  0.00, core.GyroCalibratedTo(), 0.01);
 
 
    
@@ -289,8 +289,6 @@ TEST_F(PECCoreSimpleTest, ideal_circle_driving_test )
 //    core.AddGnss(64.000, PE::SPosition(49.99724808447059,9.998716659729791,1), PE::SBasicSensor(), PE::SBasicSensor());
 //   EXPECT_TRUE(core.AddGnss(73.000, PE::SPosition(49.99863456730125,9.996082730449409,1), PE::SBasicSensor(), PE::SBasicSensor()));
 }
-
-#endif
 
 
 int main(int argc, char *argv[])

@@ -55,10 +55,10 @@ public:
     * Gets sensor configuration
     */
    CSensorCfg GetOdoCfg() const;
-
-   TValue GetOdoScaleCalib() const;
-   TValue GetOdoBaseCalib() const;
-
+   /**
+    * Gets calibration status of  odometer
+    */
+   TValue OdoCalibratedTo() const;
    /**
     * Sets sensor configuration
     */
@@ -67,10 +67,10 @@ public:
     * Gets sensor configuration
     */
    CSensorCfg GetGyroCfg() const;
-
-   TValue GetGyroScaleCalib() const;
-   TValue GetGyroBaseCalib() const;
-
+   /**
+    * Gets calibration status of  gyroscope
+    */
+   TValue GyroCalibratedTo() const;
    /**
     * Adds GNSS data. Always calls update position
     */
@@ -118,10 +118,10 @@ private:
     * Gets sensor configuration
     */
    CSensorCfg GetCfg(TSensorTypeID typeId) const;
-
-   TValue GetScaleCalib(TSensorTypeID typeId) const;
-
-   TValue GetBaseCalib(TSensorTypeID typeId) const;
+   /**
+    * Gets calibration status of  sensor
+    */
+   TValue CalibratedTo(TSensorTypeID typeId) const;
 
    void AddRef(TSensorTypeID typeId, const SBasicSensor& ref);
 
