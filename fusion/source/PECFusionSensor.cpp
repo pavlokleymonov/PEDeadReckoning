@@ -27,9 +27,7 @@ PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& p
 , m_Position(position)
 , m_Heading(heading)
 , m_AngSpeed(angSpeed)
-, m_AngAcceleration(0)
 , m_Speed(speed)
-, m_LineAcceleration(0)
 {
 }
 
@@ -213,19 +211,11 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
          }
       }
 
-      if ( m_AngSpeed.IsValid() )
-      {
-         m_AngSpeed.Value += (m_AngAcceleration * deltaTimestamp);
-      }
       SBasicSensor newAngSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_AngSpeed),
                      angSpeed
                   );
 
-      if ( m_Speed.IsValid() )
-      {
-         m_Speed.Value += (m_LineAcceleration * deltaTimestamp);
-      }
       SBasicSensor newSpeed = MergeSensor(
                      PredictSensorAccuracy(deltaTimestamp, m_Speed),
                      speed
@@ -241,30 +231,14 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
                      position
                   );
 
-      m_Timestamp       = timestamp;
+      m_Timestamp  = timestamp;
 
-      newAngSpeed        = MergeSensor( newAngSpeed, posAngSpeed);
-      if ( newAngSpeed.IsValid() )
-      {
-         if ( m_AngSpeed.IsValid() )
-         {
-            m_AngAcceleration  = (newAngSpeed.Value - m_AngSpeed.Value) / deltaTimestamp;
-         }
-      }
-      m_AngSpeed         = newAngSpeed;
+      m_AngSpeed   = MergeSensor( newAngSpeed, posAngSpeed);
 
-      newSpeed           = MergeSensor( newSpeed, posSpeed);
-      if ( newSpeed.IsValid() )
-      {
-         if ( m_Speed.IsValid() )
-         {
-            m_LineAcceleration = (newSpeed.Value - m_Speed.Value) / deltaTimestamp;
-         }
-      }
-      m_Speed            = newSpeed;
+      m_Speed      = MergeSensor( newSpeed, posSpeed);
 
-      m_Heading          = MergeHeading( newHeading, posHeading);
+      m_Heading    = MergeHeading( newHeading, posHeading);
 
-      m_Position         = newPosition;
+      m_Position   = newPosition;
    }
 }

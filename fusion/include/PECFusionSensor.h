@@ -161,17 +161,9 @@ private:
     */
    SBasicSensor m_AngSpeed;
    /**
-    * TODO: has to be removed
-    */
-   TValue m_AngAcceleration;
-   /**
     * The linear velocity in meter/seconds
     */
    SBasicSensor m_Speed;
-   /**
-    * TODO: has to be removed
-    */
-   TValue m_LineAcceleration;
 
    TSensorsList m_SensorsList;
    /**
