@@ -38,13 +38,36 @@ public:
 /**
  * tests creation 
  */
-TEST_F(PECCalibrationBaseTest, test_create)
+TEST_F(PECCalibrationBaseTest, test_create_destroy)
 {
    PE::CNormalisation base;
-   PE::CCalibrationBase   calib(&base, 10, 1);
+   PE::CCalibration* calib = new PE::CCalibrationBase(&base, 10, 1);
 
-   EXPECT_FALSE( calib.GetSensor(PE::SBasicSensor()).IsValid() );
+   EXPECT_FALSE( calib->GetSensor(PE::SBasicSensor()).IsValid() );
    EXPECT_NEAR(0.00, base.GetReliable(), 0.01);
+
+   delete calib;
+}
+
+
+/**
+ * tests invalid normalisation 
+ */
+TEST_F(PECCalibrationBaseTest, test_invalid_normalisation)
+{
+   PE::CCalibration* calib = new PE::CCalibrationBase(0, 3, 1);
+
+   calib->AddSensor(PE::SBasicSensor(1,0.1));
+   calib->AddSensor(PE::SBasicSensor(2,0.1));
+   calib->AddSensor(PE::SBasicSensor(3,0.1));
+   calib->AddReference(PE::SBasicSensor(1,0.1));
+   calib->AddSensor(PE::SBasicSensor(11,0.1));
+   calib->AddSensor(PE::SBasicSensor(11,0.1));
+   calib->AddSensor(PE::SBasicSensor(11,0.1));
+   calib->AddReference(PE::SBasicSensor(10,0.1));
+   EXPECT_FALSE( calib->GetSensor(PE::SBasicSensor()).IsValid() );
+
+   delete calib;
 }
 
 
@@ -54,16 +77,17 @@ TEST_F(PECCalibrationBaseTest, test_create)
 TEST_F(PECCalibrationBaseTest, test_no_reference)
 {
    PE::CNormalisation base;
-   PE::CCalibrationBase   calib(&base, 10, 1);
+   PE::CCalibration* calib = new PE::CCalibrationBase(&base, 10, 1);
 
-   calib.AddSensor(PE::SBasicSensor(10,0.1));
-   calib.AddSensor(PE::SBasicSensor(11,0.1));
-   calib.AddSensor(PE::SBasicSensor(12,0.1));
-   calib.AddSensor(PE::SBasicSensor(13,0.1));
-   calib.AddSensor(PE::SBasicSensor(14,0.1));
-   calib.AddSensor(PE::SBasicSensor(15,0.1));
-   EXPECT_FALSE( calib.GetSensor(PE::SBasicSensor(15,0.1)).IsValid() );
+   calib->AddSensor(PE::SBasicSensor(10,0.1));
+   calib->AddSensor(PE::SBasicSensor(11,0.1));
+   calib->AddSensor(PE::SBasicSensor(12,0.1));
+   calib->AddSensor(PE::SBasicSensor(13,0.1));
+   calib->AddSensor(PE::SBasicSensor(14,0.1));
+   calib->AddSensor(PE::SBasicSensor(15,0.1));
+   EXPECT_FALSE( calib->GetSensor(PE::SBasicSensor(15,0.1)).IsValid() );
    EXPECT_NEAR(0.00, base.GetReliable(), 0.01);
+   delete calib;
 }
 
 

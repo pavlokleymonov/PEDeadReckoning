@@ -14,16 +14,14 @@
 #ifndef __PE_CCalibrationScale_H__
 #define __PE_CCalibrationScale_H__
 
-#include "PETypes.h"
-#include "PECNormalisation.h"
-#include "PESBasicSensor.h"
+#include "PECCalibration.h"
 
 namespace PE
 {
 /**
  *
  */
-class CCalibrationScale
+class CCalibrationScale: public CCalibration
 {
 public:
    /**
@@ -36,19 +34,10 @@ public:
     *                        e.g.: valid ratio is ratio +/- threshold
     */
    CCalibrationScale( CNormalisation* norm, TValue ratio, TValue threshold );
+   /**
+    * Destructor of calibartion
+    */
    virtual ~CCalibrationScale();
-   /**
-    * Adds new reference value to the calibration
-    *
-    * @param  ref      reference sensor data
-    */
-   virtual void AddReference( const SBasicSensor& ref );
-   /**
-    * Adds new sensor raw value to the calibration
-    *
-    * @param  raw     raw sensor data
-    */
-   virtual void AddSensor( const SBasicSensor& raw );
    /**
     * Converts raw sansor according to calibartion status
     * returns sensor based on converted raw value and valid accuracy
@@ -60,49 +49,19 @@ public:
 
 protected:
 
-   /**
-    * Normalisation instance for scale calibration
-    */
-   CNormalisation* mpNorm;
-   /**
-    * Ration between reference and raw values
-    *    e.g.: 10 means 10 raw values for one reference
-    */
-   TValue mRatio;
-   /**
-    * threshold for ratio
-    *    e.g.: valid ratio is ratio +/- threshold
-    */
-   TValue mThreshold;
 
    TValue mRefMin;
    TValue mRefMax;
    TValue mRefLast;
-   TValue mRefInstAcc;
-   TValue mRefInstCnt;
    TValue mRefDeltaAcc;
    TValue mRefDeltaCnt;
 
    TValue mRawMin;
    TValue mRawMax;
    TValue mRawLast;
-   TValue mRawInstAcc;
-   TValue mRawInstCnt;
    TValue mRawDeltaAcc;
    TValue mRawDeltaCnt;
 
-   /**
-    * Calculate new max, min values, returns delta between max and min values
-    */
-   virtual TValue processValue(TValue& last, TValue& max, TValue& min, const TValue& value);
-   /**
-    * Clear all intermediate instant values of raw and references
-    */
-   virtual void clearInst();
-   /**
-    * Returns true if ration between raw and reference samples number more then ration
-    */
-   virtual bool IsOverRatio();
    /**
     * Does calibration calculation based on internal accumulated reference and raw values
     */

@@ -14,18 +14,14 @@
 #ifndef __PE_CCalibrationBase_H__
 #define __PE_CCalibrationBase_H__
 
-#include "PETypes.h"
-#include "PECNormalisation.h"
-#include "PESBasicSensor.h"
-//todo move common functionality into parent class
-#include "PECCalibrationScale.h"
+#include "PECCalibration.h"
 
 namespace PE
 {
 /**
  *
  */
-class CCalibrationBase: public CCalibrationScale
+class CCalibrationBase: public CCalibration
 {
 public:
    /**
@@ -38,6 +34,9 @@ public:
     *                        e.g.: valid ratio is ratio +/- threshold
     */
    CCalibrationBase( CNormalisation* norm, TValue ratio, TValue threshold );
+   /**
+    * Destructor of calibartion
+    */
    virtual ~CCalibrationBase();
    /**
     * Converts raw sansor according to calibartion status

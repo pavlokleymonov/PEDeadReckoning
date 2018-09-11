@@ -38,13 +38,36 @@ public:
 /**
  * tests creation 
  */
-TEST_F(PECCalibrationScaleTest, test_create)
+TEST_F(PECCalibrationScaleTest, test_create_destroy)
 {
    PE::CNormalisation scale;
-   PE::CCalibrationScale   calib(&scale, 10, 1);
+   PE::CCalibration* p_calib = new PE::CCalibrationScale(&scale, 10, 1);
 
-   EXPECT_FALSE( calib.GetSensor(PE::SBasicSensor()).IsValid() );
+   EXPECT_FALSE( p_calib->GetSensor(PE::SBasicSensor()).IsValid() );
    EXPECT_NEAR(0.00, scale.GetReliable(), 0.01);
+
+   delete p_calib;
+}
+
+
+/**
+ * tests invalid normalisation 
+ */
+TEST_F(PECCalibrationScaleTest, test_invalid_normalisation)
+{
+   PE::CCalibration* p_calib = new PE::CCalibrationScale(0, 3, 1);
+
+   p_calib->AddSensor(PE::SBasicSensor(1,0.1));
+   p_calib->AddSensor(PE::SBasicSensor(2,0.1));
+   p_calib->AddSensor(PE::SBasicSensor(3,0.1));
+   p_calib->AddReference(PE::SBasicSensor(1,0.1));
+   p_calib->AddSensor(PE::SBasicSensor(11,0.1));
+   p_calib->AddSensor(PE::SBasicSensor(11,0.1));
+   p_calib->AddSensor(PE::SBasicSensor(11,0.1));
+   p_calib->AddReference(PE::SBasicSensor(10,0.1));
+   EXPECT_FALSE( p_calib->GetSensor(PE::SBasicSensor()).IsValid() );
+
+   delete p_calib;
 }
 
 

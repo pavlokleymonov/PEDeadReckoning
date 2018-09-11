@@ -38,6 +38,7 @@ add_library ( pe_fusion STATIC
 )
 
 add_library ( pe_calibration STATIC
+   ${REPOSITORY_ROOT}/calibration/source/PECCalibration.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp

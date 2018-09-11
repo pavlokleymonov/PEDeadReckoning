@@ -19,21 +19,15 @@ using namespace PE;
 
 
 PE::CCalibrationScale::CCalibrationScale( CNormalisation* norm, TValue ratio, TValue threshold )
-: mpNorm(norm)
-, mRatio(ratio)
-, mThreshold(threshold)
+: CCalibration(norm, ratio, threshold)
 , mRefMin(MAX_VALUE)
 , mRefMax(MAX_VALUE)
 , mRefLast(MAX_VALUE)
-, mRefInstAcc(0.0)
-, mRefInstCnt(0.0)
 , mRefDeltaAcc(0.0)
 , mRefDeltaCnt(0.0)
 , mRawMin(MAX_VALUE)
 , mRawMax(MAX_VALUE)
 , mRawLast(MAX_VALUE)
-, mRawInstAcc(0.0)
-, mRawInstCnt(0.0)
 , mRawDeltaAcc(0.0)
 , mRawDeltaCnt(0.0)
 {
@@ -42,28 +36,6 @@ PE::CCalibrationScale::CCalibrationScale( CNormalisation* norm, TValue ratio, TV
 
 PE::CCalibrationScale::~CCalibrationScale()
 {
-}
-
-
-void PE::CCalibrationScale::AddReference(const SBasicSensor& ref)
-{
-   if ( ref.IsValid() )
-   {
-      mRefInstAcc += ref.Value;
-      mRefInstCnt += 1.0;
-      DoCalibration();
-   }
-}
-
-
-void PE::CCalibrationScale::AddSensor( const SBasicSensor& raw )
-{
-   if ( raw.IsValid() )
-   {
-      mRawInstAcc += raw.Value;
-      mRawInstCnt += 1.0;
-      DoCalibration();
-   }
 }
 
 
@@ -77,58 +49,6 @@ SBasicSensor PE::CCalibrationScale::GetSensor( const SBasicSensor& raw ) const
       }
    }
    return SBasicSensor();
- }
-
-
-TValue PE::CCalibrationScale::processValue(TValue& last, TValue& max, TValue& min, const TValue& value)
-{
-   if ( MAX_VALUE == last )
-   {
-      max = value;
-      min = value;
-   }
-   else
-   {
-      if ( last < value )
-      {
-         max = value;
-         min = last;
-      }
-      else
-      {
-         max = last;
-         min = value;
-      }
-   }
-   last = value;
-   return (max - min);
-}
-
-
-void PE::CCalibrationScale::clearInst()
-{
-   mRefInstAcc = 0.0;
-   mRefInstCnt = 0.0;
-
-   mRawInstAcc = 0.0;
-   mRawInstCnt = 0.0;
-}
-
-
-bool PE::CCalibrationScale::IsOverRatio()
-{
-   if      ( mRatio + mThreshold < mRawInstCnt / mRefInstCnt )
-   {
-      return true;
-   }
-   else if ( mRatio - mThreshold > mRawInstCnt / mRefInstCnt )
-   {
-      return true;
-   }
-   else
-   {
-      return false;
-   }
 }
 
 
@@ -166,4 +86,3 @@ void PE::CCalibrationScale::DoCalibration()
       }
    }
 }
-
