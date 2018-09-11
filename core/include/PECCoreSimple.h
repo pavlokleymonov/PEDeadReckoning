@@ -48,6 +48,10 @@ public:
     */
    CCoreSimple( const SPosition& position, const SBasicSensor& heading);
    /**
+    * Destructor
+    */
+   ~CCoreSimple();
+   /**
     * Sets sensor configuration
     */
    void SetOdoCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold);
@@ -105,7 +109,7 @@ public:
    void UpdatePosition();
 private:
 
-   std::map<TSensorTypeID, CSensorEntity> mEntities;
+   std::map<TSensorTypeID, CSensorEntity*> mEntities;
    /**
     * Position fusion stuff
     */

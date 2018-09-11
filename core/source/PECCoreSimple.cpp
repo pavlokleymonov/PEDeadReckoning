@@ -22,6 +22,16 @@ PE::CCoreSimple::CCoreSimple( const SPosition& position, const SBasicSensor& hea
 }
 
 
+PE::CCoreSimple::~CCoreSimple()
+{
+   while (!mEntities.empty())
+   {
+      delete mEntities.begin()->second;
+      mEntities.erase(mEntities.begin());
+   }
+}
+
+
 void PE::CCoreSimple::SetOdoCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold)
 {
    if ( SENSOR_ODOMETER_AXIS == cfg.GetType() )
@@ -120,25 +130,26 @@ void PE::CCoreSimple::UpdatePosition()
 
 void PE::CCoreSimple::SetCfg(const CSensorCfg& cfg, TValue ratio, TValue threshold)
 {
-   std::map<TSensorTypeID, CSensorEntity>::const_iterator it = mEntities.find(cfg.GetType());
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(cfg.GetType());
    if ( mEntities.end() != it )
    {
+      delete it->second;
       mEntities.erase(it);
    }
-   mEntities.insert(std::make_pair(cfg.GetType(), CSensorEntity(cfg,ratio,threshold)));
+   mEntities.insert(std::make_pair(cfg.GetType(), new CSensorEntity(cfg,ratio,threshold)));
 }
 
 
 CSensorCfg PE::CCoreSimple::GetCfg(TSensorTypeID typeId) const
 {
-   std::map<TSensorTypeID, CSensorEntity>::const_iterator it = mEntities.find(typeId);
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
    if ( mEntities.end() != it )
    {
       return CSensorCfg(
                 typeId,
-                CSensorCfg::ToNormCfg(it->second.GetScale()),
-                CSensorCfg::ToNormCfg(it->second.GetBase()),
-                it->second.GetLimit()
+                PE::CSensorCfg::ToNormCfg(it->second->GetScale()),
+                PE::CSensorCfg::ToNormCfg(it->second->GetBase()),
+                it->second->GetLimit()
              );
    }
    return CSensorCfg();
@@ -147,36 +158,33 @@ CSensorCfg PE::CCoreSimple::GetCfg(TSensorTypeID typeId) const
 
 TValue PE::CCoreSimple::CalibratedTo(TSensorTypeID typeId) const
 {
-   std::map<TSensorTypeID, CSensorEntity>::const_iterator it = mEntities.find(typeId);
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
    if ( mEntities.end() != it )
    {
-//       return it->second.CalibratedTo();
-      
-      return it->second.GetScale().GetReliable();
-      //return it->second.GetBase().GetReliable();
+      return it->second->GetBase().GetReliable();
    }
    return 0.0;
 }
 
 void PE::CCoreSimple::AddRef(TSensorTypeID typeId, const SBasicSensor& ref)
 {
-   std::map<TSensorTypeID, CSensorEntity>::iterator it = mEntities.find(typeId);
+   std::map<TSensorTypeID, CSensorEntity*>::iterator it = mEntities.find(typeId);
    if ( mEntities.end() != it )
    {
-      it->second.AddReference(ref);
+      it->second->AddReference(ref);
    }
 }
 
 
 SBasicSensor PE::CCoreSimple::CalculateSensor(TSensorTypeID typeId, const SBasicSensor& raw)
 {
-   std::map<TSensorTypeID, CSensorEntity>::iterator it = mEntities.find(typeId);
+   std::map<TSensorTypeID, CSensorEntity*>::iterator it = mEntities.find(typeId);
    if ( mEntities.end() != it )
    {
-      it->second.AddSensor(raw);
-      if ( it->second.GetLimit() <= it->second.CalibratedTo() )
+      it->second->AddSensor(raw);
+      if ( it->second->GetLimit() <= it->second->GetBase().GetReliable() )
       {
-         return it->second.GetSensor(raw);
+         return it->second->GetSensor(raw);
       }
    }
    return SBasicSensor();
