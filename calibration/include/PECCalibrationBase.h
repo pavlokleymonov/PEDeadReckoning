@@ -37,7 +37,7 @@ public:
     * @param  threshold  threshold for ratio
     *                        e.g.: valid ratio is ratio +/- threshold
     */
-   CCalibrationBase( CNormalisation& norm, TValue ratio, TValue threshold );
+   CCalibrationBase( CNormalisation* norm, TValue ratio, TValue threshold );
    virtual ~CCalibrationBase();
    /**
     * Converts raw sansor according to calibartion status

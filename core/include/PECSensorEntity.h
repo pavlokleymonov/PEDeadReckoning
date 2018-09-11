@@ -30,9 +30,15 @@ class CSensorEntity
 {
    friend class ::PECSensorEntityTest;
 
+private:
+   CSensorEntity( const CSensorEntity& );
+   CSensorEntity& operator=( CSensorEntity& );
+
 public:
 
    CSensorEntity( const CSensorCfg& cfg, TValue ratio, TValue threshold );
+
+   ~CSensorEntity();
 
    const CNormalisation& GetScale() const;
 
@@ -43,8 +49,6 @@ public:
    const TValue& GetRatio() const;
 
    const TValue& GetThreshold() const;
-
-   const TValue& CalibratedTo() const;
 
    void AddReference( const SBasicSensor& ref );
 
@@ -58,10 +62,10 @@ private:
    TValue             mRatio;
    TValue             mThreshold;
 
-   CNormalisation     mScaleNorm;
+   CNormalisation*    mpScaleNorm;
    CCalibrationScale  mScaleCalib;
 
-   CNormalisation     mBaseNorm;
+   CNormalisation*    mpBaseNorm;
    CCalibrationBase   mBaseCalib;
 
 };

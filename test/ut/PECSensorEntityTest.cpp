@@ -30,16 +30,6 @@ public:
    {}
    virtual void TearDown()
    {}
-
-   PE::TValue GetScaleCalibStatus(const PE::CSensorEntity& entity)
-   {
-      return entity.mScaleCalib.CalibratedTo();
-   }
-
-   PE::TValue GetBaseCalibStatus(const PE::CSensorEntity& entity)
-   {
-      return entity.mBaseCalib.CalibratedTo();
-   }
 };
 
 
@@ -83,57 +73,50 @@ TEST_F(PECSensorEntityTest, simple_test )
                             1 // Threshold +/- 1
                            );
 
-   EXPECT_NEAR(0.00, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetBase().GetReliable(), 0.01);
 
    entity.AddSensor(PE::SBasicSensor(1000+100,0.1));
    entity.AddSensor(PE::SBasicSensor(1000+100,0.1));
    entity.AddSensor(PE::SBasicSensor(1000+100,0.1));
    entity.AddReference(PE::SBasicSensor(10,0.01));
-   EXPECT_NEAR(0.00, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetBase().GetReliable(), 0.01);
 
    entity.AddSensor(PE::SBasicSensor(2000+100,0.2));
    entity.AddSensor(PE::SBasicSensor(2000+100,0.2));
    entity.AddSensor(PE::SBasicSensor(2000+100,0.2));
    entity.AddReference(PE::SBasicSensor(20,0.02));
-   EXPECT_NEAR(0.00, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetBase().GetReliable(), 0.01);
 
    entity.AddSensor(PE::SBasicSensor(1000+100,0.1));
    entity.AddSensor(PE::SBasicSensor(1000+100,0.1));
    entity.AddSensor(PE::SBasicSensor(1000+100,0.1));
    entity.AddReference(PE::SBasicSensor(10,0.01));
-   EXPECT_NEAR(50.00, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(50.00, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetBase().GetReliable(), 0.01);
 
    entity.AddSensor(PE::SBasicSensor(100+100,0.3));
    entity.AddSensor(PE::SBasicSensor(100+100,0.3));
    entity.AddSensor(PE::SBasicSensor(100+100,0.3));
    entity.AddReference(PE::SBasicSensor(1,0.03));
-   EXPECT_NEAR(66.67, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(0.00, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(66.67, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(0.00, entity.GetBase().GetReliable(), 0.01);
 
    entity.AddSensor(PE::SBasicSensor(200+100,0.1));
    entity.AddSensor(PE::SBasicSensor(200+100,0.1));
    entity.AddSensor(PE::SBasicSensor(200+100,0.1));
    entity.AddReference(PE::SBasicSensor(2,0.01));
-   EXPECT_NEAR(75.00, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(50.00, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(50.00, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(75.00, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(50.00, entity.GetBase().GetReliable(), 0.01);
 
    entity.AddSensor(PE::SBasicSensor(300+100,0.1));
    entity.AddSensor(PE::SBasicSensor(300+100,0.1));
    entity.AddSensor(PE::SBasicSensor(300+100,0.1));
    entity.AddReference(PE::SBasicSensor(3,0.01));
-   EXPECT_NEAR(80.00, GetScaleCalibStatus(entity), 0.01);
-   EXPECT_NEAR(66.67, GetBaseCalibStatus(entity), 0.01);
-   EXPECT_NEAR(66.67, entity.CalibratedTo(), 0.01);
+   EXPECT_NEAR(80.00, entity.GetScale().GetReliable(), 0.01);
+   EXPECT_NEAR(66.67, entity.GetBase().GetReliable(), 0.01);
    //Calibration is more then 0.00% check value
    EXPECT_NEAR(10.00, entity.GetSensor(PE::SBasicSensor(1000+100,0.1)).Value, 0.01);
    EXPECT_NEAR(0.00, entity.GetSensor(PE::SBasicSensor(1000+100,0.1)).Accuracy, 0.01);

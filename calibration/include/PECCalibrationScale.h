@@ -35,7 +35,7 @@ public:
     * @param  threshold  threshold for ratio
     *                        e.g.: valid ratio is ratio +/- threshold
     */
-   CCalibrationScale( CNormalisation& norm, TValue ratio, TValue threshold );
+   CCalibrationScale( CNormalisation* norm, TValue ratio, TValue threshold );
    virtual ~CCalibrationScale();
    /**
     * Adds new reference value to the calibration
@@ -57,19 +57,13 @@ public:
     * @return         Scaled sensor data or invalid sensor if convertion is not possible
     */
    virtual SBasicSensor GetSensor( const SBasicSensor& raw ) const;
-   /**
-    * Returns current persantage of calibartion
-    *
-    * @return         calibration status in %
-    */
-   virtual const TValue& CalibratedTo() const;
 
 protected:
 
    /**
     * Normalisation instance for scale calibration
     */
-   CNormalisation& mNorm;
+   CNormalisation* mpNorm;
    /**
     * Ration between reference and raw values
     *    e.g.: 10 means 10 raw values for one reference

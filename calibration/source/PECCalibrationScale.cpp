@@ -18,8 +18,8 @@
 using namespace PE;
 
 
-PE::CCalibrationScale::CCalibrationScale( CNormalisation& norm, TValue ratio, TValue threshold )
-: mNorm(norm)
+PE::CCalibrationScale::CCalibrationScale( CNormalisation* norm, TValue ratio, TValue threshold )
+: mpNorm(norm)
 , mRatio(ratio)
 , mThreshold(threshold)
 , mRefMin(MAX_VALUE)
@@ -69,21 +69,15 @@ void PE::CCalibrationScale::AddSensor( const SBasicSensor& raw )
 
 SBasicSensor PE::CCalibrationScale::GetSensor( const SBasicSensor& raw ) const
 {
-   if ( raw.IsValid() && 0.0 != mNorm.GetMean() )
+   if ( mpNorm )
    {
-      return SBasicSensor( raw.Value * mNorm.GetMean(), mNorm.GetMean() + mNorm.GetMld() );
+      if ( raw.IsValid() && 0.0 != mpNorm->GetMean() )
+      {
+         return SBasicSensor( raw.Value * mpNorm->GetMean(), mpNorm->GetMean() + mpNorm->GetMld() );
+      }
    }
-   else
-   {
-      return SBasicSensor();
-   }
-}
-
-
-const TValue& PE::CCalibrationScale::CalibratedTo() const
-{
-   return mNorm.GetReliable();
-}
+   return SBasicSensor();
+ }
 
 
 TValue PE::CCalibrationScale::processValue(TValue& last, TValue& max, TValue& min, const TValue& value)
@@ -140,33 +134,36 @@ bool PE::CCalibrationScale::IsOverRatio()
 
 void PE::CCalibrationScale::DoCalibration()
 {
-   if ( 0.0 != mRefInstCnt && 0.0 != mRawInstCnt )
+   if ( mpNorm )
    {
-      if ( !IsOverRatio() )
+      if ( 0.0 != mRefInstCnt && 0.0 != mRawInstCnt )
       {
-         TValue deltaRef = processValue( mRefLast, mRefMax, mRefMin, mRefInstAcc / mRefInstCnt );
-         if ( 0.0 != deltaRef )
+         if ( !IsOverRatio() )
          {
-            mRefDeltaAcc += deltaRef;
-            mRefDeltaCnt += 1.0;
-         }
-         
-         TValue deltaRaw = processValue( mRawLast, mRawMax, mRawMin, mRawInstAcc / mRawInstCnt );
-         if ( 0.0 != deltaRaw )
-         {
-            mRawDeltaAcc += deltaRaw;
-            mRawDeltaCnt += 1.0;
-         }
-         
-         if ( 0.0 != deltaRef || 0.0 != deltaRaw )
-         {
-            if ( 0.0 != mRefDeltaCnt && 0.0 != mRawDeltaCnt )
+            TValue deltaRef = processValue( mRefLast, mRefMax, mRefMin, mRefInstAcc / mRefInstCnt );
+            if ( 0.0 != deltaRef )
             {
-               mNorm.AddSensor( ( mRefDeltaAcc / mRefDeltaCnt ) / ( mRawDeltaAcc / mRawDeltaCnt ) );
+               mRefDeltaAcc += deltaRef;
+               mRefDeltaCnt += 1.0;
+            }
+            
+            TValue deltaRaw = processValue( mRawLast, mRawMax, mRawMin, mRawInstAcc / mRawInstCnt );
+            if ( 0.0 != deltaRaw )
+            {
+               mRawDeltaAcc += deltaRaw;
+               mRawDeltaCnt += 1.0;
+            }
+            
+            if ( 0.0 != deltaRef || 0.0 != deltaRaw )
+            {
+               if ( 0.0 != mRefDeltaCnt && 0.0 != mRawDeltaCnt )
+               {
+                  mpNorm->AddSensor( ( mRefDeltaAcc / mRefDeltaCnt ) / ( mRawDeltaAcc / mRawDeltaCnt ) );
+               }
             }
          }
+         clearInst();
       }
-      clearInst();
    }
 }
 

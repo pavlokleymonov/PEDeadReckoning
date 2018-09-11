@@ -21,23 +21,32 @@ PE::CSensorEntity::CSensorEntity( const CSensorCfg& cfg, TValue ratio, TValue th
 : mLimit(cfg.GetLimit())
 , mRatio(ratio)
 , mThreshold(threshold)
-, mScaleNorm(CSensorCfg::ToNormalisation(cfg.GetScale()))
-, mScaleCalib(mScaleNorm, ratio, threshold)
-, mBaseNorm(CSensorCfg::ToNormalisation(cfg.GetBase()))
-, mBaseCalib(mBaseNorm, ratio, threshold)
+, mpScaleNorm(new CNormalisation(cfg.GetScale().mAccValue, cfg.GetScale().mAccMld, cfg.GetScale().mAccRel, cfg.GetScale().mCount ))
+, mScaleCalib(mpScaleNorm, ratio, threshold)
+, mpBaseNorm(new CNormalisation(cfg.GetBase().mAccValue, cfg.GetBase().mAccMld, cfg.GetBase().mAccRel, cfg.GetBase().mCount ))
+, mBaseCalib(mpBaseNorm,ratio,threshold)
 {
+}
+
+
+PE::CSensorEntity::~CSensorEntity()
+{
+   delete mpScaleNorm;
+   mpScaleNorm = 0;
+   delete mpBaseNorm;
+   mpBaseNorm = 0;
 }
 
 
 const CNormalisation& PE::CSensorEntity::GetScale() const
 {
-   return mScaleNorm;
+   return *mpScaleNorm;
 }
 
 
 const CNormalisation& PE::CSensorEntity::GetBase() const
 {
-   return mBaseNorm;
+   return *mpBaseNorm;
 }
 
 
@@ -59,16 +68,10 @@ const TValue& PE::CSensorEntity::GetThreshold() const
 }
 
 
-const TValue& PE::CSensorEntity::CalibratedTo() const
-{
-   return mBaseCalib.CalibratedTo();
-}
-
-
 void PE::CSensorEntity::AddReference( const SBasicSensor& ref )
 {
    mScaleCalib.AddReference(ref);
-   if ( mLimit <= mScaleCalib.CalibratedTo() )
+   if ( mLimit <= mpScaleNorm->GetReliable() )
    {
       mBaseCalib.AddReference(ref);
    }
@@ -78,7 +81,7 @@ void PE::CSensorEntity::AddReference( const SBasicSensor& ref )
 void PE::CSensorEntity::AddSensor( const SBasicSensor& raw )
 {
    mScaleCalib.AddSensor(raw);
-   if ( mLimit <= mScaleCalib.CalibratedTo() )
+   if ( mLimit <= mpScaleNorm->GetReliable() )
    {
       //Add unscaled value
       mBaseCalib.AddSensor(mScaleCalib.GetSensor(raw));
