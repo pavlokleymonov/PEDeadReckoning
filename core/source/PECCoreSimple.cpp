@@ -184,7 +184,11 @@ SBasicSensor PE::CCoreSimple::CalculateSensor(TSensorTypeID typeId, const SBasic
       it->second->AddSensor(raw);
       if ( it->second->GetLimit() <= it->second->GetBase().GetReliable() )
       {
-         return it->second->GetSensor(raw);
+         SBasicSensor sen = it->second->GetSensor(raw);
+//          printf("Sensor:%d = %.4f(%.4f) scale(mean/mld/rel:%.4f/%.4f/%.2f) base(mean/mld/rel:%.4f/%.4f/%.2f)\n", static_cast<int>(typeId), sen.Value, sen.Accuracy,
+//             it->second->GetScale().GetMean(), it->second->GetScale().GetMld(), it->second->GetScale().GetReliable(),
+//             it->second->GetBase().GetMean(),  it->second->GetBase().GetMld(),  it->second->GetBase().GetReliable());
+         return sen;
       }
    }
    return SBasicSensor();
