@@ -161,6 +161,7 @@ TEST_F(PECCalibrationBaseTest, test_simple_calibartion)
    EXPECT_NEAR(80.00, base.GetReliable(), 0.01);
 }
 
+
 /**
  * tests  
  */
@@ -372,4 +373,3 @@ int main(int argc, char *argv[])
    ::testing::InitGoogleTest(&argc, argv);
    return RUN_ALL_TESTS();
 }
-

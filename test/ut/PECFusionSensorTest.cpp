@@ -1160,6 +1160,7 @@ TEST_F(PECFusionSensorTest, test_same_position_with_same_time)
    EXPECT_NEAR(  1.20000000, fusion.GetPosition().HorizontalAcc, 0.00000001);
 }
 
+
 TEST_F(PECFusionSensorTest, test_same_heading_with_same_time)
 {
    PE::CFusionSensor fusion = PE::CFusionSensor(0.0,PE::SPosition(50,10,1), PE::SBasicSensor(), PE::SBasicSensor(), PE::SBasicSensor());
@@ -1179,6 +1180,7 @@ TEST_F(PECFusionSensorTest, test_same_heading_with_same_time)
    EXPECT_NEAR(   1.20000000, fusion.GetHeading().Accuracy, 0.00000001);
 }
 
+
 TEST_F(PECFusionSensorTest, test_same_speed_with_same_time)
 {
    PE::CFusionSensor fusion = PE::CFusionSensor(0.0,PE::SPosition(), PE::SBasicSensor(), PE::SBasicSensor(0,1), PE::SBasicSensor());
@@ -1197,6 +1199,7 @@ TEST_F(PECFusionSensorTest, test_same_speed_with_same_time)
    EXPECT_NEAR( 10.200000000, fusion.GetSpeed().Value , 0.00000001);
    EXPECT_NEAR(   1.20000000, fusion.GetSpeed().Accuracy, 0.00000001);
 }
+
 
 TEST_F(PECFusionSensorTest, test_same_angular_velocity_with_same_time)
 {
@@ -1223,4 +1226,3 @@ int main(int argc, char *argv[])
    ::testing::InitGoogleTest(&argc, argv);
    return RUN_ALL_TESTS();
 }
-

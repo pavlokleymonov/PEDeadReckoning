@@ -33,6 +33,7 @@ public:
    }
 };
 
+
 //Test Default constructor
 TEST_F(PESPositionTest, default_constructor_test)
 {
@@ -43,6 +44,7 @@ TEST_F(PESPositionTest, default_constructor_test)
    EXPECT_LE(PE::MAX_ACCURACY, pos.HorizontalAcc);
    EXPECT_FALSE(pos.IsValid());
 }
+
 
 //Test simple constructor
 TEST_F(PESPositionTest, constructor_test)
@@ -74,6 +76,7 @@ TEST_F(PESPositionTest, constructor_test)
    EXPECT_FALSE(PE::SPosition(10,20).IsValid());
 }
 
+
 //Test operator==
 TEST_F(PESPositionTest, operator_eq_test)
 {
@@ -101,8 +104,8 @@ TEST_F(PESPositionTest, operator_eq_test)
    EXPECT_FALSE(PE::SPosition(10,20,30) == PE::SPosition(0,20,30));
    EXPECT_FALSE(PE::SPosition(10,20,30) == PE::SPosition(10,0,30));
    EXPECT_FALSE(PE::SPosition(10,20,30) == PE::SPosition(10,20,0));
-
 }
+
 
 int main(int argc, char *argv[])
 {

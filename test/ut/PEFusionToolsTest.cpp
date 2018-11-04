@@ -35,7 +35,6 @@ public:
 };
 
 
-
 /**
  * PredictSensorAccuracy test
  */
@@ -63,6 +62,7 @@ TEST_F(PEFusionToolsTest, test_PredictSensorAccuracy )
    EXPECT_NEAR(10.1,             PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(10.1,PE::MAX_ACCURACY)).Value   , 0.00001);
    EXPECT_NEAR(PE::MAX_ACCURACY, PE::FUSION::PredictSensorAccuracy(10,PE::SBasicSensor(10.1,PE::MAX_ACCURACY)).Accuracy, 0.00001);
 }
+
 
 /**
  * PredictHeading test by angular speeds
@@ -94,6 +94,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_angular_speed )
    EXPECT_NEAR(1.1,  PE::FUSION::PredictHeading(10,heading,PE::SBasicSensor(PE::MAX_VALUE,0.2)).Accuracy,  0.00001);
 }
 
+
 /** !!!
  * PredictHeading test invalid timesatmp
  */
@@ -103,6 +104,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_invalid_timesatmp 
    PE::SPosition                pos2(50.0,10.1,1.0); //lat=50 lon=10.1
    EXPECT_FALSE(PE::FUSION::PredictHeading(0, pos,pos2,PE::SBasicSensor()).IsValid());
 }
+
 
 /** !!!
  * PredictHeading test invalid position, invalid heading
@@ -114,6 +116,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_invalid_position_i
    EXPECT_FALSE(PE::FUSION::PredictHeading(1, pos,PE::SPosition(),PE::SBasicSensor()).IsValid());
    EXPECT_FALSE(PE::FUSION::PredictHeading(1, PE::SPosition(),pos,PE::SBasicSensor()).IsValid());
 }
+
 
 /** !!!
  * PredictHeading test invalid position, valid heading
@@ -135,6 +138,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_invalid_position_v
    EXPECT_EQ( 2.0, PE::FUSION::PredictHeading(1,PE::SPosition(),pos,heading).Accuracy);
 }
 
+
 /** !!!
  * PredictHeading test same position
  */
@@ -149,6 +153,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_to_positions_same_position )
    EXPECT_EQ(90.0, PE::FUSION::PredictHeading(1,pos,pos,heading).Value);
    EXPECT_EQ( 2.0, PE::FUSION::PredictHeading(1,pos,pos,heading).Accuracy);
 }
+
 
 /** !!!
  * PredictHeading test by two positions circle moving
@@ -218,6 +223,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_two_positions_dirrect_moving )
    EXPECT_NEAR(89.58, heading.Accuracy, 0.01);
 }
 
+
 /** !!!
  * PredictHeading test by two positions dirrect moving small timestamp
  */
@@ -244,6 +250,7 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_two_positions_dirrect_moving_sm
    EXPECT_NEAR(89.99, heading.Value, 0.01);
    EXPECT_NEAR( 0.88, heading.Accuracy, 0.01);
 }
+
 
 /**
  * PredictPosition test invalid inputs
@@ -327,6 +334,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_invalid_inputs )
    EXPECT_NEAR( 10.0462509, PE::FUSION::PredictPosition(9, heading, angSpeed, pos, speed).HorizontalAcc, 0.0000001);
 }
 
+
 /**
  * PredictPosition turning left for 180 degree
  */
@@ -349,6 +357,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left
    EXPECT_NEAR(270.000000,heading_predict.Value,0.000001);
    EXPECT_NEAR( 10.000000,heading_predict.Accuracy,0.000001);
 }
+
 
 /**
  * PredictPosition turning right for 180 degree
@@ -373,6 +382,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_righ
    EXPECT_NEAR( 10.000000,heading_predict.Accuracy,0.000001);
 }
 
+
 /**
  * PredictPosition turning left for 360 degree
  */
@@ -396,6 +406,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left
    EXPECT_NEAR( 19.000000,heading_predict.Accuracy,0.000001);
 }
 
+
 /**
  * PredictPosition turning right for 360 degree
  */
@@ -418,6 +429,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_righ
    EXPECT_NEAR( 90.000000,heading_predict.Value,0.000001);
    EXPECT_NEAR( 19.000000,heading_predict.Accuracy,0.000001);
 }
+
 
 /**
  * PredictPosition straight driving 5 [m/s]
@@ -450,6 +462,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_straight_driving_5_m_per_sec_dur
    EXPECT_NEAR(  9.999301,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Longitude,0.000001);
    EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
 }
+
 
 /**
  * PredictPosition straight driving 5 [m/s] and crossing Grinvitch meridian
@@ -484,6 +497,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Grinvitch_meridian )
    //EXPECT_FALSE(true);
 }
 
+
 /**
  * PredictPosition straight driving 5 [m/s] and crossing Anti meridian
  */
@@ -516,6 +530,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Anti_meridian )
    EXPECT_NEAR(  11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
 }
 
+
 /**
  * PredictPosition straight driving 5 [m/s] and crossing Equator
  */
@@ -547,6 +562,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Equator )
    EXPECT_NEAR(  9.999551,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).Longitude,0.000001);
    EXPECT_NEAR( 11.060591,PE::FUSION::PredictPosition(deltaTime, heading270, angSpeed, pos, speed).HorizontalAcc,0.000001);
 }
+
 
 /**
  * PredictSpeed test invalid input
@@ -605,6 +621,7 @@ TEST_F(PEFusionToolsTest, test_PredictSpeed_invalid_input )
    EXPECT_NEAR(2.001, PE::FUSION::PredictSpeed(4,pos,pos4sec,angSpeed).Accuracy, 0.001);
 }
 
+
 /**
  * PredictSpeed speed with different accuracy of angular velocity
  */
@@ -632,6 +649,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Speed_different_ang_accuracy_duration_4_s
    EXPECT_NEAR( 2.5956, PE::FUSION::PredictSpeed(deltaTime,pos,pos4sec,angSpeed_acc99).Accuracy, 0.0001);
 }
 
+
 /**
  * PredictSpeed turning left for 40 degree
  */
@@ -646,7 +664,8 @@ TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_left_40_deg )
    EXPECT_NEAR( 5.00,   PE::FUSION::PredictSpeed(deltaTime,pos,pos4sec,angSpeed).Value, 0.001);
    EXPECT_NEAR( 2.0012, PE::FUSION::PredictSpeed(deltaTime,pos,pos4sec,angSpeed).Accuracy, 0.0001);
 }
-//straight_driving
+
+
 /**
  * PredictSpeed turning right for 40 degree
  */
@@ -661,6 +680,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_right_40_deg )
    EXPECT_NEAR( 5.00,   PE::FUSION::PredictSpeed(deltaTime,pos,pos4sec,angSpeed).Value, 0.001);
    EXPECT_NEAR( 2.0012, PE::FUSION::PredictSpeed(deltaTime,pos,pos4sec,angSpeed).Accuracy, 0.0001);
 }
+
 
 /**
  * PredictSpeed straight driving
@@ -791,6 +811,7 @@ TEST_F(PEFusionToolsTest, test_PredictAngSpeed )
    EXPECT_NEAR(   1.6, PE::FUSION::PredictAngSpeed(1,heading_181,heading_91).Accuracy, 0.001);
 }
 
+
 /**
  * MergeHeading test
  */
@@ -850,6 +871,7 @@ TEST_F(PEFusionToolsTest, test_MergeHeading )
    EXPECT_NEAR(   0.360, PE::FUSION::MergeHeading(heading_180,heading_181).Accuracy, 0.001);
 }
 
+
 /**
  * MergePosition test
  */
@@ -908,6 +930,7 @@ TEST_F(PEFusionToolsTest, test_MergePosition )
    EXPECT_NEAR( 179.615, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).Longitude,     0.001);
    EXPECT_NEAR(   2.307, PE::FUSION::MergePosition(pos_lat1S_lon179E_acc2,pos_lat1S_lon179W_acc3).HorizontalAcc, 0.001);
 }
+
 
 int main(int argc, char *argv[])
 {

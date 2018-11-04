@@ -178,6 +178,7 @@ TEST_F(PECNormalisationTest, test_no_init_values_amount_of_same_values_till_full
    EXPECT_NEAR(99.50, norm.GetReliable(),0.01);
 }
 
+
 /**
  * check values form set [10.0...10.05]
  * no initial settings
@@ -250,6 +251,7 @@ TEST_F(PECNormalisationTest, test_no_init_values_amount_of_values_40)
    EXPECT_NEAR(86.035287, norm.GetReliable(),0.000001);
 }
 
+
 /**
  * check values form set [10.0...10.05]
  * Initial settings are correct
@@ -299,6 +301,7 @@ TEST_F(PECNormalisationTest, test_set_init_and_amount_of_values_28)
    EXPECT_NEAR(86.035287, norm.GetReliable(),0.000001);
 }
 
+
 /**
  * test invalid sample count
  * 
@@ -323,8 +326,8 @@ TEST_F(PECNormalisationTest, test_invalid_sample_count)
    EXPECT_NEAR( 0.5, norm.GetAccumulatedMld(),0.01);
    EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
    EXPECT_EQ  (   2, norm.GetSampleCount());
-
 }
+
 
 /**
  * test invalid accumulated reliable value
@@ -350,8 +353,8 @@ TEST_F(PECNormalisationTest, test_invalid_accumulated_reliable_value)
    EXPECT_NEAR( 0.5, norm.GetAccumulatedMld(),0.01);
    EXPECT_NEAR( 0.0, norm.GetAccumulatedReliable(),0.01);
    EXPECT_EQ  (   2, norm.GetSampleCount());
-
 }
+
 
 /**
  * test zero accumulated reliable value
@@ -377,8 +380,8 @@ TEST_F(PECNormalisationTest, test_zero_accumulated_reliable_value)
    EXPECT_NEAR(  1.5, norm.GetAccumulatedMld(),0.01);
    EXPECT_NEAR(33.33, norm.GetAccumulatedReliable(),0.01);
    EXPECT_EQ  (    3, norm.GetSampleCount());
-
 }
+
 
 /**
  * test zero accumulated reliable zero value
@@ -462,6 +465,7 @@ TEST_F(PECNormalisationTest, test_big_precalibrated_values)
    EXPECT_NEAR(100100.00000, norm1.GetAccumulatedReliable(),0.0001);
    EXPECT_EQ  (  1002, norm1.GetSampleCount());
 }
+
 
 /**
  * test value without changes at beginning
@@ -589,12 +593,11 @@ TEST_F(PECNormalisationTest, test_reduced_reliable_value_by_big_difference)
    EXPECT_NEAR( 21.35, norm.GetAccumulatedMld(),0.01);
    EXPECT_NEAR(359.85, norm.GetAccumulatedReliable(),0.01);
    EXPECT_EQ  (     8, norm.GetSampleCount());
-
 }
+
 
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
    return RUN_ALL_TESTS();
 }
-

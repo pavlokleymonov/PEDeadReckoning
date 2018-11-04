@@ -33,6 +33,7 @@ public:
    }
 };
 
+
 //Test radian to/from degrees conversions
 TEST_F(PEToolsTest, radian_degrees_conversions_test)
 {
@@ -64,6 +65,7 @@ TEST_F(PEToolsTest, radian_degrees_conversions_test)
    EXPECT_EQ(-180.0, PE::TOOLS::ToDegrees(-PE::PI));
 }
 
+
 //Test distance calc between two coordinates
 TEST_F(PEToolsTest, distance_from_coordinates_test)
 {
@@ -93,6 +95,7 @@ TEST_F(PEToolsTest, distance_from_coordinates_test)
    EXPECT_NEAR(60.704,PE::TOOLS::ToDistancePrecise(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.001);
 }
 
+
 //Test heading calc between two coordinates
 TEST_F(PEToolsTest, heading_from_coordinates_test)
 {
@@ -111,6 +114,7 @@ TEST_F(PEToolsTest, heading_from_coordinates_test)
    //SOUTH-WEST coordinates: 140.13
    EXPECT_NEAR(140.13,PE::TOOLS::ToHeading(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.01);
 }
+
 
 //Test heading calc based on original heading plus provided angular velocity.
 TEST_F(PEToolsTest, heading_from_angular_velocity_test)
@@ -134,6 +138,7 @@ TEST_F(PEToolsTest, heading_from_angular_velocity_test)
    //test got from South to North by rigth turn -90.0 for two seconds
    EXPECT_NEAR(North,PE::TOOLS::ToHeading(South, 2.0, -90.0),0.01);
 }
+
 
 //Test calc coordinates in case distance is zero
 TEST_F(PEToolsTest, next_coordinates_zero_distance_test)
@@ -168,6 +173,7 @@ TEST_F(PEToolsTest, next_coordinates_zero_distance_test)
    EXPECT_NEAR(-179.99999, pos7.Longitude, 0.000001);
 }
 
+
 //Test calc new coordinates based on distance, heading and start coordinates in SOUTH-WEST
 TEST_F(PEToolsTest, next_coordinates_SW_test)
 {
@@ -178,6 +184,7 @@ TEST_F(PEToolsTest, next_coordinates_SW_test)
    EXPECT_NEAR(-68.149849, pos.Longitude, 0.000001);
 }
 
+
 //Test calc new coordinates based on distance, heading and start coordinates in NORTH-EAST
 TEST_F(PEToolsTest, next_coordinates_NE_test)
 {
@@ -186,6 +193,7 @@ TEST_F(PEToolsTest, next_coordinates_NE_test)
    EXPECT_NEAR( 52.109320, pos.Latitude , 0.000001);
    EXPECT_NEAR( 10.131668, pos.Longitude, 0.000001);
 }
+
 
 //Test calc new coordinates based on distance, heading and start coordinates crossing grinvich
 TEST_F(PEToolsTest, next_coordinates_crossing_grinvich_test)
@@ -201,6 +209,7 @@ TEST_F(PEToolsTest, next_coordinates_crossing_grinvich_test)
    EXPECT_NEAR(  0.000123, pos2.Longitude, 0.000001);
 }
 
+
 //Test calc new coordinates based on distance, heading and start coordinates crossing antimeridian
 TEST_F(PEToolsTest, next_coordinates_crossing_antimeredian_test)
 {
@@ -215,6 +224,7 @@ TEST_F(PEToolsTest, next_coordinates_crossing_antimeredian_test)
    EXPECT_NEAR(179.999403, pos2.Longitude, 0.000001);
 }
 
+
 //Test calc new coordinates based on distance, heading and start coordinates crossing ecvator
 TEST_F(PEToolsTest, next_coordinates_crossing_ecvator_test)
 {
@@ -227,6 +237,7 @@ TEST_F(PEToolsTest, next_coordinates_crossing_ecvator_test)
    EXPECT_NEAR(  0.000123, pos2.Latitude , 0.000001);
    EXPECT_NEAR( 10.123456, pos2.Longitude, 0.000001);
 }
+
 
 TEST_F(PEToolsTest, complex_test)
 {
@@ -244,6 +255,7 @@ TEST_F(PEToolsTest, complex_test)
    EXPECT_NEAR( -5.1234567, pos2.Longitude, 0.0000001);
 }
 
+
 TEST_F(PEToolsTest, coordinate_plus_0_deg_transform_2d_test)
 {
    PE::TValue x = 1;
@@ -253,6 +265,7 @@ TEST_F(PEToolsTest, coordinate_plus_0_deg_transform_2d_test)
    EXPECT_NEAR(1,x,0.001);
    EXPECT_NEAR(0,y,0.001);
 }
+
 
 TEST_F(PEToolsTest, coordinate_plus_45_deg_transform_2d_test)
 {
@@ -264,6 +277,7 @@ TEST_F(PEToolsTest, coordinate_plus_45_deg_transform_2d_test)
    EXPECT_NEAR(0.7071,y,0.001);
 }
 
+
 TEST_F(PEToolsTest, coordinate_plus_90_deg_transform_2d_test)
 {
    PE::TValue x = 1;
@@ -273,6 +287,7 @@ TEST_F(PEToolsTest, coordinate_plus_90_deg_transform_2d_test)
    EXPECT_NEAR(0,x,0.001);
    EXPECT_NEAR(1,y,0.001);
 }
+
 
 TEST_F(PEToolsTest, coordinate_plus_180_deg_transform_2d_test)
 {
@@ -284,6 +299,7 @@ TEST_F(PEToolsTest, coordinate_plus_180_deg_transform_2d_test)
    EXPECT_NEAR(0,y,0.001);
 }
 
+
 TEST_F(PEToolsTest, coordinate_plus_270_deg_transform_2d_test)
 {
    PE::TValue x = 1;
@@ -293,6 +309,7 @@ TEST_F(PEToolsTest, coordinate_plus_270_deg_transform_2d_test)
    EXPECT_NEAR(0,x,0.001);
    EXPECT_NEAR(-1,y,0.001);
 }
+
 
 TEST_F(PEToolsTest, coordinate_plus_360_deg_transform_2d_test)
 {
@@ -304,6 +321,7 @@ TEST_F(PEToolsTest, coordinate_plus_360_deg_transform_2d_test)
    EXPECT_NEAR(0,y,0.001);
 }
 
+
 TEST_F(PEToolsTest, coordinate_minus_90_deg_transform_2d_test)
 {
    PE::TValue x = 1;
@@ -313,6 +331,7 @@ TEST_F(PEToolsTest, coordinate_minus_90_deg_transform_2d_test)
    EXPECT_NEAR(0,x,0.001);
    EXPECT_NEAR(-1,y,0.001);
 }
+
 
 TEST_F(PEToolsTest, coordinate_x0_y0_z90_deg_transform_3d_test)
 {
@@ -328,6 +347,7 @@ TEST_F(PEToolsTest, coordinate_x0_y0_z90_deg_transform_3d_test)
    EXPECT_NEAR(0,z,0.001);
 }
 
+
 TEST_F(PEToolsTest, coordinate_x90_y0_z90_deg_transform_3d_test)
 {
    PE::TValue x = 1;
@@ -341,6 +361,7 @@ TEST_F(PEToolsTest, coordinate_x90_y0_z90_deg_transform_3d_test)
    EXPECT_NEAR(1,y,0.001);
    EXPECT_NEAR(0,z,0.001);
 }
+
 
 TEST_F(PEToolsTest, coordinate_x90_y90_z90_deg_transform_3d_test)
 {
@@ -356,6 +377,7 @@ TEST_F(PEToolsTest, coordinate_x90_y90_z90_deg_transform_3d_test)
    EXPECT_NEAR(-1,z,0.001);
 }
 
+
 TEST_F(PEToolsTest, coordinate_vX1_vY2_vZ3_x90_y90_z90_deg_transform_3d_test)
 {
    PE::TValue x = 1;
@@ -369,6 +391,7 @@ TEST_F(PEToolsTest, coordinate_vX1_vY2_vZ3_x90_y90_z90_deg_transform_3d_test)
    EXPECT_NEAR(2,y,0.001);
    EXPECT_NEAR(-1,z,0.001);
 }
+
 
 TEST_F(PEToolsTest, split_string_test)
 {
@@ -403,9 +426,9 @@ TEST_F(PEToolsTest, split_string_test)
    EXPECT_EQ("",    PE::TOOLS::Split("111,222,",',')[2]);
 }
 
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
    return RUN_ALL_TESTS();
 }
-

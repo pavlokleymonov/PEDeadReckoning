@@ -33,6 +33,7 @@ public:
    }
 };
 
+
 //Test Default constructor
 TEST_F(PESBasicSensorTest, default_constructor_test)
 {
@@ -42,6 +43,7 @@ TEST_F(PESBasicSensorTest, default_constructor_test)
    EXPECT_EQ(PE::MAX_ACCURACY, sens.Accuracy);
    EXPECT_FALSE(sens.IsValid());
 }
+
 
 //Test full constructor
 TEST_F(PESBasicSensorTest, full_constructor_test)
@@ -61,6 +63,7 @@ TEST_F(PESBasicSensorTest, full_constructor_test)
    EXPECT_EQ(12.2, sens_invalid_2.Value);
 }
 
+
 //Test operator==
 TEST_F(PESBasicSensorTest, operator_eq_test)
 {
@@ -76,6 +79,7 @@ TEST_F(PESBasicSensorTest, operator_eq_test)
    EXPECT_FALSE(PE::SBasicSensor(10,20) == PE::SBasicSensor(10,0));
    EXPECT_FALSE(PE::SBasicSensor( 0,20) == PE::SBasicSensor(10,20));
 }
+
 
 int main(int argc, char *argv[])
 {
