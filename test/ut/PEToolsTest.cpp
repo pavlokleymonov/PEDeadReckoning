@@ -426,6 +426,63 @@ TEST_F(PEToolsTest, split_string_test)
    EXPECT_EQ("",    PE::TOOLS::Split("111,222,",',')[2]);
 }
 
+TEST_F(PEToolsTest, pos_set_1m_3m_6m_10m_15m_21m_28m_36m_45m_55m_test)
+{
+   PE::SPosition start(50.0, 10.0, 1.0);
+
+   //1m
+   EXPECT_NEAR(50.00000636, PE::TOOLS::ToPosition(start, 1, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00000989, PE::TOOLS::ToPosition(start, 1, 45.0).Longitude, 0.00000001);
+
+   //3m (2m/s)
+   EXPECT_NEAR(50.00001907, PE::TOOLS::ToPosition(start, 3, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00002967, PE::TOOLS::ToPosition(start, 3, 45.0).Longitude, 0.00000001);
+
+   //6m (3m/s)
+   EXPECT_NEAR(50.00003815, PE::TOOLS::ToPosition(start, 6, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00005935, PE::TOOLS::ToPosition(start, 6, 45.0).Longitude, 0.00000001);
+
+   //10m (4m/s)
+   EXPECT_NEAR(50.00006359, PE::TOOLS::ToPosition(start, 10, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00009893, PE::TOOLS::ToPosition(start, 10, 45.0).Longitude, 0.00000001);
+
+   //15m (5m/s)
+   EXPECT_NEAR(50.00009538, PE::TOOLS::ToPosition(start, 15, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00014839, PE::TOOLS::ToPosition(start, 15, 45.0).Longitude, 0.00000001);
+
+   //21m (6m/s)
+   EXPECT_NEAR(50.00013354, PE::TOOLS::ToPosition(start, 21, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00020775, PE::TOOLS::ToPosition(start, 21, 45.0).Longitude, 0.00000001);
+
+   //28m (7m/s)
+   EXPECT_NEAR(50.00017805, PE::TOOLS::ToPosition(start, 28, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00027700, PE::TOOLS::ToPosition(start, 28, 45.0).Longitude, 0.00000001);
+
+   //36m (8m/s)
+   EXPECT_NEAR(50.00022892, PE::TOOLS::ToPosition(start, 36, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00035615, PE::TOOLS::ToPosition(start, 36, 45.0).Longitude, 0.00000001);
+
+   //45m (9m/s)
+   EXPECT_NEAR(50.00028616, PE::TOOLS::ToPosition(start, 45, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00044519, PE::TOOLS::ToPosition(start, 45, 45.0).Longitude, 0.00000001);
+
+   //55m (10m/s)
+   EXPECT_NEAR(50.00034975, PE::TOOLS::ToPosition(start, 55, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00054412, PE::TOOLS::ToPosition(start, 55, 45.0).Longitude, 0.00000001);
+
+   //63m (8m/s)
+   EXPECT_NEAR(50.00040062, PE::TOOLS::ToPosition(start, 63, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00062327, PE::TOOLS::ToPosition(start, 63, 45.0).Longitude, 0.00000001);
+
+   //67m (4m/s)
+   EXPECT_NEAR(50.00042606, PE::TOOLS::ToPosition(start, 67, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00066284, PE::TOOLS::ToPosition(start, 67, 45.0).Longitude, 0.00000001);
+
+   //76m (9m/s)
+   EXPECT_NEAR(50.00048329, PE::TOOLS::ToPosition(start, 76, 45.0).Latitude, 0.00000001);
+   EXPECT_NEAR(10.00075188, PE::TOOLS::ToPosition(start, 76, 45.0).Longitude, 0.00000001);
+}
+
 
 int main(int argc, char *argv[])
 {

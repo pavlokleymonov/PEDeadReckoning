@@ -123,13 +123,23 @@ private:
     */
    CSensorCfg GetCfg(TSensorTypeID typeId) const;
    /**
-    * Gets calibration status of  sensor
+    * Gets overal calibration status of  sensor (based on "BASE" clibration status)
     */
-   TValue CalibratedTo(TSensorTypeID typeId) const;
+   TValue CalibratedBaseTo(TSensorTypeID typeId) const;
+   /**
+    * Gets scale calibration status of  sensor
+    */
+   TValue CalibratedScaleTo(TSensorTypeID typeId) const;
 
    void AddRef(TSensorTypeID typeId, const SBasicSensor& ref);
 
    SBasicSensor CalculateSensor(TSensorTypeID typeId, const SBasicSensor& raw);
+
+   SBasicSensor GetVale(TSensorTypeID typeId, const SBasicSensor& raw) const;
+
+   TValue GetScale(TSensorTypeID typeId) const;
+
+   TValue GetBase(TSensorTypeID typeId) const;
 };
 
 

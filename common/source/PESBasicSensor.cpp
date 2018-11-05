@@ -32,8 +32,8 @@ PE::SBasicSensor::SBasicSensor(const TValue& value, const TAccuracy& accuracy)
 
 bool PE::SBasicSensor::IsValid() const
 {
-   return ( MAX_VALUE != Value && 
-            MAX_ACCURACY != Accuracy );
+   return ( MAX_VALUE > Value && 
+            MAX_ACCURACY > Accuracy );
 };
 
 

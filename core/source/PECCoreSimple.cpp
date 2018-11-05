@@ -49,7 +49,7 @@ CSensorCfg PE::CCoreSimple::GetOdoCfg() const
 
 TValue PE::CCoreSimple::OdoCalibratedTo() const
 {
-   return CalibratedTo(SENSOR_ODOMETER_AXIS);
+   return CalibratedBaseTo(SENSOR_ODOMETER_AXIS);
 }
 
 
@@ -70,7 +70,7 @@ CSensorCfg PE::CCoreSimple::GetGyroCfg() const
 
 TValue PE::CCoreSimple::GyroCalibratedTo() const
 {
-   return CalibratedTo(SENSOR_GYRO_Z);
+   return CalibratedBaseTo(SENSOR_GYRO_Z);
 }
 
 
@@ -79,10 +79,6 @@ void PE::CCoreSimple::AddGnss(TTimestamp ts, const SPosition& pos, const SBasicS
    mFusion.AddPosition(ts, pos);
    mFusion.AddHeading(ts, head);
    mFusion.AddSpeed(ts, speed);
-   mFusion.DoFusion();
-
-   AddRef(SENSOR_ODOMETER_AXIS, mFusion.GetSpeed());
-   AddRef(SENSOR_GYRO_Z, mFusion.GetAngSpeed());
 }
 
 
@@ -125,6 +121,8 @@ const SBasicSensor& PE::CCoreSimple::GetSpeed() const
 void PE::CCoreSimple::UpdatePosition()
 {
    mFusion.DoFusion();
+   AddRef(SENSOR_ODOMETER_AXIS, mFusion.GetSpeed());
+   AddRef(SENSOR_GYRO_Z, mFusion.GetAngSpeed());
 }
 
 
@@ -156,7 +154,7 @@ CSensorCfg PE::CCoreSimple::GetCfg(TSensorTypeID typeId) const
 }
 
 
-TValue PE::CCoreSimple::CalibratedTo(TSensorTypeID typeId) const
+TValue PE::CCoreSimple::CalibratedBaseTo(TSensorTypeID typeId) const
 {
    std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
    if ( mEntities.end() != it )
@@ -165,6 +163,18 @@ TValue PE::CCoreSimple::CalibratedTo(TSensorTypeID typeId) const
    }
    return 0.0;
 }
+
+
+TValue PE::CCoreSimple::CalibratedScaleTo(TSensorTypeID typeId) const
+{
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
+   {
+      return it->second->GetScale().GetReliable();
+   }
+   return 0.0;
+}
+
 
 void PE::CCoreSimple::AddRef(TSensorTypeID typeId, const SBasicSensor& ref)
 {
@@ -190,3 +200,39 @@ SBasicSensor PE::CCoreSimple::CalculateSensor(TSensorTypeID typeId, const SBasic
    }
    return SBasicSensor();
 }
+
+
+SBasicSensor PE::CCoreSimple::GetVale(TSensorTypeID typeId, const SBasicSensor& raw) const
+{
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
+   {
+      return it->second->GetSensor(raw);
+   }
+   return SBasicSensor();
+}
+
+
+
+TValue PE::CCoreSimple::GetScale(TSensorTypeID typeId) const
+{
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
+   {
+      return it->second->GetScale().GetMean();
+   }
+   return PE::MAX_VALUE;
+}
+
+
+TValue PE::CCoreSimple::GetBase(TSensorTypeID typeId) const
+{
+   std::map<TSensorTypeID, CSensorEntity*>::const_iterator it = mEntities.find(typeId);
+   if ( mEntities.end() != it )
+   {
+      return it->second->GetBase().GetMean();
+   }
+   return PE::MAX_VALUE;
+}
+
+
