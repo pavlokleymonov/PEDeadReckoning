@@ -148,96 +148,105 @@ TEST_F(PECCoreSimpleTest, valid_gyro_cfg_test )
  */
 TEST_F(PECCoreSimpleTest, odo_calibration_test )
 {
-   PE::CCoreSimple core = PE::CCoreSimple(PE::SPosition(), PE::SBasicSensor());
+/*
+   PE::CCoreSimple core = PE::CCoreSimple(PE::SPosition(50.0,10.0,1.0), PE::SBasicSensor());
    PE::CSensorCfg cfgOdo = PE::CSensorCfg(PE::CSensorCfg::ToCFG("CFGSENSOR,5,0.0,0.0,0.0,0,0.0,0.0,0.0,0,90.0,XX"));
    core.SetOdoCfg(cfgOdo, 2, 1); //SENSOR_ODOMETER_AXIS = 5 2 times +/- 1
    EXPECT_TRUE(core.GetOdoCfg().IsValid());
 
-   core.AddOdo (0.5, PE::SBasicSensor( 1,0.1)); //1 ticks
    core.AddOdo (1.0, PE::SBasicSensor( 2,0.1)); //2 ticks
    core.AddGnss(1.0, PE::SPosition(50.00000636,10.00000989,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(1.0,0.1)); //1m/s
    core.UpdatePosition();
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (1.5, PE::SBasicSensor( 3,0.1)); //3 ticks
    core.AddOdo (2.0, PE::SBasicSensor( 4,0.1)); //4 ticks
    core.AddGnss(2.0, PE::SPosition(50.00001907,10.00002967,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(2.0,0.1)); //2m/s
    core.UpdatePosition();
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (2.5, PE::SBasicSensor( 5,0.1)); //5 ticks
+
    core.AddOdo (3.0, PE::SBasicSensor( 6,0.1)); //6 ticks
    core.AddGnss(3.0, PE::SPosition(50.00003815,10.00005935,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(3.0,0.1)); //3m/s
    core.UpdatePosition();
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (3.5, PE::SBasicSensor( 7,0.1)); //7 ticks
-   core.AddOdo (4.0, PE::SBasicSensor( 8,0.1)); //8 ticks
+
+   core.AddOdo (4.0, PE::SBasicSensor( 4,0.1)); //8 ticks
    core.AddGnss(4.0, PE::SPosition(50.00006359,10.00009893,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(4.0,0.1)); //4m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_EQ("", PE::CSensorCfg::ToSTR(core.GetOdoCfg()));
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (4.5, PE::SBasicSensor( 9,0.1)); //9 ticks
-   core.AddOdo (5.0, PE::SBasicSensor(10,0.1)); //10 ticks
+
+   core.AddOdo (5.0, PE::SBasicSensor( 5,0.1)); //10 ticks
    core.AddGnss(5.0, PE::SPosition(50.00009538,10.00014839,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(5.0,0.1)); //5m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (5.5, PE::SBasicSensor(11,0.1)); //11 ticks
-   core.AddOdo (6.0, PE::SBasicSensor(12,0.1)); //12 ticks
+
+   core.AddOdo (6.0, PE::SBasicSensor( 6,0.1)); //12 ticks
    core.AddGnss(6.0, PE::SPosition(50.00013354,10.00020775,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(6.0,0.1)); //6m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (6.5, PE::SBasicSensor(13,0.1)); //13 ticks
-   core.AddOdo (7.0, PE::SBasicSensor(14,0.1)); //14 ticks
+
+   core.AddOdo (7.0, PE::SBasicSensor( 7,0.1)); //14 ticks
    core.AddGnss(7.0, PE::SPosition(50.00017805,10.00027700,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(7.0,0.1)); //7m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
-//    EXPECT_EQ("", PE::CSensorCfg::ToSTR(core.GetOdoCfg()));
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (7.5, PE::SBasicSensor(15,0.1)); //15 ticks
-   core.AddOdo (8.0, PE::SBasicSensor(16,0.1)); //16 ticks
+
+   core.AddOdo (8.0, PE::SBasicSensor( 8,0.1)); //16 ticks
    core.AddGnss(8.0, PE::SPosition(50.00022892,10.00035615,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(8.0,0.1)); //8m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (8.5, PE::SBasicSensor(17,0.1)); //17 ticks
-   core.AddOdo (9.0, PE::SBasicSensor(18,0.1)); //18 ticks
+
+   core.AddOdo (9.0, PE::SBasicSensor( 9,0.1)); //18 ticks
    core.AddGnss(9.0, PE::SPosition(50.00028616,10.00044519,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(9.0,0.1)); //9m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (9.5, PE::SBasicSensor(19,0.1)); //19 ticks
-   core.AddOdo (10.0, PE::SBasicSensor(20,0.1)); //20 ticks
+
+   core.AddOdo (10.0, PE::SBasicSensor(10,0.1)); //20 ticks
    core.AddGnss(10.0, PE::SPosition(50.00034975,10.00054412,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(10.0,0.1)); //10m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
-//    EXPECT_EQ("", PE::CSensorCfg::ToSTR(core.GetOdoCfg()));
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (10.5, PE::SBasicSensor(18,0.1)); //18 ticks
-   core.AddOdo (11.0, PE::SBasicSensor(16,0.1)); //16 ticks
+
+   core.AddOdo (11.0, PE::SBasicSensor(8,0.1)); //16 ticks
    core.AddGnss(11.0, PE::SPosition(50.00040062,10.00062327,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(8.0,0.1)); //8m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (11.5, PE::SBasicSensor(12,0.1)); //12 ticks
-   core.AddOdo (12.0, PE::SBasicSensor( 8,0.1)); //8 ticks
+
+   core.AddOdo (12.0, PE::SBasicSensor(4,0.1)); //8 ticks
    core.AddGnss(12.0, PE::SPosition(50.00042606,10.00066284,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(4.0,0.1)); //4m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
 
-   core.AddOdo (12.5, PE::SBasicSensor(13,0.1)); //13 ticks
-   core.AddOdo (13.0, PE::SBasicSensor(18,0.1)); //18 ticks
+
+   core.AddOdo (13.0, PE::SBasicSensor(9,0.1)); //18 ticks
    core.AddGnss(13.0, PE::SPosition(50.00048329,10.00075188,1.0), PE::SBasicSensor(45.0,0.1), PE::SBasicSensor(9.0,0.1)); //9m/s
    core.UpdatePosition();
-//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.01);
-//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.01 );
+   EXPECT_NEAR(0.0, core.GetSpeed().Value,0.000001);
+   EXPECT_NEAR(0.0, core.GetSpeed().Accuracy,0.000001);
+
+//    EXPECT_NEAR( 0.00, CalibratedScaleTo(core, PE::SENSOR_ODOMETER_AXIS),0.0000001);
+//    EXPECT_NEAR( 0.00, GetScale(core, PE::SENSOR_ODOMETER_AXIS), 0.0000001 );
 //    EXPECT_EQ("", PE::CSensorCfg::ToSTR(core.GetOdoCfg()));
+*/
 }
 
 

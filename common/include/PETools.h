@@ -60,6 +60,10 @@ TValue ToDistance(const SPosition& first, const SPosition& second);
  */
 TValue ToDistancePrecise(const SPosition& first, const SPosition& second);
 
+TValue ToDistance(const TValue& firstHeading, const SPosition& firstPosition, const SPosition& secondPosition);
+
+TValue ToAngDistance(const TValue& firstHeading, const TValue& secondHeading);
+
 /**
  * Calculates heading between two coordinates.
  *

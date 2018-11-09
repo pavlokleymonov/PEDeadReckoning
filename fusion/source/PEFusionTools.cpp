@@ -18,7 +18,7 @@
 
 using namespace PE;
 
-
+//TODO to be moved into PETools
 TValue ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)
 {
    if   ( 180 < (firstHeading - secondHeading))

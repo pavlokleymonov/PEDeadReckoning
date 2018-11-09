@@ -56,6 +56,14 @@ TValue PE::TOOLS::ToDistancePrecise(const SPosition& first, const SPosition& sec
    return c * EARTH_RADIUS_M;
 }
 
+TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const SPosition& firstPosition, const SPosition& secondPosition)
+{
+}
+
+TValue PE::TOOLS::ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)
+{
+}
+
 TValue PE::TOOLS::ToHeading(const SPosition& first, const SPosition& second)
 {
    TValue rLat1 = PE::TOOLS::ToRadians(first.Latitude);

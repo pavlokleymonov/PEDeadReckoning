@@ -121,6 +121,10 @@ public:
     */
    void DoFusion();
 
+   TValue GetWholeDistance() const;
+
+   TValue GetWholeRotation() const;
+
 private:
    /**
     * Structure hold allbasic sensors information with the same timestamp
@@ -164,6 +168,10 @@ private:
     * The linear velocity in meter/seconds
     */
    SBasicSensor m_Speed;
+
+   TValue m_Distance;
+
+   TValue m_Rotation;
 
    TSensorsList m_SensorsList;
    /**
