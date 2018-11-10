@@ -41,7 +41,7 @@ add_library ( pe_calibration STATIC
    ${REPOSITORY_ROOT}/calibration/source/PECCalibration.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationUni.cpp
+#   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationUni.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECNormalisation.cpp
 )
 
@@ -117,11 +117,11 @@ add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
 
 #################################
 #Test class PE::CCalibrationUni
-add_executable(test_pe_calibration_uni
-   PECCalibrationUniTest.cpp
-)
-target_link_libraries(test_pe_calibration_uni pe_common pe_calibration gtest pthread )
-add_test(NAME test_pe_calibration_uni COMMAND test_pe_calibration_uni)
+#add_executable(test_pe_calibration_uni
+#   PECCalibrationUniTest.cpp
+#)
+#target_link_libraries(test_pe_calibration_uni pe_common pe_calibration gtest pthread )
+#add_test(NAME test_pe_calibration_uni COMMAND test_pe_calibration_uni)
 
 #################################
 #Test class PE::CSensorCfg

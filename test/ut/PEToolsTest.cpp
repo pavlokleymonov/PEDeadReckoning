@@ -96,6 +96,52 @@ TEST_F(PEToolsTest, distance_from_coordinates_test)
 }
 
 
+//Test angular distance between two heading
+TEST_F(PEToolsTest, agular_distance_between_two_heading_test)
+{
+   //distance between 0 and 10 wich is rigth rotation gives negative distance
+   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngDistance(0.0, 10.0),0.001);
+
+   //distance between 10 and 0 wich is left rotation gives positive distance
+   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngDistance(10.0, 0.0),0.001);
+
+   //distance between 1 and 359 wich is left rotation gives positive distance
+   EXPECT_NEAR( 2.0,PE::TOOLS::ToAngDistance(1.0, 359.0),0.001);
+
+   //distance between 359 and 1 wich is rigth rotation gives negaive distance
+   EXPECT_NEAR(-2.0,PE::TOOLS::ToAngDistance(359.0, 1.0),0.001);
+
+   //distance more then 90 degree
+   EXPECT_NEAR(-91.0,PE::TOOLS::ToAngDistance(0.0, 91.0),0.001);
+   EXPECT_NEAR( 91.0,PE::TOOLS::ToAngDistance(91.0, 0.0),0.001);
+
+   //maximum posible distance is 180
+   EXPECT_NEAR(-180.0,PE::TOOLS::ToAngDistance(0.0, 180.0),0.001);
+   EXPECT_NEAR( 180.0,PE::TOOLS::ToAngDistance(180.0, 0.0),0.001);
+
+   //distance takes always the shortest way
+   EXPECT_NEAR( 179.0,PE::TOOLS::ToAngDistance(0.0, 181.0),0.001);
+   EXPECT_NEAR(-179.0,PE::TOOLS::ToAngDistance(181.0, 0.0),0.001);
+
+   //test zero distance
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(0.0, 0.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(0.0, 360.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(360.0, 0.0),0.001);
+
+   //test ecvivalency of 360 and 0
+   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngDistance(0.0, 10.0),0.001);
+   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngDistance(360.0, 10.0),0.001);
+   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngDistance(10.0, 0.0),0.001);
+   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngDistance(10.0, 360.0),0.001);
+
+   //test over one rotation
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(361.0, 1.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(1.0, 361.0),0.001);
+   EXPECT_NEAR(-1.0,PE::TOOLS::ToAngDistance(361.0, 362.0),0.001);
+   EXPECT_NEAR( 1.0,PE::TOOLS::ToAngDistance(362.0, 361.0),0.001);
+}
+
+
 //Test heading calc between two coordinates
 TEST_F(PEToolsTest, heading_from_coordinates_test)
 {

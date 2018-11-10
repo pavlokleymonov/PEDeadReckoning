@@ -18,24 +18,6 @@
 
 using namespace PE;
 
-//TODO to be moved into PETools
-TValue ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)
-{
-   if   ( 180 < (firstHeading - secondHeading))
-   {
-      return firstHeading - (secondHeading+360.0);
-   }
-   else if ( -180 > (firstHeading - secondHeading))
-   {
-      return firstHeading+360.0 - secondHeading;
-   }
-   else
-   {
-      return firstHeading - secondHeading;
-   }
-}
-
-
 SBasicSensor PE::FUSION::PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
 {
    SBasicSensor resultSensor = sensor;
@@ -76,7 +58,7 @@ SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const 
          resultHeading.Accuracy = TOOLS::ToDegrees(atan(deviation / distance)) / 2 * deltaTimestamp;
          if (heading.IsValid())
          {
-            TValue omega           = ToAngDistance(heading.Value, TOOLS::ToHeading(positionFirst, positionLast)) * 2;
+            TValue omega           = TOOLS::ToAngDistance(heading.Value, TOOLS::ToHeading(positionFirst, positionLast)) * 2;
             resultHeading.Value    = TOOLS::ToHeading(heading.Value,1,omega);
             resultHeading.Accuracy += heading.Accuracy;
          }
@@ -147,7 +129,7 @@ SBasicSensor PE::FUSION::PredictAngSpeed(const TTimestamp& deltaTimestamp, const
    SBasicSensor resultAngSpeed;
    if ( 0 < deltaTimestamp && headingFirst.IsValid() && headingLast.IsValid() )
    {
-      resultAngSpeed.Value    = ToAngDistance(headingFirst.Value, headingLast.Value) / deltaTimestamp;
+      resultAngSpeed.Value    = TOOLS::ToAngDistance(headingFirst.Value, headingLast.Value) / deltaTimestamp;
       resultAngSpeed.Accuracy = headingFirst.Accuracy + headingLast.Accuracy;
    }
    return resultAngSpeed;

@@ -62,6 +62,18 @@ TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const SPosition& firstP
 
 TValue PE::TOOLS::ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)
 {
+   if   ( 180 < (firstHeading - secondHeading))
+   {
+      return firstHeading - (secondHeading+360.0);
+   }
+   else if ( -180 > (firstHeading - secondHeading))
+   {
+      return firstHeading+360.0 - secondHeading;
+   }
+   else
+   {
+      return firstHeading - secondHeading;
+   }
 }
 
 TValue PE::TOOLS::ToHeading(const SPosition& first, const SPosition& second)
