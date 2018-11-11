@@ -60,8 +60,26 @@ TValue ToDistance(const SPosition& first, const SPosition& second);
  */
 TValue ToDistancePrecise(const SPosition& first, const SPosition& second);
 
+/**
+ * Calculates distance between two coordinates.
+ * Considers differences between heading.
+ * If delta between first and last heading more or equal 180 returns simple distance between two coordinates
+ *
+ * @pram  firstHeading     heading of the first position
+ * @param firstPosition    first position
+ * @param secondPosition   second position
+ * @return                 distance in meters
+ */
 TValue ToDistance(const TValue& firstHeading, const SPosition& firstPosition, const SPosition& secondPosition);
 
+/**
+ * Calculates angular distance between two headings.
+ * Distance takes always the shortest way
+ *
+ * @param firstHeading    first heading in degrees
+ * @param secondHeading   second heading in degrees
+ * @return                distance in degrees
+ */
 TValue ToAngDistance(const TValue& firstHeading, const TValue& secondHeading);
 
 /**

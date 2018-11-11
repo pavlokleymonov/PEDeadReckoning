@@ -48,6 +48,8 @@ namespace PE {
 
    typedef double TAccuracy;
 
+   static const double HEAD_EPSILON = 0.0000001;
+
    static const double PI = 3.1415926535897931;
 
    static const double EARTH_RADIUS_M = 6371000.0;

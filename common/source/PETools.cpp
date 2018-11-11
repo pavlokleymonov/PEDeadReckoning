@@ -58,6 +58,21 @@ TValue PE::TOOLS::ToDistancePrecise(const SPosition& first, const SPosition& sec
 
 TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const SPosition& firstPosition, const SPosition& secondPosition)
 {
+   TValue secondHeading = ToHeading(firstPosition, secondPosition);
+   TValue rBeta         = fabs(ToRadians(ToAngDistance(firstHeading, secondHeading)));
+   TValue horda         = ToDistancePrecise(firstPosition, secondPosition);
+   if ( HEAD_EPSILON > rBeta )
+   {
+      return horda;
+   }
+   else if ( PI/2 > rBeta )
+   {
+      return horda / sin(rBeta) * rBeta;
+   }
+   else
+   {
+      return horda;
+   }
 }
 
 TValue PE::TOOLS::ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)

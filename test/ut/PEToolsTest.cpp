@@ -96,6 +96,35 @@ TEST_F(PEToolsTest, distance_from_coordinates_test)
 }
 
 
+//Test distance calc between two coordinates considering start heading
+TEST_F(PEToolsTest, distance_from_coordinates_and_heading_test)
+{
+   //Head diff is 0.0 same like normal diff
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(0.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+
+   //Head diff is 1.0
+   EXPECT_NEAR(1112.005,PE::TOOLS::ToDistance(359.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1112.005,PE::TOOLS::ToDistance(  1.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+
+   //Head diff is 45.0
+   EXPECT_NEAR(1235.065,PE::TOOLS::ToDistance( 45.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1235.065,PE::TOOLS::ToDistance(315.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+
+   //Head diff is less 90.0
+   EXPECT_NEAR(1744.707,PE::TOOLS::ToDistance( 89.9, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1744.707,PE::TOOLS::ToDistance(270.1, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+
+   //Head diff is 90.0
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance( 90.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(270.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+}
+
+
 //Test angular distance between two heading
 TEST_F(PEToolsTest, agular_distance_between_two_heading_test)
 {
