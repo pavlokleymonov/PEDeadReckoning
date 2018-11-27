@@ -133,6 +133,13 @@ void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );
  */
 std::vector<std::string> Split(const std::string& str, char delimiter);
 
+TValue ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
+//TValue ToAngDistance(const TValue& firstHeading, const TValue& lastHeading);
+TValue ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
+TValue ToHeading(const TValue& firstHeading, const TValue& angle);
+TValue ToHeading(const TValue& startHeading, const SPosition& firstPosition, const SPosition& secondPosition);
+//SBasicSensor GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos);
+
 } // namespace TOOLS
 } // namespace PE
 

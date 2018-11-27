@@ -558,7 +558,6 @@ TEST_F(PEToolsTest, pos_set_1m_3m_6m_10m_15m_21m_28m_36m_45m_55m_test)
    EXPECT_NEAR(10.00075188, PE::TOOLS::ToPosition(start, 76, 45.0).Longitude, 0.00000001);
 }
 
-
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
