@@ -201,7 +201,7 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
 
       if ( position.IsValid() )
       {
-         TValue distPos = TOOLS::ToDistancePrecise(m_Position,position);
+         TValue distPos = TOOLS::ToDistance(m_Position.Latitude,m_Position.Longitude,position.Latitude, position.Longitude);
          TAccuracy accPos = m_Position.HorizontalAcc + position.HorizontalAcc;
          if (distPos > accPos)
          {

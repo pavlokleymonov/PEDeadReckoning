@@ -29,7 +29,6 @@ namespace TOOLS {
  * @return           conversion result in radians
  */
 TValue ToRadians(const TValue& degrees);
-
 /**
  * Converts radians to degrees
  *
@@ -37,82 +36,69 @@ TValue ToRadians(const TValue& degrees);
  * @return           conversion result in degrees
  */
 TValue ToDegrees(const TValue& radians);
-
-/**
- * Calculates distance between two coordinates.
- * Uses fast algorithm.
- * Accuracy better then 1 meter for distance less then 10km.
- *
- * @param first    first position
- * @param second   second position
- * @return         distance in meters
- */
-TValue ToDistance(const SPosition& first, const SPosition& second);
-
 /**
  * Calculates distance between two coordinates.
  * Uses slow but precise algorithm.
  * Accuracy better then 1 meter for distance less then 1000km.
  *
- * @param first    first position
- * @param second   second position
- * @return         distance in meters
- */
-TValue ToDistancePrecise(const SPosition& first, const SPosition& second);
-
-/**
- * Calculates distance between two coordinates.
- * Considers differences between heading.
- * If delta between first and last heading more or equal 180 returns simple distance between two coordinates
- *
- * @pram  firstHeading     heading of the first position
- * @param firstPosition    first position
- * @param secondPosition   second position
+ * @param firstLatitude    Latitude of first position in degrees
+ * @param firstLongitude   Longitude of first position in degrees
+ * @param lastLatitude     Latitude of last position in degrees
+ * @param lastLongitude    Longitude of last position in degrees
  * @return                 distance in meters
  */
-TValue ToDistance(const TValue& firstHeading, const SPosition& firstPosition, const SPosition& secondPosition);
-
+TValue ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
 /**
- * Calculates angular distance between two headings.
- * Distance takes always the shortest way
+ * Calculates distance between two coordinates.
+ * Uses slow but precise algorithm.
+ * Accuracy better then 1 meter for distance less then 1000km.
+ * Considers curvature of turning driving
+ *
+ * @param firstHeading     first heading in degrees
+ * @param firstLatitude    Latitude of first position in degrees
+ * @param firstLongitude   Longitude of first position in degrees
+ * @param lastLatitude     Latitude of last position in degrees
+ * @param lastLongitude    Longitude of last position in degrees
+ * @return                 distance in meters
+ */
+TValue ToDistance(const TValue& firstHeading, const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
+/**
+ * Calculates angle between two headings.
+ * It takes always the shortest way
  *
  * @param firstHeading    first heading in degrees
  * @param secondHeading   second heading in degrees
- * @return                distance in degrees
+ * @return                angle between two headings in degrees turning left("+") - positive, turning right("-") - negative
  */
-TValue ToAngDistance(const TValue& firstHeading, const TValue& secondHeading);
-
+TValue ToAngle(const TValue& firstHeading, const TValue& lastHeading);
 /**
  * Calculates heading between two coordinates.
  *
- * @param first    first position
- * @param second   second position
- * @return         heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+ * @param firstLatitude    Latitude of first position in degrees
+ * @param firstLongitude   Longitude of first position in degrees
+ * @param lastLatitude     Latitude of last position in degrees
+ * @param lastLongitude    Longitude of last position in degrees
+ * @return                 heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
  */
-TValue ToHeading(const SPosition& first, const SPosition& second);
-
+TValue ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
 /**
- * Calculates heading based on original heading plus provided angular velocity.
+ * Calculates heading based on original heading and provided angle.
  *
- * @param startHeading    start headingn in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
- * @param deltaTime       delta time to new heading in second
- * @param angularSpeed    angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
- * @return                heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+ * @param heading   original heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+ * @param angle     angle to the new heading in degree turning left("+") - positive, turning right("-") - negative
+ * @return          new heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
  */
-TValue ToHeading(const TValue& startHeading, const TTimestamp& deltaTime, const TValue& angularSpeed);
-
+TValue ToHeading(const TValue& heading, const TValue& angle);
 /**
- * Calculates new coordinates based on distance, heading and first coordinates.
+ * 2D - Transforms X/Y values to new coordinate system and update them accordingly
  *
- * @param start      start position
- * @param distnce    distance in meters
- * @param heading    heading in degrees
- * @return           new calculated position
+ * @param xValue    X-component of value
+ * @param yValue    Y-component of value
+ * @param zRot      rotation around z-axis [deg]
  */
-SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
-
+void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );
 /**
- * Transforms values to new coordinate system and update them accordingly
+ * 3D - Transforms X/Y/Z values to new coordinate system and update them accordingly
  *
  * @param xValue    X-component of value
  * @param yValue    Y-component of value
@@ -122,22 +108,27 @@ SPosition ToPosition(const SPosition& start, const TValue& distance, const TValu
  * @param zRot      rotation around z-axis [deg]
  */
 void Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot );
-void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );
-
 /**
  * Splits string by delimiter
  * 
  * @param str        string which will be splitted by delimiter
- * @param delimiter  simbol which separated parts of the string
- * @return vector of strings
+ * @param delimiter  symbol which separated parts of the string
+ * @return           vector of strings
  */
 std::vector<std::string> Split(const std::string& str, char delimiter);
 
-TValue ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
-//TValue ToAngDistance(const TValue& firstHeading, const TValue& lastHeading);
-TValue ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
-TValue ToHeading(const TValue& firstHeading, const TValue& angle);
-TValue ToHeading(const TValue& startHeading, const SPosition& firstPosition, const SPosition& secondPosition);
+
+// /**
+//  * Calculates new coordinates based on distance, heading and first coordinates.
+//  *
+//  * @param start      start position
+//  * @param distnce    distance in meters
+//  * @param heading    heading in degrees
+//  * @return           new calculated position
+//  */
+//TO BE REMOVED!!!
+SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
+
 //SBasicSensor GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos);
 
 } // namespace TOOLS

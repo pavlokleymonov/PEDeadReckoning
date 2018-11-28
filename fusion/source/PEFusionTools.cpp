@@ -37,29 +37,29 @@ SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const 
       resultHeading.Accuracy = heading.Accuracy * (1 + deltaTimestamp);
       if ( angSpeed.IsValid() )
       {
-         resultHeading.Value    = TOOLS::ToHeading(heading.Value, deltaTimestamp, angSpeed.Value);
+         resultHeading.Value    = TOOLS::ToHeading(heading.Value, angSpeed.Value * deltaTimestamp);
          resultHeading.Accuracy = heading.Accuracy + angSpeed.Accuracy * deltaTimestamp;
       }
    }
    return resultHeading;
 }
 
-
+//TODO has to be reworked!!!!
 SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading)
 {
    SBasicSensor resultHeading = PredictSensorAccuracy(deltaTimestamp, heading);
    if ( 0 < deltaTimestamp && positionFirst.IsValid() && positionLast.IsValid() )
    {
-      TValue distance        = TOOLS::ToDistancePrecise(positionFirst, positionLast);
+      TValue distance        = TOOLS::ToDistance(positionFirst.Latitude, positionFirst.Longitude, positionLast.Latitude, positionLast.Longitude);
       if ( 0.0 < distance )
       {
          TValue deviation       = positionFirst.HorizontalAcc + positionLast.HorizontalAcc;
-         resultHeading.Value    = TOOLS::ToHeading(positionFirst, positionLast);
+         resultHeading.Value    = TOOLS::ToHeading(positionFirst.Latitude, positionFirst.Longitude, positionLast.Latitude, positionLast.Longitude);
          resultHeading.Accuracy = TOOLS::ToDegrees(atan(deviation / distance)) / 2 * deltaTimestamp;
          if (heading.IsValid())
          {
-            TValue omega           = TOOLS::ToAngDistance(heading.Value, TOOLS::ToHeading(positionFirst, positionLast)) * 2;
-            resultHeading.Value    = TOOLS::ToHeading(heading.Value,1,omega);
+            TValue omega           = TOOLS::ToAngle(heading.Value, resultHeading.Value) * 2;
+            resultHeading.Value    = TOOLS::ToHeading(heading.Value,omega);
             resultHeading.Accuracy += heading.Accuracy;
          }
       }
@@ -67,7 +67,7 @@ SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const 
    return resultHeading;
 }
 
-
+//TODO has to be reworked!!!!
 SPosition PE::FUSION::PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed)
 {
    SPosition resultPosition = position;
@@ -82,7 +82,7 @@ SPosition PE::FUSION::PredictPosition(const TTimestamp& deltaTimestamp, const SB
             TValue fi  = heading.Accuracy + (angSpeed.Accuracy * deltaTimestamp);
             if ( 90 > fi )
             {
-               TValue horda_heading = TOOLS::ToHeading(heading.Value, deltaTimestamp, angSpeed.Value / 2);
+               TValue horda_heading = TOOLS::ToHeading(heading.Value, angSpeed.Value / 2 * deltaTimestamp);
                TValue omega         = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
                TValue arch          = speed.Value * deltaTimestamp;
                TValue horda         = arch * ( 0 < omega ? sin(omega) / omega : 1 );
@@ -102,7 +102,7 @@ SBasicSensor PE::FUSION::PredictSpeed(const TTimestamp& deltaTimestamp, const SP
    SBasicSensor resutlSpeed;
    if ( 0 < deltaTimestamp && positionFirst.IsValid() && positionLast.IsValid() )
    {
-      TValue horda         = TOOLS::ToDistancePrecise(positionFirst,positionLast);
+      TValue horda         = TOOLS::ToDistance(positionFirst.Latitude,positionFirst.Longitude,positionLast.Latitude,positionLast.Longitude);
       resutlSpeed.Value    = horda / deltaTimestamp ;
       resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) / cos(TOOLS::ToRadians(45));
       if (  0.0 < horda && angSpeed.IsValid() )
@@ -129,7 +129,7 @@ SBasicSensor PE::FUSION::PredictAngSpeed(const TTimestamp& deltaTimestamp, const
    SBasicSensor resultAngSpeed;
    if ( 0 < deltaTimestamp && headingFirst.IsValid() && headingLast.IsValid() )
    {
-      resultAngSpeed.Value    = TOOLS::ToAngDistance(headingFirst.Value, headingLast.Value) / deltaTimestamp;
+      resultAngSpeed.Value    = TOOLS::ToAngle(headingFirst.Value, headingLast.Value) / deltaTimestamp;
       resultAngSpeed.Accuracy = headingFirst.Accuracy + headingLast.Accuracy;
    }
    return resultAngSpeed;

@@ -351,7 +351,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left
    EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
    EXPECT_NEAR( 19.293105,pos_predict.HorizontalAcc,0.000001);
    //check distance
-   EXPECT_NEAR( PE::TOOLS::ToDistance(pos, pos_predict), speed.Value * deltaTime * 2 / PE::PI,0.000001);
+   EXPECT_NEAR( PE::TOOLS::ToDistance(pos.Latitude,pos.Longitude,pos_predict.Latitude,pos_predict.Longitude), speed.Value * deltaTime * 2 / PE::PI,0.000001);
 
    const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
    EXPECT_NEAR(270.000000,heading_predict.Value,0.000001);
@@ -375,7 +375,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_righ
    EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
    EXPECT_NEAR( 19.293105,pos_predict.HorizontalAcc,0.000001);
    //check distance
-   EXPECT_NEAR( PE::TOOLS::ToDistance(pos, pos_predict), speed.Value * deltaTime * 2 / PE::PI,0.000001);
+   EXPECT_NEAR( PE::TOOLS::ToDistance(pos.Latitude,pos.Longitude,pos_predict.Latitude,pos_predict.Longitude), speed.Value * deltaTime * 2 / PE::PI,0.000001);
 
    const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
    EXPECT_NEAR(270.000000,heading_predict.Value,0.000001);
@@ -399,7 +399,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left
    EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
    EXPECT_NEAR( 39.131965,pos_predict.HorizontalAcc,0.000001);
    //check distance has to be zero (passed full circle )
-   EXPECT_NEAR( 0, PE::TOOLS::ToDistance(pos, pos_predict),0.000001);
+   EXPECT_NEAR( 0, PE::TOOLS::ToDistance(pos.Latitude,pos.Longitude,pos_predict.Latitude,pos_predict.Longitude),0.000001);
 
    const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
    EXPECT_NEAR( 90.000000,heading_predict.Value,0.000001);
@@ -423,7 +423,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_righ
    EXPECT_NEAR( 10.000000,pos_predict.Longitude,0.000001);
    EXPECT_NEAR( 39.131965,pos_predict.HorizontalAcc,0.000001);
    //check distance has to be zero (passed full circle )
-   EXPECT_NEAR( 0, PE::TOOLS::ToDistance(pos, pos_predict),0.000001);
+   EXPECT_NEAR( 0, PE::TOOLS::ToDistance(pos.Latitude,pos.Longitude,pos_predict.Latitude,pos_predict.Longitude),0.000001);
 
    const PE::SBasicSensor heading_predict = PE::FUSION::PredictHeading (deltaTime, heading, angSpeed);
    EXPECT_NEAR( 90.000000,heading_predict.Value,0.000001);

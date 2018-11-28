@@ -70,29 +70,23 @@ TEST_F(PEToolsTest, radian_degrees_conversions_test)
 TEST_F(PEToolsTest, distance_from_coordinates_test)
 {
    //small distance 22.681 meter
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.054447,10.008288)),0.001);
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054447,10.008288),PE::SPosition(52.054274,10.008114)),0.001);
+   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(52.054447,10.008288,52.054274,10.008114),0.001);
 
    //same distance but oposite dirrection
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(PE::SPosition(52.054447,10.008288),PE::SPosition(52.054274,10.008114)),0.001);
-   EXPECT_NEAR(22.618,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054447,10.008288),PE::SPosition(52.054274,10.008114)),0.001);
+   EXPECT_NEAR(22.618,PE::TOOLS::ToDistance(52.054447,10.008288,52.054274,10.008114),0.001);
    
    //middle distance ~6km 
-   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.097195,10.067757)),0.001);
-   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054274,10.008114),PE::SPosition(52.097195,10.067757)),0.001);
+   EXPECT_NEAR(6276.362,PE::TOOLS::ToDistance(52.054274,10.008114,52.097195,10.067757),0.001);
 
    //middle distance ~10km 
-   EXPECT_NEAR(10403.661,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.109193,10.131375)),0.001);
-   EXPECT_NEAR(10403.659,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054274,10.008114),PE::SPosition(52.109193,10.131375)),0.001);
+   EXPECT_NEAR(10403.659,PE::TOOLS::ToDistance(52.054274,10.008114,52.109193,10.131375),0.001);
 
    //big distance ~225km 
-   EXPECT_NEAR(224941.284,PE::TOOLS::ToDistance(PE::SPosition(52.054274,10.008114),PE::SPosition(52.671695,13.162785)),0.001);
-   EXPECT_NEAR(224919.158,PE::TOOLS::ToDistancePrecise(PE::SPosition(52.054274,10.008114),PE::SPosition(52.671695,13.162785)),0.001);
+   EXPECT_NEAR(224919.158,PE::TOOLS::ToDistance(52.054274,10.008114,52.671695,13.162785),0.001);
 
    //SOUTH-WEST coordinates
    //small distance
-   EXPECT_NEAR(60.704,PE::TOOLS::ToDistance(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.001);
-   EXPECT_NEAR(60.704,PE::TOOLS::ToDistancePrecise(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.001);
+   EXPECT_NEAR(60.704,PE::TOOLS::ToDistance(-16.499917,-68.150214,-16.500336,-68.149849),0.001);
 }
 
 
@@ -100,28 +94,28 @@ TEST_F(PEToolsTest, distance_from_coordinates_test)
 TEST_F(PEToolsTest, distance_from_coordinates_and_heading_test)
 {
    //Head diff is 0.0 same like normal diff
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(0.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(0.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(50.00,10.0,50.01,10.0),0.001);
 
    //Head diff is 1.0
-   EXPECT_NEAR(1112.005,PE::TOOLS::ToDistance(359.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1112.005,PE::TOOLS::ToDistance(  1.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1112.005,PE::TOOLS::ToDistance(359.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1112.005,PE::TOOLS::ToDistance(  1.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(50.00,10.0,50.01,10.0),0.001);
 
    //Head diff is 45.0
-   EXPECT_NEAR(1235.065,PE::TOOLS::ToDistance( 45.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1235.065,PE::TOOLS::ToDistance(315.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1235.065,PE::TOOLS::ToDistance( 45.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1235.065,PE::TOOLS::ToDistance(315.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(50.00,10.0,50.01,10.0),0.001);
 
    //Head diff is less 90.0
-   EXPECT_NEAR(1744.707,PE::TOOLS::ToDistance( 89.9, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1744.707,PE::TOOLS::ToDistance(270.1, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1744.707,PE::TOOLS::ToDistance( 89.9, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1744.707,PE::TOOLS::ToDistance(270.1, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(50.00,10.0,50.01,10.0),0.001);
 
    //Head diff is 90.0
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance( 90.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(270.0, PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
-   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistancePrecise(PE::SPosition(50.00,10.0),PE::SPosition(50.01,10.0)),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance( 90.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(270.0, 50.00,10.0,50.01,10.0),0.001);
+   EXPECT_NEAR(1111.949,PE::TOOLS::ToDistance(50.00,10.0,50.01,10.0),0.001);
 }
 
 
@@ -129,45 +123,45 @@ TEST_F(PEToolsTest, distance_from_coordinates_and_heading_test)
 TEST_F(PEToolsTest, agular_distance_between_two_heading_test)
 {
    //distance between 0 and 10 wich is rigth rotation gives negative distance
-   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngDistance(0.0, 10.0),0.001);
+   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngle(0.0, 10.0),0.001);
 
    //distance between 10 and 0 wich is left rotation gives positive distance
-   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngDistance(10.0, 0.0),0.001);
+   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngle(10.0, 0.0),0.001);
 
    //distance between 1 and 359 wich is left rotation gives positive distance
-   EXPECT_NEAR( 2.0,PE::TOOLS::ToAngDistance(1.0, 359.0),0.001);
+   EXPECT_NEAR( 2.0,PE::TOOLS::ToAngle(1.0, 359.0),0.001);
 
    //distance between 359 and 1 wich is rigth rotation gives negaive distance
-   EXPECT_NEAR(-2.0,PE::TOOLS::ToAngDistance(359.0, 1.0),0.001);
+   EXPECT_NEAR(-2.0,PE::TOOLS::ToAngle(359.0, 1.0),0.001);
 
    //distance more then 90 degree
-   EXPECT_NEAR(-91.0,PE::TOOLS::ToAngDistance(0.0, 91.0),0.001);
-   EXPECT_NEAR( 91.0,PE::TOOLS::ToAngDistance(91.0, 0.0),0.001);
+   EXPECT_NEAR(-91.0,PE::TOOLS::ToAngle(0.0, 91.0),0.001);
+   EXPECT_NEAR( 91.0,PE::TOOLS::ToAngle(91.0, 0.0),0.001);
 
    //maximum posible distance is 180
-   EXPECT_NEAR(-180.0,PE::TOOLS::ToAngDistance(0.0, 180.0),0.001);
-   EXPECT_NEAR( 180.0,PE::TOOLS::ToAngDistance(180.0, 0.0),0.001);
+   EXPECT_NEAR(-180.0,PE::TOOLS::ToAngle(0.0, 180.0),0.001);
+   EXPECT_NEAR( 180.0,PE::TOOLS::ToAngle(180.0, 0.0),0.001);
 
    //distance takes always the shortest way
-   EXPECT_NEAR( 179.0,PE::TOOLS::ToAngDistance(0.0, 181.0),0.001);
-   EXPECT_NEAR(-179.0,PE::TOOLS::ToAngDistance(181.0, 0.0),0.001);
+   EXPECT_NEAR( 179.0,PE::TOOLS::ToAngle(0.0, 181.0),0.001);
+   EXPECT_NEAR(-179.0,PE::TOOLS::ToAngle(181.0, 0.0),0.001);
 
    //test zero distance
-   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(0.0, 0.0),0.001);
-   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(0.0, 360.0),0.001);
-   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(360.0, 0.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngle(0.0, 0.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngle(0.0, 360.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngle(360.0, 0.0),0.001);
 
    //test ecvivalency of 360 and 0
-   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngDistance(0.0, 10.0),0.001);
-   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngDistance(360.0, 10.0),0.001);
-   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngDistance(10.0, 0.0),0.001);
-   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngDistance(10.0, 360.0),0.001);
+   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngle(0.0, 10.0),0.001);
+   EXPECT_NEAR(-10.0,PE::TOOLS::ToAngle(360.0, 10.0),0.001);
+   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngle(10.0, 0.0),0.001);
+   EXPECT_NEAR( 10.0,PE::TOOLS::ToAngle(10.0, 360.0),0.001);
 
    //test over one rotation
-   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(361.0, 1.0),0.001);
-   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngDistance(1.0, 361.0),0.001);
-   EXPECT_NEAR(-1.0,PE::TOOLS::ToAngDistance(361.0, 362.0),0.001);
-   EXPECT_NEAR( 1.0,PE::TOOLS::ToAngDistance(362.0, 361.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngle(361.0, 1.0),0.001);
+   EXPECT_NEAR( 0.0,PE::TOOLS::ToAngle(1.0, 361.0),0.001);
+   EXPECT_NEAR(-1.0,PE::TOOLS::ToAngle(361.0, 362.0),0.001);
+   EXPECT_NEAR( 1.0,PE::TOOLS::ToAngle(362.0, 361.0),0.001);
 }
 
 
@@ -175,43 +169,39 @@ TEST_F(PEToolsTest, agular_distance_between_two_heading_test)
 TEST_F(PEToolsTest, heading_from_coordinates_test)
 {
    //North 0.0
-   EXPECT_NEAR(0.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0524,   10.0548 ),PE::SPosition(  52.0596  ,    10.0548)),0.01);
+   EXPECT_NEAR(0.0,PE::TOOLS::ToHeading( 52.0524,   10.0548 ,  52.0596  ,    10.0548),0.01);
    //East 90.0
-   EXPECT_NEAR(90.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0524,   10.0548 ),PE::SPosition(  52.0524  ,    10.0620)),0.01);
+   EXPECT_NEAR(90.0,PE::TOOLS::ToHeading( 52.0524,   10.0548 ,  52.0524  ,    10.0620),0.01);
    //South 180.0
-   EXPECT_NEAR(180.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0596,   10.0548 ),PE::SPosition(  52.0524  ,    10.0548)),0.01);
+   EXPECT_NEAR(180.0,PE::TOOLS::ToHeading( 52.0596,   10.0548 ,  52.0524  ,    10.0548),0.01);
    //West 270.0
-   EXPECT_NEAR(270.0,PE::TOOLS::ToHeading(PE::SPosition( 52.0524,   10.0620 ),PE::SPosition(  52.0524  ,    10.0548)),0.01);
+   EXPECT_NEAR(270.0,PE::TOOLS::ToHeading( 52.0524,   10.0620 ,  52.0524  ,    10.0548),0.01);
    //PointLU 307.60
-   EXPECT_NEAR(307.60,PE::TOOLS::ToHeading(PE::SPosition( 52.045690, 10.002842 ),PE::SPosition( 52.045753 , 10.002709)),0.01);
+   EXPECT_NEAR(307.60,PE::TOOLS::ToHeading( 52.045690, 10.002842 , 52.045753 , 10.002709),0.01);
    //PointRD 138.96
-   EXPECT_NEAR(138.96,PE::TOOLS::ToHeading(PE::SPosition( 52.045690, 10.002842 ),PE::SPosition( 52.045596 , 10.002975)),0.01);
+   EXPECT_NEAR(138.96,PE::TOOLS::ToHeading( 52.045690, 10.002842 , 52.045596 , 10.002975),0.01);
    //SOUTH-WEST coordinates: 140.13
-   EXPECT_NEAR(140.13,PE::TOOLS::ToHeading(PE::SPosition(-16.499917,-68.150214),PE::SPosition(-16.500336,-68.149849)),0.01);
+   EXPECT_NEAR(140.13,PE::TOOLS::ToHeading(-16.499917,-68.150214,-16.500336,-68.149849),0.01);
 }
 
 
-//Test heading calc based on original heading plus provided angular velocity.
-TEST_F(PEToolsTest, heading_from_angular_velocity_test)
+//Test heading calc based on original heading plus provided angle.
+TEST_F(PEToolsTest, heading_from_angle_test)
 {
    const PE::TValue North = 0.0;
    const PE::TValue East  = 90.0;
    const PE::TValue South = 180.0;
    const PE::TValue West  = 270.0;
    //test zero angular velosity
-   EXPECT_NEAR(North,PE::TOOLS::ToHeading(North, 1.0, 0.0),0.01);
-   //test zero delta time turn left +90.0 deg/s
-   EXPECT_NEAR(North,PE::TOOLS::ToHeading(North, 0.0, 90.0),0.01);
-   //test left turn +3.0 deg/s jumps over 360 -> 357
-   EXPECT_NEAR(357.0,PE::TOOLS::ToHeading(North, 1.0, +3.0),0.01);
-   //test jump left from East to West for 2 seconds +90.0 deg/s
-   EXPECT_NEAR(West,PE::TOOLS::ToHeading(East, 2.0, +90.0),0.01);
-   //test turn right over 360 from North to 3.0
-   EXPECT_NEAR(3.0,PE::TOOLS::ToHeading(North, 1.0, -3.0),0.01);
-   //test got from South to North by left turn +380.0 for half second
-   EXPECT_NEAR(North,PE::TOOLS::ToHeading(South, 0.5, +360.0),0.01);
-   //test got from South to North by rigth turn -90.0 for two seconds
-   EXPECT_NEAR(North,PE::TOOLS::ToHeading(South, 2.0, -90.0),0.01);
+   EXPECT_NEAR(North,PE::TOOLS::ToHeading(North, 0.0),0.01);
+   //test left turn +3.0 deg jumps over 360 -> 357
+   EXPECT_NEAR(357.0,PE::TOOLS::ToHeading(North, +3.0),0.01);
+   //test jump left from East to West for +180.0 deg
+   EXPECT_NEAR(West,PE::TOOLS::ToHeading(East, +180.0),0.01);
+   //test right turn -3.0 deg jump from North to 3.0
+   EXPECT_NEAR(3.0,PE::TOOLS::ToHeading(North,   -3.0),0.01);
+   //test from South to North by right turn -180.0 
+   EXPECT_NEAR(North,PE::TOOLS::ToHeading(South, -180.0),0.01);
 }
 
 
@@ -316,15 +306,15 @@ TEST_F(PEToolsTest, next_coordinates_crossing_ecvator_test)
 
 TEST_F(PEToolsTest, complex_test)
 {
-   PE::TValue distance1 = PE::TOOLS::ToDistance(PE::SPosition(50.12345,10.12345),PE::SPosition(50.65432,10.65432));
-   PE::TValue heading1  = PE::TOOLS::ToHeading(PE::SPosition(50.12345,10.12345),PE::SPosition(50.65432,10.65432));
+   PE::TValue distance1 = PE::TOOLS::ToDistance(50.12345,10.12345,50.65432,10.65432);
+   PE::TValue heading1  = PE::TOOLS::ToHeading(50.12345,10.12345,50.65432,10.65432);
    
    PE::SPosition pos1 = PE::TOOLS::ToPosition(PE::SPosition( 50.12345,10.12345),distance1,heading1);
    EXPECT_NEAR( 50.65432, pos1.Latitude , 0.00001);
    EXPECT_NEAR( 10.65432, pos1.Longitude, 0.00001);
    
-   PE::TValue distance2 = PE::TOOLS::ToDistancePrecise(PE::SPosition(50.1234567,5.1234567),PE::SPosition(50.7654321,-5.1234567));
-   PE::TValue heading2  = PE::TOOLS::ToHeading(PE::SPosition(50.1234567,5.1234567),PE::SPosition(50.7654321,-5.1234567));
+   PE::TValue distance2 = PE::TOOLS::ToDistance(50.1234567,5.1234567,50.7654321,-5.1234567);
+   PE::TValue heading2  = PE::TOOLS::ToHeading(50.1234567,5.1234567,50.7654321,-5.1234567);
    PE::SPosition pos2 = PE::TOOLS::ToPosition(PE::SPosition( 50.1234567,5.1234567),distance2,heading2);
    EXPECT_NEAR( 50.7654321, pos2.Latitude , 0.0000001);
    EXPECT_NEAR( -5.1234567, pos2.Longitude, 0.0000001);

@@ -32,27 +32,25 @@ TValue PE::TOOLS::ToDegrees(const TValue& radians)
 }
 
 
-TValue PE::TOOLS::ToDistance(const SPosition& first, const SPosition& second)
+TValue PE::TOOLS::ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude)
 {
-   TValue rLat1 = PE::TOOLS::ToRadians(first.Latitude);
-   TValue rLat2 = PE::TOOLS::ToRadians(second.Latitude);
-   TValue rLon1 = PE::TOOLS::ToRadians(first.Longitude);
-   TValue rLon2 = PE::TOOLS::ToRadians(second.Longitude);
-   TValue x = (rLon2-rLon1) * cos((rLat1+rLat2)/2);
-   TValue y = rLat2-rLat1;
-   return sqrt(x*x+y*y) * EARTH_RADIUS_M;
+   TValue rLat1 = ToRadians(firstLatitude);
+   TValue rLat2 = ToRadians(lastLatitude);
+   TValue rLon1 = ToRadians(firstLongitude);
+   TValue rLon2 = ToRadians(lastLongitude);
+   TValue dLat = rLat2-rLat1;
+   TValue dLon = rLon2-rLon1;
+   TValue a = pow(sin(dLat/2),2) + cos(rLat1)*cos(rLat2)*pow(sin(dLon/2),2);
+   TValue c = 2 * atan2( sqrt(a), sqrt(1-a));
+   return c * EARTH_RADIUS_M;
 }
 
-TValue PE::TOOLS::ToDistancePrecise(const SPosition& first, const SPosition& second)
-{
-   return PE::TOOLS::ToDistance(first.Latitude, first.Longitude, second.Latitude, second.Longitude);
-}
 
-TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const SPosition& firstPosition, const SPosition& secondPosition)
+TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude)
 {
-   TValue secondHeading = ToHeading(firstPosition, secondPosition);
-   TValue rBeta         = fabs(ToRadians(ToAngDistance(firstHeading, secondHeading)));
-   TValue horda         = ToDistancePrecise(firstPosition, secondPosition);
+   TValue secondHeading = ToHeading(firstLatitude, firstLongitude, lastLatitude, lastLongitude);
+   TValue rBeta         = fabs(ToRadians(ToAngle(firstHeading, secondHeading)));
+   TValue horda         = ToDistance(firstLatitude, firstLongitude, lastLatitude, lastLongitude);
    if ( HEAD_EPSILON > rBeta )
    {
       return horda;
@@ -67,7 +65,8 @@ TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const SPosition& firstP
    }
 }
 
-TValue PE::TOOLS::ToAngDistance(const TValue& firstHeading, const TValue& secondHeading)
+
+TValue PE::TOOLS::ToAngle(const TValue& firstHeading, const TValue& secondHeading)
 {
    if   ( 180 < (firstHeading - secondHeading))
    {
@@ -83,33 +82,24 @@ TValue PE::TOOLS::ToAngDistance(const TValue& firstHeading, const TValue& second
    }
 }
 
-TValue PE::TOOLS::ToHeading(const SPosition& first, const SPosition& second)
+
+TValue PE::TOOLS::ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude)
 {
-  return ToHeading(first.Latitude,first.Longitude,second.Latitude,second.Longitude);
+   TValue rLat1 = ToRadians(firstLatitude);
+   TValue rLat2 = ToRadians(lastLatitude);
+   TValue rLon1 = ToRadians(firstLongitude);
+   TValue rLon2 = ToRadians(lastLongitude);
+   TValue dLon  = rLon2-rLon1;
+   TValue rBearing = atan2( sin(dLon) * cos(rLat2), cos(rLat1) * sin(rLat2) - sin(rLat1) * cos(rLat2) * cos(dLon));
+   return fmod(ToDegrees(rBearing) + 360, 360.0);
 }
 
-TValue PE::TOOLS::ToHeading(const TValue& startHeading, const TTimestamp& deltaTime, const TValue& angularSpeed)
+
+TValue PE::TOOLS::ToHeading(const TValue& startHeading, const TValue& angle)
 {
-   //return fmod(startHeading + (-angularSpeed * deltaTime) +360, 360.0);
-   return ToHeading( startHeading, angularSpeed * deltaTime);
+   return fmod(startHeading + (-angle) +360, 360.0);
 }
 
-SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, const TValue& heading)
-{
-   if (0 == distance)
-      return SPosition(start);
-
-   TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
-   TValue rLon1 = PE::TOOLS::ToRadians(start.Longitude);
-   TValue Q = PE::TOOLS::ToRadians(heading);
-   TValue b = distance / EARTH_RADIUS_M;
-
-   TValue rLat2 = asin(sin(rLat1)*cos(b) + cos(rLat1)*sin(b)*cos(Q));
-   TValue rLon2 = rLon1 + atan2(sin(Q)*sin(b)*cos(rLat1), cos(b) - sin(rLat1)*sin(rLat2));
-   return SPosition( PE::TOOLS::ToDegrees(rLat2),
-                     fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0,
-                     start.HorizontalAcc );
-}
 
 void PE::TOOLS::Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot )
 {
@@ -117,6 +107,7 @@ void PE::TOOLS::Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, cons
    Transform2D(zValue,xValue,yRot);
    Transform2D(xValue,yValue,zRot);
 }
+
 
 void PE::TOOLS::Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot )
 {
@@ -144,49 +135,22 @@ std::vector<std::string> PE::TOOLS::Split(const std::string& str, char delimiter
    return result;
 }
 
-TValue PE::TOOLS::ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude)
-{
-   TValue rLat1 = ToRadians(firstLatitude);
-   TValue rLat2 = ToRadians(lastLatitude);
-   TValue rLon1 = ToRadians(firstLongitude);
-   TValue rLon2 = ToRadians(lastLongitude);
-   TValue dLat = rLat2-rLat1;
-   TValue dLon = rLon2-rLon1;
-   TValue a = pow(sin(dLat/2),2) + cos(rLat1)*cos(rLat2)*pow(sin(dLon/2),2);
-   TValue c = 2 * atan2( sqrt(a), sqrt(1-a));
-   return c * EARTH_RADIUS_M;
-}
 
-// TValue PE::TOOLS::ToAngDistance(const TValue& firstHeading, const TValue& lastHeading)
-// {
-//    if   ( 180 < (firstHeading - lastHeading))
-//    {
-//       return firstHeading - (lastHeading+360.0);
-//    }
-//    else if ( -180 > (firstHeading - lastHeading))
-//    {
-//       return firstHeading+360.0 - lastHeading;
-//    }
-//    else
-//    {
-//       return firstHeading - lastHeading;
-//    }
-// }
-
-TValue PE::TOOLS::ToHeading(const TValue& startHeading, const TValue& angle)
+SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, const TValue& heading)
 {
-   return fmod(startHeading + (-angle) +360, 360.0);
-}
+   if (0 == distance)
+      return SPosition(start);
 
-TValue PE::TOOLS::ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude)
-{
-   TValue rLat1 = ToRadians(firstLatitude);
-   TValue rLat2 = ToRadians(lastLatitude);
-   TValue rLon1 = ToRadians(firstLongitude);
-   TValue rLon2 = ToRadians(lastLongitude);
-   TValue dLon  = rLon2-rLon1;
-   TValue rBearing = atan2( sin(dLon) * cos(rLat2), cos(rLat1) * sin(rLat2) - sin(rLat1) * cos(rLat2) * cos(dLon));
-   return fmod(ToDegrees(rBearing) + 360, 360.0);
+   TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
+   TValue rLon1 = PE::TOOLS::ToRadians(start.Longitude);
+   TValue Q = PE::TOOLS::ToRadians(heading);
+   TValue b = distance / EARTH_RADIUS_M;
+
+   TValue rLat2 = asin(sin(rLat1)*cos(b) + cos(rLat1)*sin(b)*cos(Q));
+   TValue rLon2 = rLon1 + atan2(sin(Q)*sin(b)*cos(rLat1), cos(b) - sin(rLat1)*sin(rLat2));
+   return SPosition( PE::TOOLS::ToDegrees(rLat2),
+                     fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0,
+                     start.HorizontalAcc );
 }
 
 // SBasicSensor PE::TOOLS::GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos)
