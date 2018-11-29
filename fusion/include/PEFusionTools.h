@@ -21,6 +21,14 @@
 namespace PE {
 namespace FUSION {
 
+
+//SBasicSensor GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos);
+
+
+
+
+
+
 /**
  * Predicts(reduce) sensor accuracy based on delta time and original accuracy
  *

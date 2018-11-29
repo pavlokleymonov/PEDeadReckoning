@@ -129,7 +129,8 @@ std::vector<std::string> Split(const std::string& str, char delimiter);
 //TO BE REMOVED!!!
 SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
 
-//SBasicSensor GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos);
+std::pair<TValue, TValue> ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading);
+
 
 } // namespace TOOLS
 } // namespace PE

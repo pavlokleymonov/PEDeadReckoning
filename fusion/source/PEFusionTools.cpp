@@ -18,6 +18,100 @@
 
 using namespace PE;
 
+/*
+SBasicSensor PE::FUSION::GetSensor(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
+{
+   SBasicSensor resultSensor = sensor;
+   if ( EPSILON < deltaTimestamp && sensor.IsValid() )
+   {
+      resultSensor.Accuracy = sensor.Accuracy * (1 + deltaTimestamp);
+   }
+   return resultSensor;
+}
+
+
+SBasicSensor PE::FUSION::GetDistanceOrAngle(const TTimestamp& deltaTimestamp, const SBasicSensor& speed)
+{
+   SBasicSensor distance;
+   TValue value = EPSILON;
+   TValue accuracy = EPSILON;
+   if ( EPSILON < deltaTimestamp && speed.IsValid() && EPSILON < speed.Value )
+   {
+      value = speed.Value * deltaTimestamp;
+      accuracy = speed.Accuracy * deltaTimestamp;
+      if ( EPSILON < accuracy && accuracy < value )
+      {
+         distance.Value = value;
+         distance.Accuracy = accuracy;
+      }
+   }
+   return distance;
+}
+
+
+SBasicSensor PE::FUSION::GetHeading(const SBasicSensor& firstHeading, const SBasicSensor& angle)
+{
+   SBasicSensor lastHeading = firstHeading;
+   if ( firstHeading.IsValid() && angle.IsValid() )
+   {
+      lastHeading.Value = TOOLS::ToHeading(firstHeading.Value, angle.Value);
+      lastHeading.Accuracy = firstHeading.Accuracy + angle.Accuracy;
+   }
+   return lastHeading;
+}
+
+
+SBasicSensor PE::FUSION::GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos)
+{
+   SBasicSensor lastHeading;
+   TValue distance = EPSILON;
+   TValue accuracy = MAX_VALUE;
+   TValue angle    = EPSILON;
+   if ( firstPos.IsValid() && lastPos.IsValid() )
+   {
+      distance = TOOLS::ToDistance(firstPos.Latitude, firstPos.Longitude,lastPos.Latitude, lastPos.Longitude);
+      accuracy = firstPos.HorizontalAcc + lastPos.HorizontalAcc;
+      if ( EPSILON < accuracy && accuracy < distance )
+      {
+         lastHeading.Value    = TOOLS::ToHeading(firstPos.Latitude, firstPos.Longitude, lastPos.Latitude, lastPos.Longitude);
+         lastHeading.Accuracy = TOOLS::ToDegrees(atan( accuracy / distance ));
+         if ( firstHeading.IsValid() && firstHeading.Accuracy < lastHeading.Accuracy )
+         {
+            angle = TOOLS::ToAngle(firstHeading.Value, lastHeading.Value) * 2;  //real heading two times bigger then delta between position heading and start heading
+            distance = TOOLS::ToDistance(firstHeading.Value, firstPos.Latitude, firstPos.Longitude,lastPos.Latitude, lastPos.Longitude); //distance with considering turning driving
+            accuracy = lastPos.HorizontalAcc;
+            lastHeading.Value = TOOLS::ToHeading(firstHeading.Value, angle );
+            lastHeading.Accuracy = TOOLS::ToDegrees(atan( accuracy / distance ));
+         }
+      }
+   }
+   return lastHeading;
+}
+
+
+SPosition PE::FUSION::GetPosition(const SBasicSensor& heading, const SPosition& pos, const SBasicSensor& distance, const SBasicSensor& angle)
+{
+   SPosition lastPos = pos;
+   if ( pos.IsValid() && heading.IsValid() && distance.IsValid() )
+   {
+      //if ( EPSILON < distance.Value ) //if distance and heading will have own classes derived from SBasicSensor and returns false if out of accuracy range limits
+      if ( EPSILON < distance.Value && distance.Accuracy < distance.Value && 45 > heading.Accuracy )
+      {
+         std::pair<TValue, TValue> latlon = PE::TOOLS::ToPosition(pos.Latitude, pos.Longitude, distance.Value, heading.Value);
+         lastPos.Latitude = latlon.first;
+         lastPos.Longitude = latlon.second;
+         TValue d = distance.Value + distance.Accuracy;
+         TValue q = PE::TOOLS::ToRadians(heading.Accuracy);
+         lastPos.HorizontalAcc = 2 * d * sin(q / 2);
+         
+         ///CONSIDERING angle
+      }
+   
+   }
+   return lastPos;
+}
+*/
+
 SBasicSensor PE::FUSION::PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
 {
    SBasicSensor resultSensor = sensor;

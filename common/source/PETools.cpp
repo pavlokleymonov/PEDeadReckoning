@@ -51,7 +51,7 @@ TValue PE::TOOLS::ToDistance(const TValue& firstHeading, const TValue& firstLati
    TValue secondHeading = ToHeading(firstLatitude, firstLongitude, lastLatitude, lastLongitude);
    TValue rBeta         = fabs(ToRadians(ToAngle(firstHeading, secondHeading)));
    TValue horda         = ToDistance(firstLatitude, firstLongitude, lastLatitude, lastLongitude);
-   if ( HEAD_EPSILON > rBeta )
+   if ( EPSILON > rBeta )
    {
       return horda;
    }
@@ -141,37 +141,30 @@ SPosition PE::TOOLS::ToPosition(const SPosition& start, const TValue& distance, 
    if (0 == distance)
       return SPosition(start);
 
-   TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
-   TValue rLon1 = PE::TOOLS::ToRadians(start.Longitude);
+//    TValue rLat1 = PE::TOOLS::ToRadians(start.Latitude);
+//    TValue rLon1 = PE::TOOLS::ToRadians(start.Longitude);
+//    TValue Q = PE::TOOLS::ToRadians(heading);
+//    TValue b = distance / EARTH_RADIUS_M;
+// 
+//    TValue rLat2 = asin(sin(rLat1)*cos(b) + cos(rLat1)*sin(b)*cos(Q));
+//    TValue rLon2 = rLon1 + atan2(sin(Q)*sin(b)*cos(rLat1), cos(b) - sin(rLat1)*sin(rLat2));
+//    return SPosition( PE::TOOLS::ToDegrees(rLat2),
+//                      fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0,
+//                      start.HorizontalAcc );
+   std::pair<TValue, TValue> pos = ToPosition(start.Latitude, start.Longitude, distance, heading);
+   return SPosition(pos.first, pos.second,start.HorizontalAcc);
+}
+
+
+std::pair<TValue, TValue> PE::TOOLS::ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading)
+{
+   TValue rLat1 = PE::TOOLS::ToRadians(latitude);
+   TValue rLon1 = PE::TOOLS::ToRadians(longitude);
    TValue Q = PE::TOOLS::ToRadians(heading);
    TValue b = distance / EARTH_RADIUS_M;
 
    TValue rLat2 = asin(sin(rLat1)*cos(b) + cos(rLat1)*sin(b)*cos(Q));
    TValue rLon2 = rLon1 + atan2(sin(Q)*sin(b)*cos(rLat1), cos(b) - sin(rLat1)*sin(rLat2));
-   return SPosition( PE::TOOLS::ToDegrees(rLat2),
-                     fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0,
-                     start.HorizontalAcc );
+
+   return std::make_pair(PE::TOOLS::ToDegrees(rLat2), fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0);
 }
-
-// SBasicSensor PE::TOOLS::GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos)
-// {
-//    SBasicSensor lastHeading;
-//    if ( firstPos.IsValid() && lastPos.IsValid() )
-//    {
-//       TValue distance = ToDistance(firstPos.Latitude, firstPos.Longitude,lastPos.Latitude, lastPos.Longitude);
-//       TValue accuracy = firstPos.HorizontalAcc + lastPos.HorizontalAcc;
-//       if ( 0.0 < accuracy && accuracy < distance )
-//       {
-//          lastHeading.Value = ToHeading(firstPos.Latitude, firstPos.Longitude, lastPos.Latitude, lastPos.Longitude);
-//          lastHeading.Accuracy = ToDegrees(atan( accuracy / distance ));
-//          if ( firstHeading.IsValid() && firstHeading.Accuracy < lastHeading.Accuracy )
-//          {
-//             TValue angle = ToAngDistance(firstHeading.Value, lastHeading.Value);
-//             lastHeading.Value = ToHeading(firstHeading.Value, angle * 2); //real heading two times bigger then delta between position heading and start heading
-//             lastHeading.Accuracy = firstHeading.Accuracy + ToDegrees(lastPos.HorizontalAcc / distance);
-//          }
-//       }
-//    }
-//    return lastHeading;
-// }
-

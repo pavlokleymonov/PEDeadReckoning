@@ -17,6 +17,7 @@
 #define __PE_Types_H__
 
 #include <stdint.h>
+#include <utility>
 #include <limits>
 #include <string>
 #include <vector>
@@ -48,7 +49,7 @@ namespace PE {
 
    typedef double TAccuracy;
 
-   static const double HEAD_EPSILON = 0.0000001;
+   static const double EPSILON = 0.0000000001;
 
    static const double PI = 3.1415926535897931;
 
