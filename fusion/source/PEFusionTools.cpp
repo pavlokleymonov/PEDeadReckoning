@@ -97,7 +97,7 @@ SPosition PE::FUSION::GetPosition(const SBasicSensor& heading, const SPosition& 
       //if ( EPSILON < distance.Value ) //if distance and heading will have own classes derived from SBasicSensor and returns false if out of accuracy range limits
       if ( EPSILON < distance.Value && distance.Accuracy < distance.Value && 45 > heading.Accuracy )
       {
-         std::pair<TValue, TValue> latlon = PE::TOOLS::ToPosition(pos.Latitude, pos.Longitude, distance.Value, heading.Value);
+         std::pair<TValue, TValue> latlon = PE::TOOLS::ToPosition(pos.Latitude, pos.Longitude, distance.Value, heading.Value); //TODO added here angle into pos calculation
          lastPos.Latitude = latlon.first;
          lastPos.Longitude = latlon.second;
          TValue d = distance.Value + distance.Accuracy;
@@ -110,8 +110,8 @@ SPosition PE::FUSION::GetPosition(const SBasicSensor& heading, const SPosition& 
    }
    return lastPos;
 }
-*/
 
+*/
 SBasicSensor PE::FUSION::PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
 {
    SBasicSensor resultSensor = sensor;

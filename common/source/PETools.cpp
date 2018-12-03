@@ -168,3 +168,16 @@ std::pair<TValue, TValue> PE::TOOLS::ToPosition(const TValue& latitude, const TV
 
    return std::make_pair(PE::TOOLS::ToDegrees(rLat2), fmod(PE::TOOLS::ToDegrees(rLon2)+540, 360.0) -180.0);
 }
+
+
+// std::pair<TValue, TValue> PE::TOOLS::ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading, const TValue& angle)
+// {
+//    TValue rBeta = ToRadians(angle) / 2;
+//    if ( EPSILON < angle && PI/2 > rBeta )
+//    {
+//       TValue hordaHeading = ToHeading(heading, angle / 2);
+//       TValue horda = distance * sin(rBeta) / rBeta;
+//       return ToPosition(latitude, longitude, horda, hordaHeading);
+//    }
+//    return ToPosition(latitude, longitude, distance, heading);
+// }

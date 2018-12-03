@@ -130,6 +130,7 @@ std::vector<std::string> Split(const std::string& str, char delimiter);
 SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
 
 std::pair<TValue, TValue> ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading);
+//std::pair<TValue, TValue> ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading, const TValue& angle);
 
 
 } // namespace TOOLS
