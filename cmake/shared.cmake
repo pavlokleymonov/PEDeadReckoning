@@ -29,21 +29,14 @@ if (DEFINED ENABLE_COVERAGE)
     find_program(CTEST_PATH ctest REQUIRED)
 
     if (NOT TARGET coverage)
-        # XML/cobertura coverage
+        # XML/HTML coverage
         add_custom_target(coverage
                           COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}/coverage.xml"
                           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                           COMMAND ${CMAKE_MAKE_PROGRAM} all
                           COMMAND ${CTEST_PATH} --timeout 30 --output-on-failure
                           COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --print-summary --xml --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.xml
-                         )
-        # HTML coverage for developers
-        add_custom_target(coverage-html
-                          COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}/coverage.html"
-                          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                          COMMAND ${CMAKE_MAKE_PROGRAM} all
-                          COMMAND ${CTEST_PATH} --timeout 30 --output-on-failure
-                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --print-summary --html-details --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
+                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --html --html-details --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
                          )
     endif (NOT TARGET coverage)
 endif (DEFINED ENABLE_COVERAGE)

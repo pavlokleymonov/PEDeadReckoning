@@ -6,7 +6,6 @@ set(GTEST_GMOCK_DIR ${REPOSITORY_ROOT}/test-utils/gtest_gmock_1.7.0)
 # Include shared cmake stuff
 # set cmake flags for coverage and unittest
 # add target coverage
-# add target coverage-html
 include(${REPOSITORY_ROOT}/cmake/shared.cmake)
 
 enable_testing()

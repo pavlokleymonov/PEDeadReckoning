@@ -13,21 +13,19 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
+echo "Build started at"
+date +%X
 make
 if [ $? -ne 0 ]; then
 	echo "Errors building unittest"
 	exit 1
 fi
+echo "Build finished at"
+date +%X
 
 make coverage
 if [ $? -ne 0 ]; then
 	echo "Errors creating coverage report"
-	exit 1
-fi
-
-make coverage-html
-if [ $? -ne 0 ]; then
-	echo "Errors creating HTML coverage report"
 	exit 1
 fi
 
