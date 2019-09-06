@@ -8,5 +8,6 @@
 *.swo
 build
 b
+out
 .project
 .cproject

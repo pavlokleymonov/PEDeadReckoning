@@ -14,6 +14,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null") #Suppress warning caused by gtest
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
 
+include(ProcessorCount)
+ProcessorCount(CORES)
+message("CPU count for coverage:" ${CORES})
+
 # Handle coverage for subcomponent
 if (DEFINED ENABLE_COVERAGE)
     # Set compiler and linker flags for unit test / coverage builds
@@ -31,10 +35,10 @@ if (DEFINED ENABLE_COVERAGE)
     if (NOT TARGET coverage)
         # XML/HTML coverage
         add_custom_target(coverage
-                          COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}/coverage.xml"
+                          COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}"
                           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                           COMMAND ${CMAKE_MAKE_PROGRAM} all
-                          COMMAND ${CTEST_PATH} --timeout 30 --output-on-failure
+                          COMMAND ${CTEST_PATH} -j ${CORES} --timeout 30 --output-on-failure
                           COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --print-summary --xml --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.xml
                           COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --html --html-details --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
                          )

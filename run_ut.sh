@@ -2,26 +2,30 @@
 
 CMAKE_FLAGS=$@
 
-mkdir -p ./test/ut/b
+mkdir -p ./out/ut
 
-cd ./test/ut/b
+cd ./out/ut
 
-cmake -DENABLE_COVERAGE=1 -DENABLE_TESTS=1 $CMAKE_FLAGS ..
+CORES=$(nproc)
+echo "CPU count for build:$CORES"
+
+cmake -DENABLE_COVERAGE=1 -DENABLE_TESTS=1 $CMAKE_FLAGS ../../test/ut
 
 if [ $? -ne 0 ]; then
 	echo "Errors generating makefiles"
 	exit 1
 fi
 
-echo "Build started at"
-date +%X
-make
+echo "Build started at: $(tput setaf 3)$(date +%X)$(tput sgr0)"
+
+make -j$CORES
 if [ $? -ne 0 ]; then
 	echo "Errors building unittest"
 	exit 1
 fi
-echo "Build finished at"
-date +%X
+
+#TIME_END=$(date +%X)
+echo "Build finished at: $(tput setaf 3)$(date +%X)$(tput sgr0)"
 
 make coverage
 if [ $? -ne 0 ]; then
