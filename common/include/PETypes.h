@@ -67,6 +67,17 @@ namespace PE {
 
    static const TValue DEFAULT_RELIABLE_LIMIT = 99.5;
 
+   template <typename T>
+   bool isnan(T realValue)
+   {
+      return ( realValue != realValue );
+   }
+
+   inline bool isepsilon(TValue v)
+   {
+      return ( v > 0 ? v < EPSILON : v > -EPSILON );
+   }
+
 } // namespace PE
 
 #endif //__PE_Types_H__
