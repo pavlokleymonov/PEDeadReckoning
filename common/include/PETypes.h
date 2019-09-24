@@ -49,15 +49,15 @@ namespace PE {
 
    typedef double TAccuracy;
 
-   static const double EPSILON = 0.0000000001;
+   static const TValue EPSILON = 0.0000000001;
 
-   static const double PI = 3.1415926535897931;
+   static const TValue PI = 3.1415926535897931;
 
-   static const double EARTH_RADIUS_M = 6371000.0;
+   static const TValue EARTH_RADIUS_M = 6371000.0;
 
-   static const double ABS_MAX_LATITUDE = 90;
+   static const TValue ABS_MAX_LATITUDE = 90;
 
-   static const double ABS_MAX_LONGITUDE = 180;
+   static const TValue ABS_MAX_LONGITUDE = 180;
 
    static const TTimestamp MAX_TIMESTAMP = std::numeric_limits<TTimestamp>::max();
 

@@ -75,92 +75,13 @@ private:
    TValue m_Bias;
    TValue m_Scale;
 
+   /**
+    * Calculates bias/base and scale of raw value.
+    * Did not check first iteration
+    */
    void CalculateBaseScale();
 };
 
 } //namespace PE
-
-
-PE::CCalibrationSummary::CCalibrationSummary()
-: m_Sum_Ref_before(0.0)
-, m_Sum_Raw_before(0.0)
-, m_Index_before(0)
-, m_Sum_Ref_now(0.0)
-, m_Sum_Raw_now(0.0)
-, m_Index_now(0)
-, m_Divisor(0.0)
-, m_Bias(std::numeric_limits<TValue>::quiet_NaN())
-, m_Scale(std::numeric_limits<TValue>::quiet_NaN())
-{
-}
-
-
-PE::CCalibrationSummary::~CCalibrationSummary()
-{
-}
-
-
-void PE::CCalibrationSummary::AddRef( const PE::TValue& ref )
-{
-   m_Sum_Ref_now += ref;
-}
-
-
-void PE::CCalibrationSummary::AddRaw( const PE::TValue& raw )
-{
-   m_Sum_Raw_now += raw;
-   ++m_Index_now;
-}
-
-
-const PE::TValue& PE::CCalibrationSummary::GetBias() const
-{
-   return m_Bias;
-}
-
-
-const PE::TValue& PE::CCalibrationSummary::GetScale() const
-{
-   return m_Scale;
-}
-
-
-void PE::CCalibrationSummary::Recalculate()
-{
-   if ( 0 == m_Index_before )
-   {
-      m_Sum_Ref_before = m_Sum_Ref_now
-      m_Sum_Raw_before = m_Sum_Raw_now;
-      m_Index_before   = m_Index_now;
-   }
-   else
-   {
-      CalculateBaseScale()
-   }
-}
-
-
-void PE::CCalibrationSummary::CalculateBaseScale()
-{
-   m_Divisor = ( m_Index_before * m_Sum_Ref_now - m_Index_now * m_Sum_Ref_before );
-   if ( false == isepsilon( m_Divisor ) )
-   {
-      m_Bias = ( m_Sum_Ref_now * m_Sum_Raw_before - m_Sum_Raw_now * m_Sum_Ref_before ) / m_Divisor;
-
-      m_Divisor = m_Sum_Raw_now - m_Bias * m_Index_now;
-
-      if ( false == isepsilon( m_Divisor ) )
-      {
-         m_Scale = m_Sum_Ref_now / m_Divisor;
-         m_Sum_Ref_before = m_Sum_Ref_now
-         m_Sum_Raw_before = m_Sum_Raw_now;
-         m_Index_before   = m_Index_now;
-         return;
-      }
-   }
-   m_Bias  = std::numeric_limits<TValue>::quiet_NaN();
-   m_Scale = std::numeric_limits<TValue>::quiet_NaN();
-}
-
 
 #endif //__PE_CCalibrationSummary_H__

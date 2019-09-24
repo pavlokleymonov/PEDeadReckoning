@@ -31,7 +31,7 @@ public:
    /**
     * Destructor of calibartion
     */
-   virtual ~ICalibration();
+   virtual ~ICalibration(){};
    /**
     * Adds new reference value to the calibration
     *

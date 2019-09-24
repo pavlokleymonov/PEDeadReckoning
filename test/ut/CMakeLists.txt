@@ -41,7 +41,7 @@ add_library ( pe_calibration STATIC
    ${REPOSITORY_ROOT}/calibration/source/PECCalibration.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
-#   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationUni.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationSummary.cpp
 )
 
 add_library ( pe_normalisation STATIC
@@ -53,6 +53,14 @@ add_library ( pe_core STATIC
    ${REPOSITORY_ROOT}/core/source/PECSensorEntity.cpp
    ${REPOSITORY_ROOT}/core/source/PECCoreSimple.cpp
 )
+
+##########################
+#Test types of namespace PE::
+add_executable(test_pe_types
+   PETypesTest.cpp
+)
+target_link_libraries(test_pe_types gtest pthread)
+add_test(NAME test_pe_types COMMAND test_pe_types)
 
 ##########################
 #Test struct PE::SPosition
@@ -119,12 +127,12 @@ target_link_libraries(test_pe_calibration_base pe_common pe_normalisation pe_cal
 add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
 
 #################################
-#Test class PE::CCalibrationUni
-#add_executable(test_pe_calibration_uni
-#   PECCalibrationUniTest.cpp
-#)
-#target_link_libraries(test_pe_calibration_uni pe_common pe_calibration gtest pthread )
-#add_test(NAME test_pe_calibration_uni COMMAND test_pe_calibration_uni)
+#Test class PE::CCalibrationSummary
+add_executable(test_pe_calibration_summary
+   PECCalibrationSummaryTest.cpp
+)
+target_link_libraries(test_pe_calibration_summary pe_common pe_calibration gtest pthread )
+add_test(NAME test_pe_calibration_summary COMMAND test_pe_calibration_summary)
 
 #################################
 #Test class PE::CSensorCfg
