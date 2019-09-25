@@ -21,6 +21,11 @@ namespace PE
 
 /**
  * class for calibartion functionality
+ *
+ * IMPORTANT:  reference and raw value has to be on a same timebase without any delay or latency
+ *             If there is any latency or delay it has to be compensated before calibration.
+ *             Same value at startup has to be avoid.
+ *
  */
 class CCalibrationSummary : public ICalibration
 {
