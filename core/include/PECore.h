@@ -15,113 +15,141 @@
 #define __PE_Core_H__
 
 
-namespace PE
-{
+
+#ifdef __cplusplus
+   class PECCore;
+   extern "C" {
+#else
+   struct PECCore;
+   typedef struct PECCore PECCore;
+#endif
    /**
-    * Initialises and starts position engine
-    * @return   true if position engine started with no error
-    */
-   bool Start();
+    * Initialises and starts position engine
+    * @return   pointer to the position engine instance if it started with no error
+    *           in case any errors return NULL
+    *
+    * @param[in] cfg   simple c-type string to configuration information
+    */
+   PECCore* Start(const char* cfg);
    /**
-    * Stops position engine
-    * @return   true if position engine stopped with no error
-    */
-   bool Stop();
+    * Stops position engine
+    * @return   pointer to configuration information c-type string if position engine stopped with no error
+    *           in case any errors return NULL
+    *
+    * @param[in] core   pointer to the position engine instance
+    */
+   const char* Stop(PECCore* core);
    /**
     * Cleans all internal values
+    *
+    * @param[in] core   pointer to the position engine instance
     */
-   void Clean();
+   void Clean(PECCore* core);
    /**
     * Calculates position based on given coordinates, headings, speeds and sensors
     * @return   true if position calculates with no error
+    *
+    * @param[in] core   pointer to the position engine instance
     */
-   bool Calculate();
+   bool Calculate(PECCore* core);
    /**
     * Sends new coordinates
     * @return   true if coordinates were sent with no error
     *
-    * @param[in] timestamp   todo
-    * @param[in] latutude    todo
-    * @param[in] longitude   todo
-    * @param[in] accuracy    todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[in] timestamp   timestamp of given sensors data in seconds
+    * @param[in] latutude    latitude in degrees (0..+/-90)
+    * @param[in] longitude   longitude in degrees (0..+/-180) 
+    * @param[in] accuracy    expectation area of position with radius around given coordinates in meters
     */
-   bool SendCoordinates(const TTimestamp& timestamp, const TValue& latutude, const TValue& longitude, const TAccuracy& accuracy);
+   bool SendCoordinates(PECCore* core, const double& timestamp, const double& latutude, const double& longitude, const double& accuracy);
    /**
     * Sends new heading - direction of traveling
     * @return   true if heading was sent with no error
     *
-    * @param[in] timestamp   todo
-    * @param[in] heading     todo
-    * @param[in] accuracy    todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[in] timestamp   timestamp of given sensors data in seconds
+    * @param[in] heading     heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+    * @param[in] accuracy    estimated deviation of heading in degrees (+/-180)
     */
-   bool SendHeading(const TTimestamp& timestamp, const TValue& heading, const TAccuracy& accuracy);
+   bool SendHeading(PECCore* core, const double& timestamp, const double& heading, const double& accuracy);
    /**
     * Sends new speed - velocity of the object
     * @return   true if speed was sent with no error
     *
-    * @param[in] timestamp   todo
-    * @param[in] speed       todo
-    * @param[in] accuracy    todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[in] timestamp   timestamp of given sensors data in seconds
+    * @param[in] speed       velocity of the object in meter per seconds [m/s]
+    * @param[in] accuracy    estimated deviation of speed in meter per seconds 
     */
-   bool SendSpeed(const TTimestamp& timestamp, const TValue& speed, const TAccuracy& accuracy);
+   bool SendSpeed(PECCore* core, const double& timestamp, const double& speed, const double& accuracy);
    /**
     * Sends new gyroscope - angular velocity of the object
     * @return   true if gyroscope was sent with no error
     *
-    * @param[in] timestamp   todo
-    * @param[in] gyro        todo
-    * @param[in] accuracy    todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[in] timestamp   timestamp of given sensors data in seconds
+    * @param[in] gyro        raw gyroscope sensors data dimention does not matter
     */
-   bool SendGyro(const TTimestamp& timestamp, const TValue& gyro, const TAccuracy& accuracy);
+   bool SendGyro(PECCore* core, const double& timestamp, const double& gyro);
    /**
     * Sends new odometer - ticks count of the wheel
     * @return   true if odometer was sent with no error
     *
-    * @param[in] timestamp   todo
-    * @param[in] odo         todo
-    * @param[in] accuracy    todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[in] timestamp   timestamp of given sensors data in seconds
+    * @param[in] odo         raw odometer sensors data dimention does not matter
     */
-   bool SendOdo(const TTimestamp& timestamp, const TValue& odo, const TAccuracy& accuracy);
+   bool SendOdo(PECCore* core, const double& timestamp, const double& odo);
    /**
     * Receives calculated position - coordinates, heading and speed
     * @return   true if position was calculated with no error
     *
-    * @param[out] timestamp              todo
-    * @param[out] latutude               todo
-    * @param[out] longitude              todo
-    * @param[out] coordinatesAccuracy    todo
-    * @param[out] heading                todo
-    * @param[out] headingAccuracy        todo
-    * @param[out] speed                  todo
-    * @param[out] speedAccuracy          todo
+    * @param[in] core                    pointer to the position engine instance
+    * @param[out] timestamp              timestamp of given sensors data in seconds
+    * @param[out] latutude               latitude in degrees (0..+/-90)
+    * @param[out] longitude              longitude in degrees (0..+/-180) 
+    * @param[out] coordinatesAccuracy    expectation area of position with radius around given coordinates in meters
+    * @param[out] heading                heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
+    * @param[out] headingAccuracy        estimated deviation of heading in degrees (+/-180)
+    * @param[out] speed                  velocity of the object in meter per seconds [m/s]
+    * @param[out] speedAccuracy          estimated deviation of speed in meter per seconds 
     */
-   bool ReceivePosition(TTimestamp& timestamp, TValue& latutude, TValue& longitude, TAccuracy& coordinatesAccuracy, TValue& heading, TAccuracy& headingAccuracy, TValue& speed, TAccuracy& speedAccuracy);
+   bool ReceivePosition(PECCore* core, double& timestamp, double& latutude, double& longitude, double& coordinatesAccuracy, double& heading, double& headingAccuracy, double& speed, double& speedAccuracy);
    /**
-    * Receives whole distance of treveling
+    * Receives whole distance of traveling
     * @return   true if distance was calculated with no error
     *
-    * @param[out] distance   todo
-    * @param[out] accuracy   todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[out] distance   travel distance of vehicle in meters
+    * @param[out] accuracy   estimated deviation of distance in meters
     */
-   bool ReceiveDistance(TValue& distance, TAccuracy& accuracy);
+   bool ReceiveDistance(PECCore* core, double& distance, double& accuracy);
    /**
-    * Receives gyro calibration status
+    * Receives gyro calibration status  ---  real_value = (raw_value - base) x scale
     * @return true if calibration was triggered
     *
-    * @param[out] base       todo
-    * @param[out] scale      todo
-    * @param[out] reliable   todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[out] base       shift of the raw value according to real value
+    * @param[out] scale      scale value for converting raw into real value
+    * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
+    * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool ReceiveGyroStatus(TValue& base, TValue& scale, TValue& reliable);
+   bool ReceiveGyroStatus(PECCore* core, double& base, double& scale, double& reliable, double& accuracy);
    /**
-    * Receives odometer calibration status
+    * Receives odometer calibration status  ---  real_value = (raw_value - base) x scale
     * @return true if calibration was triggered
     *
-    * @param[out] base       todo
-    * @param[out] scale      todo
-    * @param[out] reliable   todo
+    * @param[in] core        pointer to the position engine instance
+    * @param[out] base       shift of the raw value according to real value
+    * @param[out] scale      scale value for converting raw into real value
+    * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
+    * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool ReceiveOdoStatus(TValue& base, TValue& scale, TValue& reliable);
+   bool ReceiveOdoStatus(PECCore* core, double& base, double& scale, double& reliable, double& accuracy);
 
-} //namespace PE
+#ifdef __cpluscplus
+   }
+#endif
+
 #endif //__PE_Core_H__
