@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-set(REPOSITORY_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(GTEST_GMOCK_DIR ${REPOSITORY_ROOT}/test-utils/gtest_gmock_1.7.0)
-
-# Include shared cmake stuff
-# set cmake flags for coverage and unittest
-# add target coverage
-include(${REPOSITORY_ROOT}/cmake/shared.cmake)
-
-enable_testing()
 
 include_directories(
    ${GTEST_GMOCK_DIR}
@@ -157,3 +149,12 @@ add_executable(test_pe_core_simple
 )
 target_link_libraries(test_pe_core_simple pe_core pe_fusion pe_common pe_normalisation pe_calibration gtest pthread )
 add_test(NAME test_pe_core_simple COMMAND test_pe_core_simple)
+
+#################################
+#Test C library PECore
+add_executable(test_pe_core_c_lib
+   ${REPOSITORY_ROOT}/core/source/PECore.cpp
+   PECoreTest.cpp
+)
+target_link_libraries(test_pe_core_c_lib gtest pthread )
+add_test(NAME test_pe_core_c_lib COMMAND test_pe_core_c_lib)

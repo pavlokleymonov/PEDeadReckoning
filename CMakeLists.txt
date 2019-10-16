@@ -5,24 +5,30 @@ project(top)
 
 cmake_minimum_required (VERSION 3.0)
 
-# At the top level, determine the targets to incldue and build
+# At the top level, determine the targets to include and build
 # and what installation actions to perform
 # You can override these options in command line like this:
 # cmake -DBUILD_TESTS=ON ..
 OPTION(BUILD_APP "Build position engine" ON)
 
-#Alway build test aplication to be in sync with main sources
+#Always build test application to be in sync with main sources
 OPTION(BUILD_TESTS "Build test programs" ON)
 
+#Set repository root
+set(REPOSITORY_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-#add global include folders
-#include_directories(
-#   ${CMAKE_CURRENT_SOURCE_DIR}/utils/include
-#)
+# Include shared cmake stuff
+# set cmake flags for coverage and unittest
+# add target coverage
+include(${REPOSITORY_ROOT}/cmake/shared.cmake)
 
-#implementation of all stuff
+#Build all stuff
 if(BUILD_APP)
-   add_subdirectory(common)
-   add_subdirectory(calibration)
-   add_subdirectory(normalisation)
+   add_subdirectory(core)
+endif()
+
+#build all tests
+if(BUILD_TESTS)
+   enable_testing()
+   add_subdirectory(test)
 endif()

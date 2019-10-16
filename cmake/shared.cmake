@@ -14,12 +14,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null") #Suppress warning caused by gtest
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
 
-include(ProcessorCount)
-ProcessorCount(CORES)
-message("CPU count for coverage:" ${CORES})
+#include(ProcessorCount)
+#ProcessorCount(CORES)
+#message("CPU count for coverage:" ${CORES})
 
 # Handle coverage for subcomponent
-if (DEFINED ENABLE_COVERAGE)
+if (BUILD_TESTS)
     # Set compiler and linker flags for unit test / coverage builds
 
     # GCOV operates on object code.
@@ -30,7 +30,7 @@ if (DEFINED ENABLE_COVERAGE)
     
     set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} --coverage")
     find_program(GCOVR_PATH gcovr REQUIRED)
-    find_program(CTEST_PATH ctest REQUIRED)
+    #find_program(CTEST_PATH ctest REQUIRED)
 
     if (NOT TARGET coverage)
         # XML/HTML coverage
@@ -38,9 +38,10 @@ if (DEFINED ENABLE_COVERAGE)
                           COMMENT "Generating coverage report to ${CMAKE_CURRENT_BINARY_DIR}"
                           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                           COMMAND ${CMAKE_MAKE_PROGRAM} all
-                          COMMAND ${CTEST_PATH} -j ${CORES} --timeout 30 --output-on-failure
-                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --print-summary --xml --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.xml
-                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR}/../.. -e .*test-utils.* -e .*Test.* -b --html --html-details --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
+                          #COMMAND ${CTEST_PATH} -j ${CORES} --timeout 30 --output-on-failure
+                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR} -e .*test-utils.* -e .*Test.* -b --print-summary --xml --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.xml
+                          COMMAND ${GCOVR_PATH} -r ${CMAKE_CURRENT_SOURCE_DIR} -e .*test-utils.* -e .*Test.* -b --html --html-details --output=${CMAKE_CURRENT_BINARY_DIR}/coverage.html
                          )
     endif (NOT TARGET coverage)
-endif (DEFINED ENABLE_COVERAGE)
+
+endif (BUILD_TESTS)
