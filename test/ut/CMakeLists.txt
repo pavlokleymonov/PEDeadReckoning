@@ -40,12 +40,6 @@ add_library ( pe_normalisation STATIC
    ${REPOSITORY_ROOT}/normalisation/source/PECNormalisation.cpp
 )
 
-add_library ( pe_core STATIC
-   ${REPOSITORY_ROOT}/core/source/PECSensorCfg.cpp
-   ${REPOSITORY_ROOT}/core/source/PECSensorEntity.cpp
-   ${REPOSITORY_ROOT}/core/source/PECCoreSimple.cpp
-)
-
 ##########################
 #Test types of namespace PE::
 add_executable(test_pe_types
@@ -125,30 +119,6 @@ add_executable(test_pe_calibration_summary
 )
 target_link_libraries(test_pe_calibration_summary pe_common pe_calibration gtest pthread )
 add_test(NAME test_pe_calibration_summary COMMAND test_pe_calibration_summary)
-
-#################################
-#Test class PE::CSensorCfg
-add_executable(test_pe_sensor_cfg
-   PECSensorCfgTest.cpp
-)
-target_link_libraries(test_pe_sensor_cfg pe_core pe_common pe_normalisation gtest pthread )
-add_test(NAME test_pe_sensor_cfg COMMAND test_pe_sensor_cfg)
-
-#################################
-#Test class PE::CSensorEntity
-add_executable(test_pe_sensor_entity
-   PECSensorEntityTest.cpp
-)
-target_link_libraries(test_pe_sensor_entity pe_core pe_common pe_normalisation pe_calibration gtest pthread )
-add_test(NAME test_pe_sensor_entity COMMAND test_pe_sensor_entity)
-
-#################################
-#Test class PE::CCoreSimple
-add_executable(test_pe_core_simple
-   PECCoreSimpleTest.cpp
-)
-target_link_libraries(test_pe_core_simple pe_core pe_fusion pe_common pe_normalisation pe_calibration gtest pthread )
-add_test(NAME test_pe_core_simple COMMAND test_pe_core_simple)
 
 #################################
 #Test C library PECore
