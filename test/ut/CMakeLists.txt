@@ -123,8 +123,7 @@ add_test(NAME test_pe_calibration_summary COMMAND test_pe_calibration_summary)
 #################################
 #Test C library PECore
 add_executable(test_pe_core_c_lib
-   ${REPOSITORY_ROOT}/core/source/PECore.cpp
    PECoreTest.cpp
 )
-target_link_libraries(test_pe_core_c_lib gtest pthread )
+target_link_libraries(test_pe_core_c_lib pe gtest pthread )
 add_test(NAME test_pe_core_c_lib COMMAND test_pe_core_c_lib)

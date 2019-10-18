@@ -12,6 +12,8 @@ file(GLOB SRC
    #${REPOSITORY_ROOT}/common/source/PETools.cpp
    #${REPOSITORY_ROOT}/common/source/*.cpp
    ${REPOSITORY_ROOT}/core/source/PECore.cpp
+   ${REPOSITORY_ROOT}/core/source/PECCore.cpp
+   #${REPOSITORY_ROOT}/core/source/*.cpp
 )
 
 
