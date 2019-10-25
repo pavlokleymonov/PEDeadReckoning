@@ -14,7 +14,8 @@
 #ifndef __PE_CCore_H__
 #define __PE_CCore_H__
 #include <string>
-
+#include "PECCalibrationSummary.h"
+#include "PECNormalisation.h"
 
 /**
  * class PECCore core functionality of Position Engine
@@ -45,10 +46,6 @@ public:
     * @return   string of configuration information
     */
    const std::string& Stop();
-   /**
-    * Cleans all internal values
-    */
-   void Clean();
    /**
     * Calculates position based on given coordinates, headings, speeds and sensors
     */
@@ -115,30 +112,65 @@ public:
     */
    bool ReceiveDistance( double& distance, double& accuracy);
    /**
-    * Receives gyro calibration status  ---  real_value = (raw_value - base) x scale
+    * Receives gyro calibration status  ---  real_value = (raw_value - bias) x scale
     * @return true if calibration was triggered
     *
-    * @param[out] base       shift of the raw value according to real value
+    * @param[out] bias       shift of the raw value according to real value
     * @param[out] scale      scale value for converting raw into real value
     * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
     * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool ReceiveGyroStatus( double& base, double& scale, double& reliable, double& accuracy);
+   bool ReceiveGyroStatus( double& bias, double& scale, double& reliable, double& accuracy);
    /**
-    * Receives odometer calibration status  ---  real_value = (raw_value - base) x scale
+    * Receives odometer calibration status  ---  real_value = (raw_value - bias) x scale
     * @return true if calibration was triggered
     *
-    * @param[out] base       shift of the raw value according to real value
+    * @param[out] bias       shift of the raw value according to real value
     * @param[out] scale      scale value for converting raw into real value
     * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
     * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool ReceiveOdoStatus( double& base, double& scale, double& reliable, double& accuracy);
+   bool ReceiveOdoStatus( double& bias, double& scale, double& reliable, double& accuracy);
 private:
    /**
     * Current configuration string
     */
-   std::string m_cfg_str;
+   std::string m_Cfg_Str;
+
+   /**
+    * Last odometer timestamp
+    */
+   PE::TTimestamp m_Odo_Ts;
+   /**
+    * Odometer calibration service
+    */
+   PE::CCalibrationSummary m_Odo_Calib;
+   /**
+    * Odometer normalisation service for bias
+    */
+   PE::CNormalisation m_Odo_Bias;
+   /**
+    * Odometer normalisation service for scale
+    */
+   PE::CNormalisation m_Odo_Scale;
+
+
+   /**
+    * Last speed timestamp
+    */
+   PE::TTimestamp m_Speed_Ts;
+   /**
+    * Speed normalisation service for accuracy
+    */
+   PE::CNormalisation m_Speed_Acc;
+
+
+
+   /**
+    * Cleans internal values for last step of odometer processing
+    */
+   void CleanOdoStep();
+   
 };
 
 #endif //__PE_CCore_H__

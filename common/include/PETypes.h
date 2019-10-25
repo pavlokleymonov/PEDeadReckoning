@@ -61,9 +61,19 @@ namespace PE {
 
    static const TTimestamp MAX_TIMESTAMP = std::numeric_limits<TTimestamp>::max();
 
+   static const TTimestamp MIN_TIMESTAMP = EPSILON; // timestamp could be only positive
+
+   static const TValue MAX_SPEED = 299792458.0; // speed of light m/s
+
+   static const TValue MIN_SPEED = EPSILON; // speed could be only positive
+
    static const TValue MAX_VALUE = std::numeric_limits<TValue>::max();
 
+   static const TValue MIN_VALUE = std::numeric_limits<TValue>::min();
+
    static const TAccuracy MAX_ACCURACY = std::numeric_limits<TAccuracy>::max();
+
+   static const TAccuracy MIN_ACCURACY = EPSILON;
 
    static const TValue DEFAULT_RELIABLE_LIMIT = 99.5;
 
