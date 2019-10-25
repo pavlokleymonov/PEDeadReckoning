@@ -30,9 +30,6 @@ add_library ( pe_fusion STATIC
 )
 
 add_library ( pe_calibration STATIC
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibration.cpp
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationScale.cpp
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationBase.cpp
    ${REPOSITORY_ROOT}/calibration/source/PECCalibrationSummary.cpp
 )
 
@@ -95,22 +92,6 @@ add_executable(test_pe_normalisation
 )
 target_link_libraries(test_pe_normalisation pe_common pe_normalisation gtest pthread )
 add_test(NAME test_pe_normalisation COMMAND test_pe_normalisation)
-
-#################################
-#Test class PE::CCalibrationScale
-add_executable(test_pe_calibration_scale
-   PECCalibrationScaleTest.cpp
-)
-target_link_libraries(test_pe_calibration_scale pe_common pe_normalisation pe_calibration gtest pthread )
-add_test(NAME test_pe_calibration_scale COMMAND test_pe_calibration_scale)
-
-#################################
-#Test class PE::CCalibrationBase
-add_executable(test_pe_calibration_base
-   PECCalibrationBaseTest.cpp
-)
-target_link_libraries(test_pe_calibration_base pe_common pe_normalisation pe_calibration gtest pthread )
-add_test(NAME test_pe_calibration_base COMMAND test_pe_calibration_base)
 
 #################################
 #Test class PE::CCalibrationSummary
