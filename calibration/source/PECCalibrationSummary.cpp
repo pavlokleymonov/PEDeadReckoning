@@ -77,6 +77,14 @@ void PE::CCalibrationSummary::Recalculate()
 }
 
 
+void PE::CCalibrationSummary::CleanLastStep()
+{
+   m_Sum_Ref_now = m_Sum_Ref_before;
+   m_Sum_Raw_now = m_Sum_Raw_before;
+   m_Index_now = m_Index_before;
+}
+
+
 void PE::CCalibrationSummary::CalculateBaseScale()
 {
    m_Divisor = ( m_Index_before * m_Sum_Ref_now - m_Index_now * m_Sum_Ref_before );

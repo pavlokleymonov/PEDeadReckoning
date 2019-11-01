@@ -14,8 +14,8 @@
 #ifndef __PE_CCore_H__
 #define __PE_CCore_H__
 #include <string>
-#include "PECCalibrationSummary.h"
-#include "PECNormalisation.h"
+// #include "PECCalibrationSummary.h"
+// #include "PECNormalisation.h"
 
 /**
  * class PECCore core functionality of Position Engine
@@ -46,6 +46,10 @@ public:
     * @return   string of configuration information
     */
    const std::string& Stop();
+   /**
+    * Cleans all internal values
+    */
+   void Clean();
    /**
     * Calculates position based on given coordinates, headings, speeds and sensors
     */
@@ -136,41 +140,35 @@ private:
     * Current configuration string
     */
    std::string m_Cfg_Str;
+//    /**
+//     * Last odometer timestamp
+//     */
+//    PE::TTimestamp m_Odo_Ts;
+//    /**
+//     * Odometer calibration service
+//     */
+//    PE::CCalibrationSummary m_Odo_Calib;
+//    /**
+//     * Odometer normalisation service for bias
+//     */
+//    PE::CNormalisation m_Odo_Bias;
+//    /**
+//     * Odometer normalisation service for scale
+//     */
+//    PE::CNormalisation m_Odo_Scale;
+//    /**
+//     * Last speed timestamp
+//     */
+//    PE::TTimestamp m_Speed_Ts;
+//    /**
+//     * Speed normalisation service for accuracy
+//     */
+//    PE::CNormalisation m_Speed_Acc;
+//    /**
+//     * Cleans internal values for last step of odometer processing
+//     */
+//    void CleanOdoStep();
 
-   /**
-    * Last odometer timestamp
-    */
-   PE::TTimestamp m_Odo_Ts;
-   /**
-    * Odometer calibration service
-    */
-   PE::CCalibrationSummary m_Odo_Calib;
-   /**
-    * Odometer normalisation service for bias
-    */
-   PE::CNormalisation m_Odo_Bias;
-   /**
-    * Odometer normalisation service for scale
-    */
-   PE::CNormalisation m_Odo_Scale;
-
-
-   /**
-    * Last speed timestamp
-    */
-   PE::TTimestamp m_Speed_Ts;
-   /**
-    * Speed normalisation service for accuracy
-    */
-   PE::CNormalisation m_Speed_Acc;
-
-
-
-   /**
-    * Cleans internal values for last step of odometer processing
-    */
-   void CleanOdoStep();
-   
 };
 
 #endif //__PE_CCore_H__

@@ -270,6 +270,60 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_123_scale_minus_5_do
 }
 
 
+/**
+ * tests  CleanLastStep bias=11 scale=0.1
+ */
+TEST_F(PECCalibrationSummaryTest, clean_last_step_test)
+{
+   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+
+   //RAW=10+11   REF=1.0
+   p_calib->AddRaw(10.0 + 11);
+   p_calib->AddRef(1.0);
+   p_calib->Recalculate();
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   //RAW=20+11   REF=2.0
+   p_calib->AddRaw(20 + 11);
+   p_calib->AddRef(2.0);
+   p_calib->Recalculate();
+   EXPECT_NEAR( 11, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 0.1, p_calib->GetScale(), PE::EPSILON);
+
+   //RAW=20+11   REF=2.0 deviation +0.01
+   p_calib->AddRaw(20 + 0.01 + 11);
+   p_calib->AddRef(2.0);
+   //reject last data has to be previouse scale and base
+   p_calib->CleanLastStep();
+   //clean up will not change the bias and scale value
+   EXPECT_NEAR( 11, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 0.1, p_calib->GetScale(), PE::EPSILON);
+
+   //but recalculate on same values has to provide NaN
+   p_calib->Recalculate();
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   //RAW=20+11   REF=2.0 deviation +0.01
+   p_calib->AddRaw(20 + 0.01 + 11);
+   p_calib->AddRef(2.0);
+   p_calib->Recalculate();
+   EXPECT_NEAR( 10.9699999999999, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR(  0.0998003992016, p_calib->GetScale(), PE::EPSILON);
+
+   //RAW=20+11   REF=2.0 deviation -0.01
+   p_calib->AddRaw(20 - 0.01 + 11);
+   p_calib->AddRef(2.0);
+   //retry last data has to be considered
+   p_calib->Recalculate();
+   EXPECT_NEAR( 11.07000000000005, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR(  0.10040160642570, p_calib->GetScale(), PE::EPSILON);
+
+   delete p_calib;
+}
+
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);

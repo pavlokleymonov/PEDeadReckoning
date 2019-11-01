@@ -58,6 +58,10 @@ public:
     * Calculates bias/base and scale of raw value.
     */
    virtual void Recalculate() = 0;
+   /**
+    * Clean all data since last Recalculate call
+    */
+   virtual void CleanLastStep() = 0;
 };
 
 
