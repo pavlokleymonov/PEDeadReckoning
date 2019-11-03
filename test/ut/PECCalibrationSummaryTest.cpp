@@ -271,6 +271,39 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_123_scale_minus_5_do
 
 
 /**
+ * tests  n; n+1; base=1 and scale=1, raw:1+1;0.5+1;-1.5+1
+ */
+TEST_F(PECCalibrationSummaryTest, special_case_when_second_divisor_can_be_zero_test)
+{
+   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+
+   //RAW=1.0+1  REF=1.0
+   p_calib->AddRaw(1.0 + 1);
+   p_calib->AddRef(1.0);
+   p_calib->Recalculate();
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   //RAW=0.5+1  REF=0.5
+   p_calib->AddRaw(0.5 + 1);
+   p_calib->AddRef(0.5);
+   p_calib->Recalculate();
+   EXPECT_NEAR( 1, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 1, p_calib->GetScale(), PE::EPSILON);
+
+   //RAW=-1.5+1  REF=-1.5
+   p_calib->AddRaw(-1.5 + 1);
+   p_calib->AddRef(-1.5);
+   p_calib->Recalculate();
+   //special case
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   delete p_calib;
+}
+
+
+/**
  * tests  CleanLastStep bias=11 scale=0.1
  */
 TEST_F(PECCalibrationSummaryTest, clean_last_step_test)
