@@ -140,8 +140,15 @@ private:
     * Current configuration string
     */
    std::string m_Cfg_Str;
+/*
+   PE::ISensor* mp_Odo;
+   PE::ISensor* mp_Gyro;
+
+*/
+
+   
 //    /**
-//     * Last odometer timestamp
+//     * Last valid odometer timestamp
 //     */
 //    PE::TTimestamp m_Odo_Ts;
 //    /**
