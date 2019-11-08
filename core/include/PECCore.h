@@ -140,42 +140,6 @@ private:
     * Current configuration string
     */
    std::string m_Cfg_Str;
-/*
-   PE::ISensor* mp_Odo;
-   PE::ISensor* mp_Gyro;
-
-*/
-
-   
-//    /**
-//     * Last valid odometer timestamp
-//     */
-//    PE::TTimestamp m_Odo_Ts;
-//    /**
-//     * Odometer calibration service
-//     */
-//    PE::CCalibrationSummary m_Odo_Calib;
-//    /**
-//     * Odometer normalisation service for bias
-//     */
-//    PE::CNormalisation m_Odo_Bias;
-//    /**
-//     * Odometer normalisation service for scale
-//     */
-//    PE::CNormalisation m_Odo_Scale;
-//    /**
-//     * Last speed timestamp
-//     */
-//    PE::TTimestamp m_Speed_Ts;
-//    /**
-//     * Speed normalisation service for accuracy
-//     */
-//    PE::CNormalisation m_Speed_Acc;
-//    /**
-//     * Cleans internal values for last step of odometer processing
-//     */
-//    void CleanOdoStep();
-
 };
 
 #endif //__PE_CCore_H__
