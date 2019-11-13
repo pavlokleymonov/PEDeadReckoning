@@ -9,6 +9,7 @@ include_directories(
    ${REPOSITORY_ROOT}/calibration/include
    ${REPOSITORY_ROOT}/normalisation/include
    ${REPOSITORY_ROOT}/core/include
+   ${REPOSITORY_ROOT}/sensors/include
    ${CMAKE_CURRENT_SOURCE_DIR}/mock
 )
 
@@ -35,6 +36,10 @@ add_library ( pe_calibration STATIC
 
 add_library ( pe_normalisation STATIC
    ${REPOSITORY_ROOT}/normalisation/source/PECNormalisation.cpp
+)
+
+add_library ( pe_sensors STATIC
+   ${REPOSITORY_ROOT}/sensors/source/PECOdometer.cpp
 )
 
 ##########################
@@ -100,6 +105,14 @@ add_executable(test_pe_calibration_summary
 )
 target_link_libraries(test_pe_calibration_summary pe_common pe_calibration gtest pthread )
 add_test(NAME test_pe_calibration_summary COMMAND test_pe_calibration_summary)
+
+#################################
+#Test class PE::COdometer
+add_executable(test_pe_odometer
+   PECOdometerTest.cpp
+)
+target_link_libraries(test_pe_odometer pe_sensors pe_common pe_calibration pe_normalisation gtest pthread )
+add_test(NAME test_pe_odometer COMMAND test_pe_odometer)
 
 #################################
 #Test C library PECore

@@ -357,6 +357,44 @@ TEST_F(PECCalibrationSummaryTest, clean_last_step_test)
 }
 
 
+/**
+ * tests 4 raw / 1 ref  bias=11 scale=0.1
+ */
+TEST_F(PECCalibrationSummaryTest, raw_4_to_ref_1_bias_0_scale_0_1_test)
+{
+   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+
+   p_calib->AddRaw(2.5 + 11);
+   p_calib->AddRaw(2.5 + 11 );
+   p_calib->AddRaw(2.5 + 11 );
+   p_calib->AddRaw(2.5 + 11 );
+   p_calib->AddRef(1.0);
+   p_calib->Recalculate();
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   p_calib->AddRaw(5 + 11);
+   p_calib->AddRaw(5 + 11);
+   p_calib->AddRaw(5 + 11);
+   p_calib->AddRaw(5 + 11);
+   p_calib->AddRef(2.0);
+   p_calib->Recalculate();
+   EXPECT_NEAR( 11, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 0.1, p_calib->GetScale(), PE::EPSILON);
+
+   p_calib->AddRaw(2.5 + 11);
+   p_calib->AddRaw(2.5 + 11);
+   p_calib->AddRaw(2.5 + 11);
+   p_calib->AddRaw(2.5 + 11);
+   p_calib->AddRef(1.0);
+   p_calib->Recalculate();
+   EXPECT_NEAR( 11, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 0.1, p_calib->GetScale(), PE::EPSILON);
+
+   delete p_calib;
+}
+
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
