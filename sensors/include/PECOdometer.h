@@ -19,6 +19,8 @@
 #include "PECNormalisation.h"
 #include "PECCalibrationSummary.h"
 
+class PECOdometerTest; //to get possibility for test class
+
 namespace PE
 {
 
@@ -28,6 +30,8 @@ namespace PE
  */
 class COdometer
 {
+   friend class ::PECOdometerTest;
+
 public:
    /**
     * Constructor of odemeter
