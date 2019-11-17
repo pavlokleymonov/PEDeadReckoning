@@ -31,9 +31,17 @@ public:
    }
    virtual void TearDown() {
    }
-   PE::TValue Call_PredictOdoTickSpeed(PE::COdometer& odo, const PE::TTimestamp& referenceSpeedTs, const PE::TTimestamp& odoTsBefore, const PE::TTimestamp& odoTsAfter, const PE::TValue& odoTickSpeedBefore, const PE::TValue& odoTickSpeedAfter )
+
+
+   PE::TValue Call_PredictOdoTickSpeed(PE::COdometer& obj, const PE::TTimestamp& referenceSpeedTs, const PE::TTimestamp& odoTsBefore, const PE::TTimestamp& odoTsAfter, const PE::TValue& odoTickSpeedBefore, const PE::TValue& odoTickSpeedAfter )
    {
-      return odo.PredictOdoTickSpeed( referenceSpeedTs, odoTsBefore, odoTsAfter, odoTickSpeedBefore, odoTickSpeedAfter );
+      return obj.PredictOdoTickSpeed( referenceSpeedTs, odoTsBefore, odoTsAfter, odoTickSpeedBefore, odoTickSpeedAfter );
+   }
+
+
+   bool Call_IsSpeedOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& speed, const PE::TAccuracy& acc)
+   {
+      return obj.IsSpeedOk( deltaTs, speed, acc);
    }
 };
 
@@ -303,6 +311,44 @@ TEST_F(PECOdometerTest, test_PredictOdoTickSpeed )
     *  +-----------+-------+-----------------------------------------------------+
     */
    EXPECT_NEAR ( 21, Call_PredictOdoTickSpeed(odo, 1011, 1000, 1010, 10,20), PE::EPSILON );
+}
+
+
+/**
+ * checks IsSpeedOk
+ */
+TEST_F(PECOdometerTest, test_IsSpeedOk )
+{
+   PE::TValue       ODO_INTERVAL_50MS = 0.050;
+   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
+   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
+   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
+   uint32_t SPEED_CALIBRATION_COUNT_1 = 1;
+
+   PE::COdometer odo;
+
+   //call init all is correct
+   EXPECT_TRUE(odo.Init(ODO_INTERVAL_50MS, SPEED_INTERVAL_200MS, BIAS_LIMIT_26PROCENT, SCALE_LIMIT_26PROCENT, SPEED_ACCURACY_RATIO_x2, SPEED_CALIBRATION_COUNT_1));
+
+   //all is valid
+   EXPECT_TRUE(Call_IsSpeedOk(odo, 0.200, 10.00, 0.01));
+   //speed is negative
+   EXPECT_FALSE(Call_IsSpeedOk(odo, 0.200, -1, 0.01));
+   //speed is zero
+   EXPECT_FALSE(Call_IsSpeedOk(odo, 0.200, PE::EPSILON, PE::EPSILON / (SPEED_ACCURACY_RATIO_x2 + 1)));
+   //speed is out interval -10%
+   EXPECT_FALSE(Call_IsSpeedOk(odo, 0.180, 10.00, 0.01));
+   //speed is in interval -10%
+   EXPECT_TRUE(Call_IsSpeedOk(odo, 0.181, 10.00, 0.01));
+   //speed is out interval +10%
+   EXPECT_FALSE(Call_IsSpeedOk(odo, 0.220, 10.00, 0.01));
+   //speed is in interval +10%
+   EXPECT_TRUE(Call_IsSpeedOk(odo, 0.219, 10.00, 0.01));
+   //speed does not feet to accuracy ratio
+   EXPECT_FALSE(Call_IsSpeedOk(odo, 0.200, 1.00, 0.50));
+   //speed feets to accuracy ratio
+   EXPECT_TRUE(Call_IsSpeedOk(odo, 0.200, 1.00, 0.49));
 }
 
 
