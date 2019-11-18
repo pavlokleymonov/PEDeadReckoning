@@ -184,7 +184,7 @@ void PE::COdometer::ResetUncomplitedProcessing()
 SBasicSensor PE::COdometer::CalculateOdoSpeed( const TValue& odoTickSpeed )
 {
    SBasicSensor odoSpeed;//invalid by default
-   if ( true == IsOdoCalibrated() )
+   if ( true == IsOdoCalibrated(BiasCalibartedTo(), ScaleCalibartedTo()) )
    {
       odoSpeed.Value    = m_OdoScale.GetMean() * (odoTickSpeed - m_OdoBias.GetMean()); // value = scale * (odo_speed - bias)
       odoSpeed.Accuracy = m_OdoBias.GetMld() * (m_OdoScale.GetMean() + m_OdoScale.GetMld()); // accuracy = bias_mld * (scale + scale_mld)
@@ -277,11 +277,11 @@ bool PE::COdometer::IsAccuracyOk(const TValue& value, const TAccuracy& accuracy,
 }
 
 
-bool PE::COdometer::IsOdoCalibrated()
+bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo)
 {
-   if ( m_biasLimit < BiasCalibartedTo() ) // has to be adjustable
+   if ( m_biasLimit < biasCalibartedTo )
    {
-      if ( m_scaleLimit < ScaleCalibartedTo() ) // has to be adjustable
+      if ( m_scaleLimit < scaleCalibartedTo )
       {
          return true;
       }
@@ -311,10 +311,7 @@ bool PE::COdometer::IsCalibrationPossible( const TTimestamp& speedTs, const TVal
       {
          if ( PE::EPSILON < OdoTickSpeedAfter )
          {
-            if ( IsInRange(speedTs, OdoTsBefore, OdoTsAfter) )
-            {
-               return true;
-            }
+            return IsInRange(speedTs, OdoTsBefore, OdoTsAfter);
          }
       }
    }

@@ -207,6 +207,7 @@ private:
    bool IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid );
    /**
     * Checks if delta time in a range of interval +/- hysteresis
+    * IMPORTANT:   negative values have to be excluded!!!
     * @return   true if delta time passed all checkings
     *
     * @param  deltaTs      delta time for checking in second
@@ -216,6 +217,7 @@ private:
    bool IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis);
    /**
     * Checks if value is bigger than accuracy with specified ratio coefficient
+    * IMPORTANT:   negative values have to be excluded!!!
     * @return   true if value passed all checkings
     *
     * @param  value      to be checked
@@ -226,8 +228,11 @@ private:
    /**
     * Checks if bias and scale of odometer riched specified calibration limit
     * @return   true if odometer reached calibration level
+    *
+    * @param biasCalibartedTo    bias calibration status with range [0..100] in %
+    * @param scaleCalibartedTo   scale calibration status with range [0..100] in %
     */
-   bool IsOdoCalibrated();
+   bool IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo);
    /**
     * Checks if given tested timestamp is in specified range
     * @return   true if testedTS belongs to the range [beginTS .. endTS]

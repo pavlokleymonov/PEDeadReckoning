@@ -43,6 +43,36 @@ public:
    {
       return obj.IsSpeedOk( deltaTs, speed, acc);
    }
+
+   bool Call_IsOdoOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& ticks, bool IsValid )
+   {
+      return obj.IsOdoOk(deltaTs, ticks, IsValid );
+   }
+
+   bool Call_IsIntervalOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& interval, const PE::TValue& hysteresis)
+   {
+      return obj.IsIntervalOk( deltaTs, interval, hysteresis);
+   }
+
+   bool Call_IsAccuracyOk( PE::COdometer& obj, const PE::TValue& value, const PE::TAccuracy& accuracy, const PE::TValue& ratio)
+   {
+      return obj.IsAccuracyOk( value, accuracy, ratio);
+   }
+
+   bool Call_IsOdoCalibrated( PE::COdometer& obj, const PE::TValue& biasCalibartedTo, const PE::TValue& scaleCalibartedTo)
+   {
+      return obj.IsOdoCalibrated( biasCalibartedTo, scaleCalibartedTo);
+   }
+
+   bool Call_IsInRange( PE::COdometer& obj, const PE::TTimestamp& testedTS, const PE::TTimestamp& beginTS, const PE::TTimestamp& endTS)
+   {
+      return obj.IsInRange(testedTS, beginTS, endTS);
+   }
+
+   bool Call_IsCalibrationPossible( PE::COdometer& obj, const PE::TTimestamp& speedTs, const PE::TValue& speed, const PE::TTimestamp& OdoTsBefore, const PE::TValue& OdoTickSpeedBefore, const PE::TTimestamp& OdoTsAfter, const PE::TValue& OdoTickSpeedAfter )
+   {
+      return obj.IsCalibrationPossible( speedTs, speed, OdoTsBefore, OdoTickSpeedBefore, OdoTsAfter, OdoTickSpeedAfter );
+   }
 };
 
 
@@ -650,6 +680,8 @@ TEST_F(PECOdometerTest, test_IsSpeedOk )
 
    //all is valid
    EXPECT_TRUE(Call_IsSpeedOk(odo, 0.200, 10.00, 0.01));
+   //timeinterval almost zero
+   EXPECT_FALSE(Call_IsSpeedOk(odo, PE::EPSILON, 10.00, 0.01));
    //speed is negative
    EXPECT_FALSE(Call_IsSpeedOk(odo, 0.200, -1, 0.01));
    //speed is zero
@@ -666,6 +698,165 @@ TEST_F(PECOdometerTest, test_IsSpeedOk )
    EXPECT_FALSE(Call_IsSpeedOk(odo, 0.200, 1.00, 0.50));
    //speed feets to accuracy ratio
    EXPECT_TRUE(Call_IsSpeedOk(odo, 0.200, 1.00, 0.49));
+}
+
+
+/**
+ * checks IsOdoOk
+ */
+TEST_F(PECOdometerTest, test_IsOdoOk )
+{
+   PE::TValue       ODO_INTERVAL_50MS = 0.050;
+   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
+   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
+   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
+   uint32_t SPEED_CALIBRATION_COUNT_1 = 1;
+
+   PE::COdometer odo;
+
+   //call init all is correct
+   EXPECT_TRUE(odo.Init(ODO_INTERVAL_50MS, SPEED_INTERVAL_200MS, BIAS_LIMIT_26PROCENT, SCALE_LIMIT_26PROCENT, SPEED_ACCURACY_RATIO_x2, SPEED_CALIBRATION_COUNT_1));
+
+   //all is valid
+   EXPECT_TRUE(Call_IsOdoOk (odo, 0.050, 10.00, true));
+   //tick is invalid
+   EXPECT_FALSE(Call_IsOdoOk(odo, 0.050, 10.00, false));
+   //timeinterval almost zero
+   EXPECT_FALSE(Call_IsOdoOk(odo, PE::EPSILON, 10.00, true));
+   //tick is negative
+   EXPECT_FALSE(Call_IsOdoOk(odo, 0.050, -10.00, true));
+   //tick is zero
+   EXPECT_FALSE(Call_IsOdoOk(odo, 0.050,   0.00, true));
+   //tick is out interval -5%
+   EXPECT_FALSE(Call_IsOdoOk(odo, 0.0474999, 10.00, true));
+   //tick is in interval -5%
+   EXPECT_TRUE(Call_IsOdoOk (odo, 0.0475001, 10.00, true));
+   //tick is out interval +5%
+   EXPECT_FALSE(Call_IsOdoOk(odo, 0.0525001, 10.00, true));
+   //tick is in interval +5%
+   EXPECT_TRUE(Call_IsOdoOk (odo, 0.0524999, 10.00, true));
+}
+
+
+/**
+ * checks IsIntervalOk
+ */
+TEST_F(PECOdometerTest, test_IsIntervalOk )
+{
+   PE::TValue       INTERVAL_1000MS = 1.000;
+   PE::TValue       HYSTERESIS_10MS = 0.010;
+
+   PE::COdometer odo;
+
+   //interval 1 second +/-10ms
+   //all is valid
+   EXPECT_TRUE (Call_IsIntervalOk(odo,       1.000, INTERVAL_1000MS, HYSTERESIS_10MS));
+   //timeinterval almost zero
+   EXPECT_FALSE(Call_IsIntervalOk(odo, PE::EPSILON, INTERVAL_1000MS, HYSTERESIS_10MS));
+   //timeinterval is out +10ms
+   EXPECT_FALSE(Call_IsIntervalOk(odo,       1.010001, INTERVAL_1000MS, HYSTERESIS_10MS));
+   //timeinterval is out -10ms
+   EXPECT_FALSE(Call_IsIntervalOk(odo,       0.989999, INTERVAL_1000MS, HYSTERESIS_10MS));
+}
+
+
+/**
+ * checks IsAccuracyOk
+ */
+TEST_F(PECOdometerTest, test_IsAccuracyOk )
+{
+   uint32_t   ACCURACY_RATIO_x2 = 2;
+   uint32_t  ACCURACY_RATIO_x10 = 10;
+   uint32_t   ACCURACY_RATIO_x0 = 0;
+
+   PE::COdometer odo;
+
+   //all is valid
+   EXPECT_TRUE (Call_IsAccuracyOk(odo,  10.000, 0.1, ACCURACY_RATIO_x2));
+   EXPECT_TRUE (Call_IsAccuracyOk(odo,  10.000, 0.1, ACCURACY_RATIO_x10));
+   EXPECT_TRUE (Call_IsAccuracyOk(odo,  10.000, 0.1, ACCURACY_RATIO_x0));
+   //value is out of accuracy ratio
+   EXPECT_FALSE(Call_IsAccuracyOk(odo,  10.000, 1.0, ACCURACY_RATIO_x10));
+}
+
+
+/**
+ * checks IsOdoCalibrated
+ */
+TEST_F(PECOdometerTest, test_IsOdoCalibrated )
+{
+   PE::TValue       ODO_INTERVAL_50MS = 0.050;
+   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
+   PE::TValue    BIAS_LIMIT_22PROCENT = 22.00;
+   PE::TValue   SCALE_LIMIT_33PROCENT = 33.00;
+   uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
+   uint32_t SPEED_CALIBRATION_COUNT_1 = 1;
+
+   PE::COdometer odo;
+
+   //call init all is correct
+   EXPECT_TRUE(odo.Init(ODO_INTERVAL_50MS, SPEED_INTERVAL_200MS, BIAS_LIMIT_22PROCENT, SCALE_LIMIT_33PROCENT, SPEED_ACCURACY_RATIO_x2, SPEED_CALIBRATION_COUNT_1));
+
+   //all is calibrated
+   EXPECT_TRUE (Call_IsOdoCalibrated(odo, BIAS_LIMIT_22PROCENT + 0.01, SCALE_LIMIT_33PROCENT + 0.01));
+   //bias is not callibrated
+   EXPECT_FALSE(Call_IsOdoCalibrated(odo,        BIAS_LIMIT_22PROCENT, SCALE_LIMIT_33PROCENT + 0.01));
+   //scale is not callibrated
+   EXPECT_FALSE(Call_IsOdoCalibrated(odo, BIAS_LIMIT_22PROCENT + 0.01,        SCALE_LIMIT_33PROCENT));
+   //bias and scale are not callibrated
+   EXPECT_FALSE(Call_IsOdoCalibrated(odo,        BIAS_LIMIT_22PROCENT,        SCALE_LIMIT_33PROCENT));
+}
+
+
+/**
+ * checks IsInRange
+ */
+TEST_F(PECOdometerTest, test_IsInRange )
+{
+   PE::COdometer odo;
+
+   //data is in range from left
+   EXPECT_TRUE (Call_IsInRange(odo, 10, 10, 100));
+   //data is in range from right
+   EXPECT_TRUE (Call_IsInRange(odo, 100, 10, 100));
+   //data positive is in range in between
+   EXPECT_TRUE (Call_IsInRange(odo,  50, 10, 100));
+   //data negative is in range in between
+   EXPECT_TRUE (Call_IsInRange(odo, -5, -10, 100));
+   //data is out of range from the left
+   EXPECT_FALSE(Call_IsInRange(odo,   1, 10, 100));
+   //data is out of range from the right
+   EXPECT_FALSE(Call_IsInRange(odo, 101, 10, 100));
+   //wrong range definition
+   EXPECT_FALSE(Call_IsInRange(odo,  50, 100, 10));
+}
+
+
+/**
+ * checks IsCalibrationPossible
+ */
+TEST_F(PECOdometerTest, test_IsCalibrationPossible )
+{
+   PE::COdometer odo;
+
+   PE::TTimestamp SPEED_TS_1001S = 1001;
+   PE::TValue   SPEED_10_M_PER_S = 10;
+   PE::TTimestamp   ODO_TS_1000S = 1000;
+   PE::TValue      ODO_100_TICKS = 100;
+   PE::TTimestamp   ODO_TS_1002S = 1002;
+   PE::TValue      ODO_200_TICKS = 200;
+
+   //all values are correct
+   EXPECT_TRUE (Call_IsCalibrationPossible(odo, SPEED_TS_1001S, SPEED_10_M_PER_S, ODO_TS_1000S, ODO_100_TICKS, ODO_TS_1002S, ODO_200_TICKS));
+   //speed value is zero
+   EXPECT_FALSE(Call_IsCalibrationPossible(odo, SPEED_TS_1001S,                0, ODO_TS_1000S, ODO_100_TICKS, ODO_TS_1002S, ODO_200_TICKS));
+   //odometer from the left is zero
+   EXPECT_FALSE(Call_IsCalibrationPossible(odo, SPEED_TS_1001S, SPEED_10_M_PER_S, ODO_TS_1000S,             0, ODO_TS_1002S, ODO_200_TICKS));
+   //odometer from the right is zero
+   EXPECT_FALSE(Call_IsCalibrationPossible(odo, SPEED_TS_1001S, SPEED_10_M_PER_S, ODO_TS_1000S, ODO_100_TICKS, ODO_TS_1002S,             0));
+   //speed is out of the range
+   EXPECT_FALSE(Call_IsCalibrationPossible(odo,              0, SPEED_10_M_PER_S, ODO_TS_1000S, ODO_100_TICKS, ODO_TS_1002S, ODO_200_TICKS));
 }
 
 
