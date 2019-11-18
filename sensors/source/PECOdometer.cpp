@@ -210,7 +210,7 @@ void PE::COdometer::UpdateBias(const TValue& bias)
    if ( false == PE::isnan(bias) )
    {
       m_OdoBias.AddSensor(bias);
-      //printf("\nBias=%0.6f",bias);
+      printf("\nBias=%0.6f",bias);
    }
 }
 
@@ -220,7 +220,7 @@ void PE::COdometer::UpdateScale(const TValue& scale)
    if ( false == PE::isnan(scale) )
    {
       m_OdoScale.AddSensor(scale);
-      //printf("\nScal=%0.6f",scale);
+      printf("\nScal=%0.6f",scale);
    }
 }
 
