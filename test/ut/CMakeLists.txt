@@ -31,7 +31,7 @@ add_library ( pe_fusion STATIC
 )
 
 add_library ( pe_calibration STATIC
-   ${REPOSITORY_ROOT}/calibration/source/PECCalibrationSummary.cpp
+   ${REPOSITORY_ROOT}/calibration/source/PECCalibration.cpp
 )
 
 add_library ( pe_normalisation STATIC
@@ -99,12 +99,12 @@ target_link_libraries(test_pe_normalisation pe_common pe_normalisation gtest pth
 add_test(NAME test_pe_normalisation COMMAND test_pe_normalisation)
 
 #################################
-#Test class PE::CCalibrationSummary
-add_executable(test_pe_calibration_summary
-   PECCalibrationSummaryTest.cpp
+#Test class PE::CCalibration
+add_executable(test_pe_calibration
+   PECCalibrationTest.cpp
 )
-target_link_libraries(test_pe_calibration_summary pe_common pe_calibration gtest pthread )
-add_test(NAME test_pe_calibration_summary COMMAND test_pe_calibration_summary)
+target_link_libraries(test_pe_calibration pe_calibration gtest pthread )
+add_test(NAME test_pe_calibration COMMAND test_pe_calibration)
 
 #################################
 #Test class PE::COdometer

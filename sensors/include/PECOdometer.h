@@ -17,7 +17,7 @@
 #include "PETypes.h"
 #include "PESBasicSensor.h"
 #include "PECNormalisation.h"
-#include "PECCalibrationSummary.h"
+#include "PECCalibration.h"
 
 class PECOdometerTest; //to get possibility for test class
 
@@ -144,7 +144,7 @@ private:
    /**
     * Odometer calibration service
     */
-   CCalibrationSummary m_OdoCalib;
+   CCalibration m_OdoCalib;
    /**
     * Odometer normalisation service for bias
     */

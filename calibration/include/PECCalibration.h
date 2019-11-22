@@ -11,10 +11,10 @@
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the License for more information.
  */
-#ifndef __PE_CCalibrationSummary_H__
-#define __PE_CCalibrationSummary_H__
+#ifndef __PE_CCalibration_H__
+#define __PE_CCalibration_H__
 
-#include "PEICalibration.h"
+#include "PETypes.h"
 
 namespace PE
 {
@@ -22,68 +22,86 @@ namespace PE
 /**
  * class for calibartion functionality
  *
+ * The scaled value could be calculated by this formula:
+ *
+ *   value = ( raw - bias ) * scale
+ *
  * IMPORTANT:  reference and raw value have to be on a same timebase without any delay or latency
  *             If there is any latency or delay it has to be compensated before calibration.
  *             Same value at startup has to be avoid.
  *
  */
-class CCalibrationSummary : public ICalibration
+class CCalibration
 {
 public:
    /**
-    * Constructor of calibartion
+    * Constructor of calibration
     */
-   CCalibrationSummary();
-   /**
-    * Destructor of calibartion
-    */
-   virtual ~CCalibrationSummary();
+   CCalibration();
    /**
     * Adds new reference value to the calibration
     *
     * @param  ref      reference value
     */
-   virtual void AddRef( const TValue& ref );
+   void AddRef( const TValue& ref );
    /**
     * Adds new raw value to the calibration
     *
     * @param  raw     raw value
     */
-   virtual void AddRaw( const TValue& raw );
+   void AddRaw( const TValue& raw );
    /**
     * Returns bias/base of the calibration
     * @return         bias/base or NaN if there is no valid data
     */
-   virtual const TValue& GetBias() const;
+   const TValue& GetBias() const;
    /**
     * Returns scale of the calibration
     * @return         scale or NaN if there is no valid data
     */
-   virtual const TValue& GetScale() const;
+   const TValue& GetScale() const;
    /**
     * Calculates bias/base and scale of raw value.
     */
-   virtual void Recalculate();
+   void Recalculate();
    /**
     * Clean all data since last Recalculate call
     */
-   virtual void CleanLastStep();
+   void CleanLastStep();
 
 private:
-
+   /**
+    * Summ of all reference data before calculation - SUM(N)
+    */
    TValue m_Sum_Ref_before;
+   /**
+    * Summ of all raw data before calculation  - SUM(K)
+    */
    TValue m_Sum_Raw_before;
+   /**
+    * Index of summ of reference data before calculation - N
+    */
    uint32_t m_Index_before;
-
+   /**
+    * Summ of all reference data during calculation - SUM(N+1)
+    */
    TValue m_Sum_Ref_now;
+   /**
+    * Summ of all raw data during calculation  - SUM(K+1)
+    */
    TValue m_Sum_Raw_now;
+   /**
+    * Index of summ of reference data during calculation - N+1
+    */
    uint32_t m_Index_now;
-
-   TValue m_Divisor;
-
+   /**
+    * Bias of the raw data
+    */
    TValue m_Bias;
+   /**
+    * Scale of the raw data
+    */
    TValue m_Scale;
-
    /**
     * Calculates bias/base and scale of raw value.
     * Did not check first iteration
@@ -93,4 +111,4 @@ private:
 
 } //namespace PE
 
-#endif //__PE_CCalibrationSummary_H__
+#endif //__PE_CCalibration_H__

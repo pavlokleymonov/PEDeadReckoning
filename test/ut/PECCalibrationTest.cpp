@@ -14,7 +14,7 @@
 
 
 /**
- * Unit test of the PECCalibrationSummary class.
+ * Unit test of the PECCalibration class.
  *
  * Code under test:
  *
@@ -22,10 +22,10 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "PECCalibrationSummary.h"
+#include "PECCalibration.h"
 
 
-class PECCalibrationSummaryTest : public ::testing::Test
+class PECCalibrationTest : public ::testing::Test
 {
 public:
    virtual void SetUp()
@@ -38,9 +38,9 @@ public:
 /**
  * tests creation 
  */
-TEST_F(PECCalibrationSummaryTest, create_destroy_test)
+TEST_F(PECCalibrationTest, create_destroy_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
    EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
@@ -52,9 +52,9 @@ TEST_F(PECCalibrationSummaryTest, create_destroy_test)
 /**
  * tests first iteration
  */
-TEST_F(PECCalibrationSummaryTest, first_iteration_test)
+TEST_F(PECCalibrationTest, first_iteration_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
    EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
@@ -77,9 +77,9 @@ TEST_F(PECCalibrationSummaryTest, first_iteration_test)
 /**
  * tests same value at start-up
  */
-TEST_F(PECCalibrationSummaryTest, same_value_at_start_up_test)
+TEST_F(PECCalibrationTest, same_value_at_start_up_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    p_calib->AddRaw(11);
    p_calib->AddRef(1);
@@ -106,9 +106,9 @@ TEST_F(PECCalibrationSummaryTest, same_value_at_start_up_test)
 /**
  * tests  n; n+1; base=1 and scale=0.1
  */
-TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_1_scale_0_dot_1_test)
+TEST_F(PECCalibrationTest, n_and_n_plus_1_base_1_scale_0_dot_1_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=11 REF=1.0
    p_calib->AddRaw(11);
@@ -138,9 +138,9 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_1_scale_0_dot_1_test)
 /**
  * tests  n; n+1; base=-12 and scale=0.1
  */
-TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_12_scale_0_dot_1_test)
+TEST_F(PECCalibrationTest, n_and_n_plus_1_base_minus_12_scale_0_dot_1_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=-2 REF=1.0
    p_calib->AddRaw(-2);
@@ -170,9 +170,9 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_12_scale_0_dot_1_tes
 /**
  * tests  n; n+1; base=0 and scale=0.11
  */
-TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_0_scale_0_dot_11_test)
+TEST_F(PECCalibrationTest, n_and_n_plus_1_base_0_scale_0_dot_11_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=9.090909090909 REF=1.0
    p_calib->AddRaw(9.090909090909);
@@ -209,9 +209,9 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_0_scale_0_dot_11_test)
 /**
  * tests  n; n+1; base=-0.1234 and scale=1.2
  */
-TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_0_dot_1234_scale_1_dot_2_test)
+TEST_F(PECCalibrationTest, n_and_n_plus_1_base_minus_0_dot_1234_scale_1_dot_2_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=0.70993333333   REF=1.0
    p_calib->AddRaw(0.70993333333);
@@ -241,9 +241,9 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_0_dot_1234_scale_1_d
 /**
  * tests  n; n+1; base=-123 and scale=-5.4
  */
-TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_123_scale_minus_5_dot_4_test)
+TEST_F(PECCalibrationTest, n_and_n_plus_1_base_minus_123_scale_minus_5_dot_4_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=-123.1851851851851   REF=1.0
    p_calib->AddRaw(-123.1851851851851);
@@ -273,9 +273,9 @@ TEST_F(PECCalibrationSummaryTest, n_and_n_plus_1_base_minus_123_scale_minus_5_do
 /**
  * tests  n; n+1; base=1 and scale=1, raw:1+1;0.5+1;-1.5+1
  */
-TEST_F(PECCalibrationSummaryTest, special_case_when_second_divisor_can_be_zero_test)
+TEST_F(PECCalibrationTest, special_case_when_second_divisor_can_be_zero_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=1.0+1  REF=1.0
    p_calib->AddRaw(1.0 + 1);
@@ -306,9 +306,9 @@ TEST_F(PECCalibrationSummaryTest, special_case_when_second_divisor_can_be_zero_t
 /**
  * tests  CleanLastStep bias=11 scale=0.1
  */
-TEST_F(PECCalibrationSummaryTest, clean_last_step_test)
+TEST_F(PECCalibrationTest, clean_last_step_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    //RAW=10+11   REF=1.0
    p_calib->AddRaw(10.0 + 11);
@@ -360,9 +360,9 @@ TEST_F(PECCalibrationSummaryTest, clean_last_step_test)
 /**
  * tests 4 raw / 1 ref  bias=11 scale=0.1
  */
-TEST_F(PECCalibrationSummaryTest, raw_4_to_ref_1_bias_0_scale_0_1_test)
+TEST_F(PECCalibrationTest, raw_4_to_ref_1_bias_0_scale_0_1_test)
 {
-   PE::ICalibration* p_calib = new PE::CCalibrationSummary();
+   PE::CCalibration* p_calib = new PE::CCalibration();
 
    p_calib->AddRaw(2.5 + 11);
    p_calib->AddRaw(2.5 + 11 );

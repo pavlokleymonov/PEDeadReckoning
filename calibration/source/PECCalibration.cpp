@@ -12,57 +12,51 @@
  * See the License for more information.
  */
 
-#include "PECCalibrationSummary.h"
+#include "PECCalibration.h"
 
 
 using namespace PE;
 
 
-PE::CCalibrationSummary::CCalibrationSummary()
+PE::CCalibration::CCalibration()
 : m_Sum_Ref_before(0.0)
 , m_Sum_Raw_before(0.0)
 , m_Index_before(0)
 , m_Sum_Ref_now(0.0)
 , m_Sum_Raw_now(0.0)
 , m_Index_now(0)
-, m_Divisor(0.0)
 , m_Bias(std::numeric_limits<TValue>::quiet_NaN())
 , m_Scale(std::numeric_limits<TValue>::quiet_NaN())
 {
 }
 
 
-PE::CCalibrationSummary::~CCalibrationSummary()
-{
-}
-
-
-void PE::CCalibrationSummary::AddRef( const PE::TValue& ref )
+void PE::CCalibration::AddRef( const PE::TValue& ref )
 {
    m_Sum_Ref_now += ref;
 }
 
 
-void PE::CCalibrationSummary::AddRaw( const PE::TValue& raw )
+void PE::CCalibration::AddRaw( const PE::TValue& raw )
 {
    m_Sum_Raw_now += raw;
    ++m_Index_now;
 }
 
 
-const PE::TValue& PE::CCalibrationSummary::GetBias() const
+const PE::TValue& PE::CCalibration::GetBias() const
 {
    return m_Bias;
 }
 
 
-const PE::TValue& PE::CCalibrationSummary::GetScale() const
+const PE::TValue& PE::CCalibration::GetScale() const
 {
    return m_Scale;
 }
 
 
-void PE::CCalibrationSummary::Recalculate()
+void PE::CCalibration::Recalculate()
 {
    if ( 0 == m_Index_before )
    {
@@ -77,7 +71,7 @@ void PE::CCalibrationSummary::Recalculate()
 }
 
 
-void PE::CCalibrationSummary::CleanLastStep()
+void PE::CCalibration::CleanLastStep()
 {
    m_Sum_Ref_now = m_Sum_Ref_before;
    m_Sum_Raw_now = m_Sum_Raw_before;
@@ -85,18 +79,18 @@ void PE::CCalibrationSummary::CleanLastStep()
 }
 
 
-void PE::CCalibrationSummary::CalculateBaseScale()
+void PE::CCalibration::CalculateBaseScale()
 {
-   m_Divisor = ( m_Index_before * m_Sum_Ref_now - m_Index_now * m_Sum_Ref_before );
-   if ( false == isepsilon( m_Divisor ) )
+   TValue divisor = ( m_Index_before * m_Sum_Ref_now - m_Index_now * m_Sum_Ref_before );
+   if ( false == isepsilon( divisor ) )
    {
-      m_Bias = ( m_Sum_Ref_now * m_Sum_Raw_before - m_Sum_Raw_now * m_Sum_Ref_before ) / m_Divisor;
+      m_Bias = ( m_Sum_Ref_now * m_Sum_Raw_before - m_Sum_Raw_now * m_Sum_Ref_before ) / divisor;
 
-      m_Divisor = m_Sum_Raw_now - m_Bias * m_Index_now;
+      divisor = m_Sum_Raw_now - m_Bias * m_Index_now;
 
-      if ( false == isepsilon( m_Divisor ) )
+      if ( false == isepsilon( divisor ) )
       {
-         m_Scale = m_Sum_Ref_now / m_Divisor;
+         m_Scale = m_Sum_Ref_now / divisor;
          m_Sum_Ref_before = m_Sum_Ref_now;
          m_Sum_Raw_before = m_Sum_Raw_now;
          m_Index_before   = m_Index_now;
