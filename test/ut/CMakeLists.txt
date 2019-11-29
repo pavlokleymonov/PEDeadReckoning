@@ -10,7 +10,6 @@ include_directories(
    ${REPOSITORY_ROOT}/normalisation/include
    ${REPOSITORY_ROOT}/core/include
    ${REPOSITORY_ROOT}/sensors/include
-   ${CMAKE_CURRENT_SOURCE_DIR}/mock
 )
 
 #build gtest static library
@@ -108,6 +107,9 @@ add_test(NAME test_pe_calibration COMMAND test_pe_calibration)
 
 #################################
 #Test class PE::COdometer
+#copying track file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testtracks/ODO_40ms_60sec_GNSS_100ms_32sec.txt ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+#create binary
 add_executable(test_pe_odometer
    PECOdometerTest.cpp
 )

@@ -20,9 +20,15 @@
  *
  */
 
+#include <fstream>
+#include <iostream>
+#include <string>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+
 #include "PECOdometer.h"
+#include "PETools.h"
 
 class PECOdometerTest : public ::testing::Test
 {
@@ -859,6 +865,127 @@ TEST_F(PECOdometerTest, test_IsCalibrationPossible )
    EXPECT_FALSE(Call_IsCalibrationPossible(odo,              0, SPEED_10_M_PER_S, ODO_TS_1000S, ODO_100_TICKS, ODO_TS_1002S, ODO_200_TICKS));
 }
 
+#ifdef TTT
+
+#define PE_ODO_RAW_VALUE_MAX      2047   ///< Maximum value of odometer
+uint32_t GetDeltaTick(uint32_t odo_raw_value)
+{
+   static uint32_t last_odo_raw_value = 0;
+   uint32_t ticks = odo_raw_value - last_odo_raw_value;
+   if ( last_odo_raw_value > odo_raw_value )
+   {
+      ticks = PE_ODO_RAW_VALUE_MAX + 1 + odo_raw_value - last_odo_raw_value;
+   }
+   last_odo_raw_value = odo_raw_value;
+   return ticks;
+}
+
+
+/**
+ * checks 60seconds drive track file
+ */
+TEST_F(PECOdometerTest, test_ODO_40ms_60sec_GNSS_100ms_32sec)
+{
+   PE::TValue       ODO_INTERVAL_40MS = 0.040;
+   PE::TValue   SPEED_INTERVAL_1000MS = 1.000;
+   PE::TValue      BIAS_LIMIT_PROCENT = 26.00;
+   PE::TValue     SCALE_LIMIT_PROCENT = 26.00;
+   uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
+   uint32_t SPEED_CALIBRATION_COUNT_1 = 1;
+
+   std::string TRACK_ODO_40MS_60SEC_GNSS_100MS_32SEC = "ODO_40ms_60sec_GNSS_100ms_32sec.txt";
+   std::ifstream* trk = new std::ifstream(TRACK_ODO_40MS_60SEC_GNSS_100MS_32SEC);
+   EXPECT_TRUE(trk->is_open());
+
+   std::string line;
+   PE::COdometer odo;
+   //call init all is correct
+   EXPECT_TRUE(odo.Init(ODO_INTERVAL_40MS, SPEED_INTERVAL_1000MS, BIAS_LIMIT_PROCENT, SCALE_LIMIT_PROCENT, SPEED_ACCURACY_RATIO_x2, SPEED_CALIBRATION_COUNT_1));
+
+   uint32_t          ts_ms = 0;
+   uint32_t     speed_orig = 0;
+   uint32_t acc_speed_orig = 0;
+   uint32_t       odo_orig = 0;
+   bool       is_new_speed = false;
+   uint32_t  tries = 0;
+   do
+   {
+      *trk >> line;
+      std::vector<std::string> group = PE::TOOLS::Split(line, ',');
+      if (3 < group.size())
+      {
+         //printf("0-%s 1-%s 3-%s\n", group[0].c_str(), group[1].c_str(), group[3].c_str());
+         ts_ms = atoi(group[0].c_str());
+         PE::TTimestamp ts = ts_ms / 1000.0;
+         if ( 0 == group[1].compare("ODO") )
+         {
+            odo_orig = atoi(group[3].c_str());
+            uint32_t ticks = GetDeltaTick(odo_orig);
+            odo.AddOdo(ts, ticks, true);
+            printf("ts=%0.3f ticks=%d odo=%d\n", ts, ticks, odo_orig);
+         }
+         if ( 0 == group[1].compare("SPEED") )
+         {
+            if ( atoi(group[3].c_str()) != speed_orig )
+            {
+               speed_orig = atoi(group[3].c_str());
+               is_new_speed = true;
+            }
+            else
+            {
+               is_new_speed = false;
+            }
+         }
+         if ( 0 == group[1].compare("ACC") )
+         {
+            if ( true == is_new_speed )
+            {
+               acc_speed_orig = atoi(group[3].c_str());
+               odo.AddSpeed(ts, speed_orig / 100.0, acc_speed_orig / 100.0);
+               printf("ts=%0.3f speed=%0.2f[m/s] acc=%0.2f[m/s]\n", ts, speed_orig / 100.0, acc_speed_orig / 100.0);
+               is_new_speed = false;
+            }
+         }
+
+         //CASE: 10x speeds were provided
+//          if ( 270128 == ts_ms)
+//          {
+//             EXPECT_NEAR ( 0.00, odo.BiasCalibartedTo(), 0.01 );
+//             EXPECT_NEAR ( 0.00, odo.ScaleCalibartedTo(), 0.01 );
+//          }
+         //CASE: last speed were provided (round about 40 seconds one iteration)
+         if ( 301608 == ts_ms)
+         {
+            EXPECT_NEAR ( 0.00, odo.BiasCalibartedTo(), 0.01 );
+            EXPECT_NEAR ( 0.00, odo.GetOdoBias(), 0.01 );
+            EXPECT_NEAR ( 0.00, odo.ScaleCalibartedTo(), 0.01 );
+            EXPECT_NEAR ( 0.00, odo.GetOdoScale(), 0.01 );
+            EXPECT_NEAR ( 0.00, odo.GetOdoSpeed().Value, 0.01 );
+            EXPECT_NEAR ( 0.00, odo.GetOdoSpeed().Accuracy, 0.01 );
+            tries++;
+            if ( tries > 100 ) //100 iteration 1 hour 6 minutes
+            {
+               break;
+            }
+            else
+            {
+               ts_ms = 0;
+               speed_orig = 0;
+               acc_speed_orig = 0;
+               odo_orig = 0;
+               is_new_speed = false;
+               //reopen track
+               trk->close();
+               trk->open(TRACK_ODO_40MS_60SEC_GNSS_100MS_32SEC);
+            }
+         }
+      }
+   }
+   while (trk->good());
+
+   delete trk;
+}
+#endif
 
 int main(int argc, char *argv[])
 {
