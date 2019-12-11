@@ -141,9 +141,21 @@ const TTimestamp& PE::COdometer::GetOdoTimeStamp() const
 }
 
 
-SBasicSensor PE::COdometer::GetOdoSpeed()
+bool PE::COdometer::IsOdoSpeedCalibrated() const
 {
-   return CalculateOdoSpeed(m_OdoTickSpeed);
+   return IsOdoCalibrated(BiasCalibartedTo(), ScaleCalibartedTo());
+}
+
+
+const TValue PE::COdometer::GetOdoSpeedValue() const
+{
+   return m_OdoScale.GetMean() * (m_OdoTickSpeed - m_OdoBias.GetMean()); // value = scale * (odo_speed - bias)
+}
+
+
+const TAccuracy PE::COdometer::GetOdoSpeedAccuracy() const
+{
+   return m_OdoBias.GetMld() * (m_OdoScale.GetMean() + m_OdoScale.GetMld()); // accuracy = bias_mld * (scale + scale_mld)
 }
 
 
@@ -181,18 +193,6 @@ void PE::COdometer::ResetUncomplitedProcessing()
 }
 
 
-SBasicSensor PE::COdometer::CalculateOdoSpeed( const TValue& odoTickSpeed )
-{
-   SBasicSensor odoSpeed;//invalid by default
-   if ( true == IsOdoCalibrated(BiasCalibartedTo(), ScaleCalibartedTo()) )
-   {
-      odoSpeed.Value    = m_OdoScale.GetMean() * (odoTickSpeed - m_OdoBias.GetMean()); // value = scale * (odo_speed - bias)
-      odoSpeed.Accuracy = m_OdoBias.GetMld() * (m_OdoScale.GetMean() + m_OdoScale.GetMld()); // accuracy = bias_mld * (scale + scale_mld)
-   }
-   return odoSpeed;
-}
-
-
 TValue PE::COdometer::PredictOdoTickSpeed( const TTimestamp& referenceSpeedTs, const TTimestamp& odoTsBefore, const TTimestamp& odoTsAfter, const TValue& odoTickSpeedBefore, const TValue& odoTickSpeedAfter )
 {
    //to be more precise better to use Exponential function then proportional
@@ -225,7 +225,7 @@ void PE::COdometer::UpdateScale(const TValue& scale)
 }
 
 
-bool PE::COdometer::IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, const TAccuracy& acc)
+bool PE::COdometer::IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, const TAccuracy& acc) const
 {
    if ( PE::EPSILON < speed ) //speed has to be always more then zero
    {
@@ -238,7 +238,7 @@ bool PE::COdometer::IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, c
 }
 
 
-bool PE::COdometer::IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid )
+bool PE::COdometer::IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid ) const
 {
    if ( true == IsValid )
    {
@@ -251,7 +251,7 @@ bool PE::COdometer::IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool
 }
 
 
-bool PE::COdometer::IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis)
+bool PE::COdometer::IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis) const
 {
    if ( PE::EPSILON < deltaTs )
    {
@@ -267,7 +267,7 @@ bool PE::COdometer::IsIntervalOk(const TTimestamp& deltaTs, const TValue& interv
 }
 
 
-bool PE::COdometer::IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio)
+bool PE::COdometer::IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio) const
 {
    if ( value > (accuracy * ratio) )
    {
@@ -277,7 +277,7 @@ bool PE::COdometer::IsAccuracyOk(const TValue& value, const TAccuracy& accuracy,
 }
 
 
-bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo)
+bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo) const
 {
    if ( m_biasLimit < biasCalibartedTo )
    {
@@ -290,7 +290,7 @@ bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue
 }
 
 
-bool PE::COdometer::IsInRange(const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS)
+bool PE::COdometer::IsInRange(const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS) const
 {
    if ( beginTS <= testedTS )
    {
@@ -303,7 +303,7 @@ bool PE::COdometer::IsInRange(const TTimestamp& testedTS, const TTimestamp& begi
 }
 
 
-bool PE::COdometer::IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter )
+bool PE::COdometer::IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter ) const
 {
    if ( PE::EPSILON < speed )
    {

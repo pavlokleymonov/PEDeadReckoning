@@ -218,7 +218,7 @@ TEST_F(PECOdometerTest, test_calibration_check)
    EXPECT_EQ   (2.000, odo.GetOdoTimeStamp() );
    EXPECT_NEAR (21.03, odo.BiasCalibartedTo(), 0.01 );
    EXPECT_NEAR (21.47, odo.ScaleCalibartedTo(), 0.01 );
-   EXPECT_FALSE( odo.GetOdoSpeed().IsValid() );
+   EXPECT_FALSE( odo.IsOdoSpeedCalibrated() );
    odo.AddOdo  (2.050, 250, true);
    odo.AddOdo  (2.100, 250, true);
    odo.AddOdo  (2.150, 250, true);
@@ -230,9 +230,9 @@ TEST_F(PECOdometerTest, test_calibration_check)
    EXPECT_NEAR (26.08, odo.ScaleCalibartedTo(), 0.01 );
    EXPECT_NEAR (00.002, odo.GetOdoScale(), 0.001 );
    //reliable limit is 26%
-   EXPECT_TRUE ( odo.GetOdoSpeed().IsValid() );
-   EXPECT_NEAR (10.0, odo.GetOdoSpeed().Value, 0.01 );
-   EXPECT_NEAR ( 0.0, odo.GetOdoSpeed().Accuracy, PE::EPSILON );
+   EXPECT_TRUE ( odo.IsOdoSpeedCalibrated() );
+   EXPECT_NEAR (10.0, odo.GetOdoSpeedValue(), 0.01 );
+   EXPECT_NEAR ( 0.0, odo.GetOdoSpeedAccuracy(), PE::EPSILON );
 }
 
 
@@ -960,8 +960,6 @@ TEST_F(PECOdometerTest, test_ODO_40ms_60sec_GNSS_100ms_32sec)
             EXPECT_NEAR ( 0.00, odo.GetOdoBias(), 0.01 );
             EXPECT_NEAR ( 0.00, odo.ScaleCalibartedTo(), 0.01 );
             EXPECT_NEAR ( 0.00, odo.GetOdoScale(), 0.01 );
-            EXPECT_NEAR ( 0.00, odo.GetOdoSpeed().Value, 0.01 );
-            EXPECT_NEAR ( 0.00, odo.GetOdoSpeed().Accuracy, 0.01 );
             tries++;
             if ( tries > 100 ) //100 iteration 1 hour 6 minutes
             {

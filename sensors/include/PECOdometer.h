@@ -15,7 +15,6 @@
 #define __PE_COdometer_H__
 
 #include "PETypes.h"
-#include "PESBasicSensor.h"
 #include "PECNormalisation.h"
 #include "PECCalibration.h"
 
@@ -71,10 +70,20 @@ public:
     */
    const TTimestamp& GetOdoTimeStamp() const;
    /**
-    * Returns odometer speed based on last added odometer value
-    * @return   odometer speed in [m/s] with accuracy in +/-[m/s]
+    * Checks if claibration of base and scale is enough for odometer speed calculation
+    * @return   true if odometer speed could be calculated
     */
-   SBasicSensor GetOdoSpeed();
+   bool IsOdoSpeedCalibrated() const;
+   /**
+    * Returns odometer speed value based on last added odometer value
+    * @return   odometer speed in [m/s]
+    */
+   const TValue GetOdoSpeedValue() const;
+   /**
+    * Returns odometer speed accuracy based on last added odometer value
+    * @return   odometer speed accuracy in +/-[m/s]
+    */
+   const TAccuracy GetOdoSpeedAccuracy() const;
    /**
     * Returns odometer bias value
     * @return   bias of odometer
@@ -158,13 +167,6 @@ private:
     */
    void ResetUncomplitedProcessing();
    /**
-    * Calculates real odometer speed based on odometer ticks per second
-    * @return   calculated odomete speed in [m/s] with accuracy +/-[m/s]
-    *
-    * @param odoTickSpeed   odemeter ticks speed ticks per second
-    */
-   SBasicSensor CalculateOdoSpeed( const TValue& odoTickSpeed );
-   /**
     * Predict odometer ticks speed which is fit to the reference speed timestamp
     * @return   calculated odomete speed in ticks per second
     *
@@ -195,7 +197,7 @@ private:
     * @param  speed     speed value in [m/s] 
     * @param  acc       speed accuracy in +/-[m/s]
     */
-   bool IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, const TAccuracy& acc);
+   bool IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, const TAccuracy& acc) const;
    /**
     * Checks if odemeter is fit to expected conditions and accuracy
     * @return   true if odometer passed all checkings
@@ -204,7 +206,7 @@ private:
     * @param  ticks     odometer raw value
     * @param  IsValid   true if odometer value is valid
     */
-   bool IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid );
+   bool IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid ) const;
    /**
     * Checks if delta time in a range of interval +/- hysteresis
     * IMPORTANT:   negative values have to be excluded!!!
@@ -214,7 +216,7 @@ private:
     * @param  interval     interval of delat time in second
     * @param  hysteresis   hysteresis of delta time for given interval in second
     */
-   bool IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis);
+   bool IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis) const;
    /**
     * Checks if value is bigger than accuracy with specified ratio coefficient
     * IMPORTANT:   negative values have to be excluded!!!
@@ -224,7 +226,7 @@ private:
     * @param  accuracy   accuracy of the value
     * @param  ratio      ratio coefficient
     */
-   bool IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio);
+   bool IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio) const;
    /**
     * Checks if bias and scale of odometer riched specified calibration limit
     * @return   true if odometer reached calibration level
@@ -232,7 +234,7 @@ private:
     * @param biasCalibartedTo    bias calibration status with range [0..100] in %
     * @param scaleCalibartedTo   scale calibration status with range [0..100] in %
     */
-   bool IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo);
+   bool IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo) const;
    /**
     * Checks if given tested timestamp is in specified range
     * @return   true if testedTS belongs to the range [beginTS .. endTS]
@@ -241,7 +243,7 @@ private:
     * @param beginTS    beginning of the specified range
     * @param endTS      end of the specified range
     */
-   bool IsInRange(const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS);
+   bool IsInRange(const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS) const;
    /**
     * Checks if calibration is possible based on given timestamps and speeds
     * @return   true if calibration is possible
@@ -253,7 +255,7 @@ private:
     * @param OdoTsAfter           odometer timestamp after reference timestamp
     * @param OdoTickSpeedAfter    odometer ticks speed after reference timestamp
     */
-   bool IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter );
+   bool IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter ) const;
 };
 
 } //namespace PE
