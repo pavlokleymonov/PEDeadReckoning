@@ -25,7 +25,6 @@ PE::COdometer::COdometer()
 , m_biasLimit(0)
 , m_scaleLimit(0)
 , m_speedAccuracyRatio(0)
-, m_valueCalibrationCount(0)
 , m_SpeedTs(0)
 , m_Speed(0)
 , m_OdoTs(0)
@@ -34,7 +33,7 @@ PE::COdometer::COdometer()
 }
 
 
-bool PE::COdometer::Init(const TValue& odoInterval, const TValue& speedInterval, const TValue& biasLimit, const TValue& scaleLimit, const uint32_t speedAccuracyRatio, const uint32_t valueCalibrationCount)
+bool PE::COdometer::Init(const TValue& odoInterval, const TValue& speedInterval, const TValue& biasLimit, const TValue& scaleLimit, const uint32_t speedAccuracyRatio)
 {
    if ( PE::EPSILON < odoInterval ) //all intervals have to be positive and bigger then zero
    {
@@ -46,17 +45,13 @@ bool PE::COdometer::Init(const TValue& odoInterval, const TValue& speedInterval,
             {
                if ( 0 < speedAccuracyRatio ) //ration has to be bigger then 0
                {
-                  if ( 0 < valueCalibrationCount ) //calibration count has to be bigger then 0
-                  {
-                     m_isInitOk = true;
-                     m_odoInterval = odoInterval;
-                     m_speedInterval = speedInterval;
-                     m_biasLimit = biasLimit;
-                     m_scaleLimit = scaleLimit;
-                     m_speedAccuracyRatio = speedAccuracyRatio;
-                     m_valueCalibrationCount = valueCalibrationCount;
-                     return true;
-                  }
+                  m_isInitOk = true;
+                  m_odoInterval = odoInterval;
+                  m_speedInterval = speedInterval;
+                  m_biasLimit = biasLimit;
+                  m_scaleLimit = scaleLimit;
+                  m_speedAccuracyRatio = speedAccuracyRatio;
+                  return true;
                }
             }
          }

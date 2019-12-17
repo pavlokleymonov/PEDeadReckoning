@@ -45,9 +45,8 @@ public:
     * @param  biasLimit       base calibartion limit in %
     * @param  scaleLimit      scale calibartion limit in %
     * @param  speedAccuracyRatio   consider the reference speed only when value is more then accuracy by this ratio. For instance ration 5 means that value is 5 times bigger then accuracy.
-    * @param  valueCalibrationCount   how much consecutive valid reference speed signals have to be received before calculation new bias and scale.
     */
-   bool Init(const TValue& odoInterval, const TValue& speedInterval, const TValue& biasLimit, const TValue& scaleLimit, const uint32_t speedAccuracyRatio, const uint32_t valueCalibrationCount);
+   bool Init(const TValue& odoInterval, const TValue& speedInterval, const TValue& biasLimit, const TValue& scaleLimit, const uint32_t speedAccuracyRatio);
    /**
     * Adds new reference speed
     *
@@ -130,10 +129,6 @@ private:
     * Accuracy ration consider the reference speed only when value is more then accuracy by this ratio. For instance ration 5 means that value is 5 times bigger then accuracy.
     */
    uint32_t m_speedAccuracyRatio;
-   /**
-    * It shows how much consecutive valid reference speed signals have to be received before calculation new bias and scale.
-    */
-   uint32_t m_valueCalibrationCount;
    /**
      * Last speed timestamp
      */
