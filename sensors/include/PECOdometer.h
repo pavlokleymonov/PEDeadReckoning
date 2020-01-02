@@ -162,17 +162,6 @@ private:
     */
    void ResetUncomplitedProcessing();
    /**
-    * Predict odometer ticks speed which is fit to the reference speed timestamp
-    * @return   calculated odomete speed in ticks per second
-    *
-    * @param referenceSpeedTs     reference speed timestamp
-    * @param odoTsBefore          odometer timestamp before reference speed timestamp
-    * @param odoTsAfter           odometer timestamp after reference speed timestamp
-    * @param odoTickSpeedBefore   odometer tick speed before reference speed timestamp
-    * @param odoTickSpeedAfter    odometer tick speed after reference speed timestamp
-    */
-   TValue PredictOdoTickSpeed( const TTimestamp& referenceSpeedTs, const TTimestamp& odoTsBefore, const TTimestamp& odoTsAfter, const TValue& odoTickSpeedBefore, const TValue& odoTickSpeedAfter );
-   /**
     * Inject new bias into normalization stuff
     *
     * @param bias   new bias value
@@ -203,26 +192,6 @@ private:
     */
    bool IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid ) const;
    /**
-    * Checks if delta time in a range of interval +/- hysteresis
-    * IMPORTANT:   negative values have to be excluded!!!
-    * @return   true if delta time passed all checkings
-    *
-    * @param  deltaTs      delta time for checking in second
-    * @param  interval     interval of delat time in second
-    * @param  hysteresis   hysteresis of delta time for given interval in second
-    */
-   bool IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis) const;
-   /**
-    * Checks if value is bigger than accuracy with specified ratio coefficient
-    * IMPORTANT:   negative values have to be excluded!!!
-    * @return   true if value passed all checkings
-    *
-    * @param  value      to be checked
-    * @param  accuracy   accuracy of the value
-    * @param  ratio      ratio coefficient
-    */
-   bool IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio) const;
-   /**
     * Checks if bias and scale of odometer riched specified calibration limit
     * @return   true if odometer reached calibration level
     *
@@ -230,15 +199,6 @@ private:
     * @param scaleCalibartedTo   scale calibration status with range [0..100] in %
     */
    bool IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo) const;
-   /**
-    * Checks if given tested timestamp is in specified range
-    * @return   true if testedTS belongs to the range [beginTS .. endTS]
-    *
-    * @param testedTS   tested timestamp
-    * @param beginTS    beginning of the specified range
-    * @param endTS      end of the specified range
-    */
-   bool IsInRange(const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS) const;
    /**
     * Checks if calibration is possible based on given timestamps and speeds
     * @return   true if calibration is possible

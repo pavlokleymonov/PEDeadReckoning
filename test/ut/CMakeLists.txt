@@ -38,6 +38,7 @@ add_library ( pe_normalisation STATIC
 )
 
 add_library ( pe_sensors STATIC
+   ${REPOSITORY_ROOT}/sensors/source/PESensorTools.cpp
    ${REPOSITORY_ROOT}/sensors/source/PECOdometer.cpp
 )
 
@@ -115,6 +116,14 @@ add_executable(test_pe_odometer
 )
 target_link_libraries(test_pe_odometer pe_sensors pe_common pe_calibration pe_normalisation gtest pthread )
 add_test(NAME test_pe_odometer COMMAND test_pe_odometer)
+
+#################################
+#Test class PE::Sensor
+add_executable(test_pe_sensor
+   PESensorToolsTest.cpp
+)
+target_link_libraries(test_pe_sensor pe_sensors pe_common gtest pthread )
+add_test(NAME test_pe_sensor COMMAND test_pe_sensor)
 
 #################################
 #Test C library PECore

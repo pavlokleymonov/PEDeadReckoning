@@ -39,12 +39,6 @@ public:
    }
 
 
-   PE::TValue Call_PredictOdoTickSpeed(PE::COdometer& obj, const PE::TTimestamp& referenceSpeedTs, const PE::TTimestamp& odoTsBefore, const PE::TTimestamp& odoTsAfter, const PE::TValue& odoTickSpeedBefore, const PE::TValue& odoTickSpeedAfter )
-   {
-      return obj.PredictOdoTickSpeed( referenceSpeedTs, odoTsBefore, odoTsAfter, odoTickSpeedBefore, odoTickSpeedAfter );
-   }
-
-
    bool Call_IsSpeedOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& speed, const PE::TAccuracy& acc)
    {
       return obj.IsSpeedOk( deltaTs, speed, acc);
@@ -55,24 +49,9 @@ public:
       return obj.IsOdoOk(deltaTs, ticks, IsValid );
    }
 
-   bool Call_IsIntervalOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& interval, const PE::TValue& hysteresis)
-   {
-      return obj.IsIntervalOk( deltaTs, interval, hysteresis);
-   }
-
-   bool Call_IsAccuracyOk( PE::COdometer& obj, const PE::TValue& value, const PE::TAccuracy& accuracy, const PE::TValue& ratio)
-   {
-      return obj.IsAccuracyOk( value, accuracy, ratio);
-   }
-
    bool Call_IsOdoCalibrated( PE::COdometer& obj, const PE::TValue& biasCalibartedTo, const PE::TValue& scaleCalibartedTo)
    {
       return obj.IsOdoCalibrated( biasCalibartedTo, scaleCalibartedTo);
-   }
-
-   bool Call_IsInRange( PE::COdometer& obj, const PE::TTimestamp& testedTS, const PE::TTimestamp& beginTS, const PE::TTimestamp& endTS)
-   {
-      return obj.IsInRange(testedTS, beginTS, endTS);
    }
 
    bool Call_IsCalibrationPossible( PE::COdometer& obj, const PE::TTimestamp& speedTs, const PE::TValue& speed, const PE::TTimestamp& OdoTsBefore, const PE::TValue& OdoTickSpeedBefore, const PE::TTimestamp& OdoTsAfter, const PE::TValue& OdoTickSpeedAfter )
@@ -528,134 +507,6 @@ TEST_F(PECOdometerTest, test_zero_speed_value)
 
 
 /**
- * checks PredictOdoTickSpeed
- */
-TEST_F(PECOdometerTest, test_PredictOdoTickSpeed )
-{
-   PE::COdometer odo;
-   /**
-    *  Case: speed in between of two odometers
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1005s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 15, Call_PredictOdoTickSpeed(odo, 1005, 1000, 1010, 10,20), PE::EPSILON );
-
-   /**
-    *  Case: speed same as first odometer timestamp
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1000s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 10, Call_PredictOdoTickSpeed(odo, 1000, 1000, 1010, 10,20), PE::EPSILON );
-
-   /**
-    *  Case: speed same as last odometer timestamp
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1010s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 20, Call_PredictOdoTickSpeed(odo, 1010, 1000, 1010, 10,20), PE::EPSILON );
-
-   /**
-    *  Case: speed close to the first odometer timestamp
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1001s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 11, Call_PredictOdoTickSpeed(odo, 1001, 1000, 1010, 10,20), PE::EPSILON );
-
-   /**
-    *  Case: speed close to the last odometer timestamp
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1009s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 19, Call_PredictOdoTickSpeed(odo, 1009, 1000, 1010, 10,20), PE::EPSILON );
-
-   /**
-    *  Case: odometer values are equal
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1001s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1010s |    10 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 10, Call_PredictOdoTickSpeed(odo, 1001, 1000, 1010, 10,10), PE::EPSILON );
-
-   /**
-    *  Case: odometer timestam and values are equal -- wrong case - has to be avoided!!! - NaN value
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1000s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1000s |    10 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_TRUE ( PE::isnan(Call_PredictOdoTickSpeed(odo, 1000, 1000, 1000, 10, 10)) );
-
-   /**
-    *  Case: odometer timestam are equal but value are different -- wrong case - has to be avoided!!! - NaN value
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1000s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1000s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_TRUE ( PE::isnan(Call_PredictOdoTickSpeed(odo, 1000, 1000, 1000, 10, 20)) );
-
-   /**
-    *  Case: speed timestamp is before the first odometer speed -- wrong case - has to be avoided!!!
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |      999s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR (  9, Call_PredictOdoTickSpeed(odo, 999, 1000, 1010, 10,20), PE::EPSILON );
-
-   /**
-    *  Case: speed timestamp is after the last odometer speed -- wrong case - has to be avoided!!!
-    *  +-----------+-------+-----------------------------------------------------+
-    *  | timestamp |  odo  |  comment                                            |
-    *  +-----------+-------+-----------------------------------------------------+
-    *  |     1000s |    10 | First odometer                                      |
-    *  |     1010s |    20 | Last odometer                                       |
-    *  |     1011s |  ???? | Predicted odometer for timestamp of reference speed |
-    *  +-----------+-------+-----------------------------------------------------+
-    */
-   EXPECT_NEAR ( 21, Call_PredictOdoTickSpeed(odo, 1011, 1000, 1010, 10,20), PE::EPSILON );
-}
-
-
-/**
  * checks IsSpeedOk
  */
 TEST_F(PECOdometerTest, test_IsSpeedOk )
@@ -732,48 +583,6 @@ TEST_F(PECOdometerTest, test_IsOdoOk )
 
 
 /**
- * checks IsIntervalOk
- */
-TEST_F(PECOdometerTest, test_IsIntervalOk )
-{
-   PE::TValue       INTERVAL_1000MS = 1.000;
-   PE::TValue       HYSTERESIS_10MS = 0.010;
-
-   PE::COdometer odo;
-
-   //interval 1 second +/-10ms
-   //all is valid
-   EXPECT_TRUE (Call_IsIntervalOk(odo,       1.000, INTERVAL_1000MS, HYSTERESIS_10MS));
-   //timeinterval almost zero
-   EXPECT_FALSE(Call_IsIntervalOk(odo, PE::EPSILON, INTERVAL_1000MS, HYSTERESIS_10MS));
-   //timeinterval is out +10ms
-   EXPECT_FALSE(Call_IsIntervalOk(odo,       1.010001, INTERVAL_1000MS, HYSTERESIS_10MS));
-   //timeinterval is out -10ms
-   EXPECT_FALSE(Call_IsIntervalOk(odo,       0.989999, INTERVAL_1000MS, HYSTERESIS_10MS));
-}
-
-
-/**
- * checks IsAccuracyOk
- */
-TEST_F(PECOdometerTest, test_IsAccuracyOk )
-{
-   uint32_t   ACCURACY_RATIO_x2 = 2;
-   uint32_t  ACCURACY_RATIO_x10 = 10;
-   uint32_t   ACCURACY_RATIO_x0 = 0;
-
-   PE::COdometer odo;
-
-   //all is valid
-   EXPECT_TRUE (Call_IsAccuracyOk(odo,  10.000, 0.1, ACCURACY_RATIO_x2));
-   EXPECT_TRUE (Call_IsAccuracyOk(odo,  10.000, 0.1, ACCURACY_RATIO_x10));
-   EXPECT_TRUE (Call_IsAccuracyOk(odo,  10.000, 0.1, ACCURACY_RATIO_x0));
-   //value is out of accuracy ratio
-   EXPECT_FALSE(Call_IsAccuracyOk(odo,  10.000, 1.0, ACCURACY_RATIO_x10));
-}
-
-
-/**
  * checks IsOdoCalibrated
  */
 TEST_F(PECOdometerTest, test_IsOdoCalibrated )
@@ -797,30 +606,6 @@ TEST_F(PECOdometerTest, test_IsOdoCalibrated )
    EXPECT_FALSE(Call_IsOdoCalibrated(odo, BIAS_LIMIT_22PROCENT + 0.01,        SCALE_LIMIT_33PROCENT));
    //bias and scale are not callibrated
    EXPECT_FALSE(Call_IsOdoCalibrated(odo,        BIAS_LIMIT_22PROCENT,        SCALE_LIMIT_33PROCENT));
-}
-
-
-/**
- * checks IsInRange
- */
-TEST_F(PECOdometerTest, test_IsInRange )
-{
-   PE::COdometer odo;
-
-   //data is in range from left
-   EXPECT_TRUE (Call_IsInRange(odo, 10, 10, 100));
-   //data is in range from right
-   EXPECT_TRUE (Call_IsInRange(odo, 100, 10, 100));
-   //data positive is in range in between
-   EXPECT_TRUE (Call_IsInRange(odo,  50, 10, 100));
-   //data negative is in range in between
-   EXPECT_TRUE (Call_IsInRange(odo, -5, -10, 100));
-   //data is out of range from the left
-   EXPECT_FALSE(Call_IsInRange(odo,   1, 10, 100));
-   //data is out of range from the right
-   EXPECT_FALSE(Call_IsInRange(odo, 101, 10, 100));
-   //wrong range definition
-   EXPECT_FALSE(Call_IsInRange(odo,  50, 100, 10));
 }
 
 

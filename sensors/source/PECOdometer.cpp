@@ -13,6 +13,7 @@
  */
 
 #include "PECOdometer.h"
+#include "PESensorTools.h"
 
 
 using namespace PE;
@@ -108,7 +109,7 @@ void PE::COdometer::AddOdo(const TTimestamp& ts, const TValue& ticks, bool IsVal
             if ( true == IsCalibrationPossible(m_SpeedTs, m_Speed, m_OdoTs, m_OdoTickSpeed, ts, currentOdoTickSpeed) )
             {
                m_OdoCalib.AddRef( m_Speed );
-               m_OdoCalib.AddRaw( PredictOdoTickSpeed( m_SpeedTs, m_OdoTs, ts, m_OdoTickSpeed, currentOdoTickSpeed ) );
+               m_OdoCalib.AddRaw( PE::Sensor::PredictValue( m_SpeedTs, m_OdoTs, ts, m_OdoTickSpeed, currentOdoTickSpeed ) );
                m_OdoCalib.Recalculate();
                UpdateBias( m_OdoCalib.GetBias() );
                UpdateScale( m_OdoCalib.GetScale() );
@@ -188,18 +189,6 @@ void PE::COdometer::ResetUncomplitedProcessing()
 }
 
 
-TValue PE::COdometer::PredictOdoTickSpeed( const TTimestamp& referenceSpeedTs, const TTimestamp& odoTsBefore, const TTimestamp& odoTsAfter, const TValue& odoTickSpeedBefore, const TValue& odoTickSpeedAfter )
-{
-   //to be more precise better to use Exponential function then proportional
-   //for short distance we can ignore the differences
-   TTimestamp deltaOdoTs = odoTsAfter - odoTsBefore;
-   TTimestamp deltaSpeedTs = referenceSpeedTs - odoTsBefore;
-   TValue deltaOdoTickSpeed = odoTickSpeedAfter - odoTickSpeedBefore;
-   TValue odoTickSpeed = deltaOdoTickSpeed * deltaSpeedTs / deltaOdoTs  + odoTickSpeedBefore;
-   return odoTickSpeed;
-}
-
-
 void PE::COdometer::UpdateBias(const TValue& bias)
 {
    if ( false == PE::isnan(bias) )
@@ -224,9 +213,9 @@ bool PE::COdometer::IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, c
 {
    if ( PE::EPSILON < speed ) //speed has to be always more then zero
    {
-      if ( true == IsIntervalOk(deltaTs, m_speedInterval, m_speedInterval / 10) ) //hysteresis 10% - has to be adjusted
+      if ( true == PE::Sensor::IsIntervalOk(deltaTs, m_speedInterval, m_speedInterval / 10) ) //hysteresis 10% - has to be adjusted
       {
-         return IsAccuracyOk(speed, acc, m_speedAccuracyRatio);
+         return PE::Sensor::IsAccuracyOk(speed, acc, m_speedAccuracyRatio);
       }
    }
    return false;
@@ -239,34 +228,8 @@ bool PE::COdometer::IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool
    {
       if ( PE::EPSILON < ticks )
       {
-         return IsIntervalOk(deltaTs, m_odoInterval, m_odoInterval / 20); //hysteresis 5% - has to be adjusted
+         return PE::Sensor::IsIntervalOk(deltaTs, m_odoInterval, m_odoInterval / 20); //hysteresis 5% - has to be adjusted
       }
-   }
-   return false;
-}
-
-
-bool PE::COdometer::IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis) const
-{
-   if ( PE::EPSILON < deltaTs )
-   {
-      if ( deltaTs < (interval + hysteresis) )
-      {
-         if ( deltaTs > (interval - hysteresis) )
-         {
-            return true;
-         }
-      }
-   }
-   return false;
-}
-
-
-bool PE::COdometer::IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio) const
-{
-   if ( value > (accuracy * ratio) )
-   {
-      return true;
    }
    return false;
 }
@@ -285,19 +248,6 @@ bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue
 }
 
 
-bool PE::COdometer::IsInRange(const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS) const
-{
-   if ( beginTS <= testedTS )
-   {
-      if ( endTS >= testedTS )
-      {
-         return true;
-      }
-   }
-   return false;
-}
-
-
 bool PE::COdometer::IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter ) const
 {
    if ( PE::EPSILON < speed )
@@ -306,7 +256,7 @@ bool PE::COdometer::IsCalibrationPossible( const TTimestamp& speedTs, const TVal
       {
          if ( PE::EPSILON < OdoTickSpeedAfter )
          {
-            return IsInRange(speedTs, OdoTsBefore, OdoTsAfter);
+            return PE::Sensor::IsInRange(speedTs, OdoTsBefore, OdoTsAfter);
          }
       }
    }
