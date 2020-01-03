@@ -28,7 +28,7 @@ namespace PE
  */
 class CSensor
 {
-protected: //It is only possible to have a child class. Should not be explicitly instantiated
+public:
    /**
     * Constructor
     */
@@ -51,50 +51,16 @@ protected: //It is only possible to have a child class. Should not be explicitly
     * @param  senValid       True if sensors data is valid
     */
    bool AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid );
-   /**
-    * Checks if given reference value is fit to expected conditions and accuracy
-    *
-    * IMPORTANT: It is pure virtual function. Has to be overridden by successor class.
-    *
-    * @return true if reference value passed all checkings
-    *
-    * @param refTimestamp   Timestamp of reference value [s]
-    * @param refValue       Reference value in [units]
-    * @param refAccuracy    Reference accuracy in +/-[units]
-    */
-   virtual bool IsRefOk( const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy) const = 0;
-   /**
-    * Checks if sensor value is fit to expected conditions and accuracy
-    *
-    * IMPORTANT: It is pure virtual function. Has to be overridden by successor class.
-    *
-    * @return true if sensor passed all checkings
-    *
-    * @param  senTimestamp   Timestamp of sensor value [s]
-    * @param  senValue       Sensor value
-    * @param  senValid       True if sensor is valid
-    */
-   virtual bool IsSenOk(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid ) const = 0;
-   /**
-    * Checks if reference timestamp inside range between two sensors
-    *
-    * IMPORTANT: It is pure virtual function. Has to be overridden by successor class.
-    *
-    * @return   true if calibration is possible
-    *
-    * @param senTimestamp   Timestamp of sensors value [s]
-    */
-   virtual bool IsCalibrationPossible( const TTimestamp& senTimestamp ) const = 0;
 
-protected:
+private:
    /**
      * Last reference data timestamp
      */
-    TTimestamp m_refTimestamp;
+   TTimestamp m_refTimestamp;
    /**
      * Last reference data in [units]
      */
-    TTimestamp m_refValue;
+   TValue m_refValue;
    /**
     * Last valid sensor timestamp
     */
@@ -115,20 +81,10 @@ protected:
     * Sensor normalisation service for scale
     */
    CNormalisation m_SenScale;
-
-private:
    /**
     * Resets uncomplited calibration in case some inconsistency during current sensors processing
     */
    void ResetUncomplitedProcessing();
-   /**
-    * Predict sensor value which is fit to the timestamp of the reference value
-    * @return sensor value
-    *
-    * @param  senTimestamp   Timestamp of sensor value [s]
-    * @param  senValue       Sensor value - measurement units does not matter
-    */
-   TValue PredictSensorValue( const TTimestamp& senTimestamp, const TValue& senValue ) const;
    /**
     * Inject new bias into normalisation stuff
     *

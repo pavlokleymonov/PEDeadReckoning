@@ -12,22 +12,23 @@
  * See the License for more information.
  */
 
-#include "PECSensor.h"
+#include "PECGyroscope.h"
 
 
 using namespace PE;
 
 
-PE::CSensor::CSensor()
-: m_refTimestamp(0)
+PE::CGyroscope::CGyroscope()
+: m_headValue(std::numeric_limits<TValue>::quiet_NaN())
+, m_headAccuracy(std::numeric_limits<TAccuracy>::quiet_NaN())
+, m_refTimestamp(0)
 , m_refValue(0)
 , m_senTimestamp(0)
 , m_senValue(0)
 {
 }
 
-
-bool PE::CSensor::AddRef(const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy)
+bool PE::CGyroscope::AddRef(const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy)
 {
    if ( 0 == m_refTimestamp )
    {
@@ -35,11 +36,10 @@ bool PE::CSensor::AddRef(const TTimestamp& refTimestamp, const TValue& refValue,
    }
    else
    {
-      TValue adj_refValue = AdjustRefValue(m_refTimestamp, refTimestamp, refValue, refAccuracy);
-      if ( false == PE::isnan(adj_refValue) )
+      if ( true == IsRefOk(refTimestamp, refValue, refAccuracy) )
       {
          m_refTimestamp = refTimestamp;
-         m_refValue     = adj_refValue;
+         m_refValue     = refValue;
          return true;
       }
       else
@@ -51,7 +51,8 @@ bool PE::CSensor::AddRef(const TTimestamp& refTimestamp, const TValue& refValue,
 }
 
 
-bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid )
+
+bool PE::CGyroscope::AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid )
 {
    if ( 0 < m_refTimestamp )
    {
@@ -61,19 +62,18 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
       }
       else
       {
-         TValue adj_senValue = AdjustSenValue(m_senTimestamp, senTimestamp, senValue, senValid);
-         if ( false == PE::isnan(adj_senValue) )
+         if ( true == IsSenOk(senTimestamp, senValue, senValid) )
          {
-            if ( PE::Sensor::IsInRange(m_refTimestamp, m_senTimestamp, senTimestamp) )
+            if ( true == IsCalibrationPossible(senTimestamp) )
             {
                m_SenCalib.AddRef( m_refValue );
-               m_SenCalib.AddRaw( PE::Sensor::PredictValue( m_refTimestamp, m_senTimestamp, senTimestamp, m_senValue, adj_senValue ) );
+               m_SenCalib.AddRaw( PE::Sensor::PredictValue( m_refTimestamp, m_senTimestamp, senTimestamp, m_senValue, senValue ) );
                m_SenCalib.Recalculate();
-               UpdateBias( m_SenCalib.GetBias() );
-               UpdateScale( m_SenCalib.GetScale() );
+               UpdateBias(m_SenCalib.GetBias());
+               UpdateScale(m_SenCalib.GetScale());
             }
             m_senTimestamp = senTimestamp;
-            m_senValue     = adj_senValue;
+            m_senValue     = senValue;
             return true;
          }
          else
@@ -90,8 +90,10 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
 }
 
 
-void PE::CSensor::ResetUncomplitedProcessing()
+void PE::CGyroscope::ResetUncomplitedProcessing()
 {
+   m_headValue    = std::numeric_limits<TValue>::quiet_NaN();
+   m_headAccuracy = std::numeric_limits<TAccuracy>::quiet_NaN();
    m_refTimestamp = 0;
    m_refValue     = 0;
    m_senTimestamp = 0;
@@ -100,7 +102,7 @@ void PE::CSensor::ResetUncomplitedProcessing()
 }
 
 
-void PE::CSensor::UpdateBias(const TValue& bias)
+void PE::CGyroscope::UpdateBias(const TValue& bias)
 {
    if ( false == PE::isnan(bias) )
    {
@@ -109,7 +111,7 @@ void PE::CSensor::UpdateBias(const TValue& bias)
 }
 
 
-void PE::CSensor::UpdateScale(const TValue& scale)
+void PE::CGyroscope::UpdateScale(const TValue& scale)
 {
    if ( false == PE::isnan(scale) )
    {
