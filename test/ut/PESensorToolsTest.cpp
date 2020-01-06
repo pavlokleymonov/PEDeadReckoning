@@ -219,6 +219,11 @@ TEST_F(PESensorTest, test_IsInRange )
    EXPECT_FALSE(PE::Sensor::IsInRange( 101, 10, 100));
    //wrong range definition
    EXPECT_FALSE(PE::Sensor::IsInRange(  50, 100, 10));
+   //tets NaN value
+   EXPECT_FALSE(PE::Sensor::IsInRange(  std::numeric_limits<PE::TTimestamp>::quiet_NaN(), 10, 100));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  std::numeric_limits<PE::TValue>::quiet_NaN(), 10, 100));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  50, std::numeric_limits<PE::TValue>::quiet_NaN(), 100));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  50, 10, std::numeric_limits<PE::TValue>::quiet_NaN()));
 }
 
 

@@ -55,13 +55,12 @@ bool PE::Sensor::IsAccuracyOk( const TValue& value, const TAccuracy& accuracy, c
 
 bool PE::Sensor::IsInRange( const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS )
 {
-   if ( beginTS > testedTS )
+   if ( beginTS <= testedTS )
    {
-      return false;
+      if ( endTS >= testedTS )
+      {
+         return true;
+      }
    }
-   if ( endTS < testedTS )
-   {
-      return false;
-   }
-   return true;
+   return false;
 }
