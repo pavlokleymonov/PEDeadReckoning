@@ -13,16 +13,16 @@
  */
 
 #include "PECSensor.h"
+#include "PESensorTools.h"
 
 
 using namespace PE;
 
 
-PE::CSensor::CSensor()
-: m_refTimestamp(0)
-, m_refValue(0)
+PE::CSensor::CSensor(ISensorAdjuster& adjuster)
+: m_adjuster(adjuster)
+, m_refTimestamp(0)
 , m_senTimestamp(0)
-, m_senValue(0)
 {
 }
 
@@ -35,11 +35,9 @@ bool PE::CSensor::AddRef(const TTimestamp& refTimestamp, const TValue& refValue,
    }
    else
    {
-      TValue adj_refValue = AdjustRefValue(m_refTimestamp, refTimestamp, refValue, refAccuracy);
-      if ( false == PE::isnan(adj_refValue) )
+      if ( true == m_adjuster.SetRefValue(m_refTimestamp, refTimestamp, refValue, refAccuracy) )
       {
          m_refTimestamp = refTimestamp;
-         m_refValue     = adj_refValue;
          return true;
       }
       else
@@ -61,19 +59,17 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
       }
       else
       {
-         TValue adj_senValue = AdjustSenValue(m_senTimestamp, senTimestamp, senValue, senValid);
-         if ( false == PE::isnan(adj_senValue) )
+         if ( true == m_adjuster.SetSenValue(m_refTimestamp, m_senTimestamp, senTimestamp, senValue, senValid) )
          {
             if ( PE::Sensor::IsInRange(m_refTimestamp, m_senTimestamp, senTimestamp) )
             {
-               m_SenCalib.AddRef( m_refValue );
-               m_SenCalib.AddRaw( PE::Sensor::PredictValue( m_refTimestamp, m_senTimestamp, senTimestamp, m_senValue, adj_senValue ) );
-               m_SenCalib.Recalculate();
-               UpdateBias( m_SenCalib.GetBias() );
-               UpdateScale( m_SenCalib.GetScale() );
+               UpdateCalibrationRef( m_adjuster.GetRefValue() );
+               UpdateCalibrationSen( m_adjuster.GetSenValue() );
+               m_Calibration.Recalculate();
+               UpdateBias( m_Calibration.GetBias() );
+               UpdateScale( m_Calibration.GetScale() );
             }
             m_senTimestamp = senTimestamp;
-            m_senValue     = adj_senValue;
             return true;
          }
          else
@@ -90,13 +86,53 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
 }
 
 
+const TTimestamp& PE::CSensor::GetRefTimeStamp() const
+{
+   return m_refTimestamp;
+}
+
+
+const TTimestamp& PE::CSensor::GetSenTimeStamp() const
+{
+   return m_senTimestamp;
+}
+
+
+const CNormalisation& PE::CSensor::GetBias() const
+{
+   return m_SenBias;
+}
+
+
+const CNormalisation& PE::CSensor::GetScale() const
+{
+   return m_SenScale;
+}
+
+
 void PE::CSensor::ResetUncomplitedProcessing()
 {
    m_refTimestamp = 0;
-   m_refValue     = 0;
    m_senTimestamp = 0;
-   m_senValue     = 0;
-   m_SenCalib.CleanLastStep();
+   m_Calibration.CleanLastStep();
+}
+
+
+void PE::CSensor::UpdateCalibrationRef(const TValue& refValue)
+{
+   if ( false == PE::isnan(refValue) )
+   {
+      m_Calibration.AddRef(refValue);
+   }
+}
+
+
+void PE::CSensor::UpdateCalibrationSen(const TValue& senValue)
+{
+   if ( false == PE::isnan(senValue) )
+   {
+      m_Calibration.AddRaw(senValue);
+   }
 }
 
 

@@ -2,7 +2,7 @@
  * Position Engine provides dead reckoning engine to obtain position
  * information based on fusion of different kind of sensors.
  *
- * Copyright 2019 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
+ * Copyright 2020 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
  *
  * Distributed under the OSI-approved BSD License (the "License");
  * see accompanying file LICENSE.txt for details.
@@ -15,9 +15,9 @@
 #define __PE_CGyroscope_H__
 
 #include "PETypes.h"
-#include "PECNormalisation.h"
-#include "PECCalibration.h"
+#include "PECSensor.h"
 
+class PECGyroscopeTest; //to get possibility for test class
 
 namespace PE
 {
@@ -26,13 +26,24 @@ namespace PE
  * class for processing gyroscope sensors data
  *
  */
-class CGyroscope
+class CGyroscope : public ISensorAdjuster
 {
+
+   friend class ::PECGyroscopeTest;
+
 public:
    /**
     * Constructor
     */
-   CGyroscope();
+   CGyroscope( const TValue& headInterval,
+               const TValue& headHysteresis,
+               const TValue& headMin,
+               const TValue& headMax,
+               const TValue& headAccuracyRatio,
+               const TValue& gyroInterval,
+               const TValue& gyroHysteresis,
+               const TValue& gyroMin,
+               const TValue& gyroMax);
    /**
     * Adds new reference heading
     * @return true if reference data was accepted
@@ -56,145 +67,122 @@ public:
     *         It is undefined if last AddGyro() call was unsuccessful
     * @return Sensor timestamp in seconds
     */
-   const TTimestamp& GetTimeStamp() const;
+   const TTimestamp& TimeStamp() const;
    /**
     * Returns converted gyroscope angular velocity according to reference information.
     *         It is undefined if last AddGyro() call was unsuccessful
     * @return calculated angular velocity based on gyroscope sensor data in [deg/s]
     */
-   const TValue GetValue() const;
+   const TValue Value() const;
    /**
     * Returns accuracy of converted gyroscope sensor data.
     *         It is undefined if last AddGyro() call was unsuccessful
     * @return calculated accuracy of angular velocity based on gyroscope sensor data in +/-[deg/s]
     */
-   const TAccuracy GetAccuracy() const;
+   const TAccuracy Accuracy() const;
    /**
     * Returns gyroscope bias value
     * @return   bias of the gyroscope
     */
-   const TValue& GetBias() const;
-   /**
-    * Returns calibration completion status of bias in %
-    * @return   bias calibration status in %
-    */
-   const TValue& BiasCalibartedTo() const;
+   const TValue& Base() const;
    /**
     * Returns gyroscope  scale value
     * @return   scale of the gyroscope sensor
     */
-   const TValue& GetScale() const;
+   const TValue& Scale() const;
    /**
     * Returns calibration completion status of scale in %
     * @return   scale calibration status in %
     */
-   const TValue& ScaleCalibartedTo() const;
+   const TValue& CalibartedTo() const;
+
+public:
+   /**************************************************************************************
+    * ISensorAdjuster service methods
+    **************************************************************************************/
+
+   /**
+    * Sets new heading value and checks if value, interval and accuracy are fit to expected conditions
+    * @return   true if it passed all checkings
+    *
+    * @param  oldHeadTS   timestamp of the previouse heading in seconds [s]
+    * @param  newHeadTS   timestamp of the new heading in seconds [s]
+    * @param  head        new heading value in [deg]
+    * @param  acc         accuracy of new heading value in +/-[deg]
+    */
+   virtual bool SetRefValue(const TTimestamp& oldHeadTS, const TTimestamp& newHeadTS, const TValue& head, const TAccuracy& acc);
+   /**
+    * Adjust heading to angular velocity which was provided by previouse call SetRefValue()
+    * Second call without upfront call of SetRefValue() has to return NaN
+    *
+    * @return adjusted angular velocity in [deg/s] or NaN in case of any errors
+    */
+   virtual const TValue& GetRefValue() const;
+   /**
+    * Checks if given gyroscope angular velocity value, interval and validity are fit to expected conditions
+    * @return   true if it passed all checkings
+    *
+    * @param  oldHeadTS   timestamp of the previouse heading in seconds [s]
+    * @param  oldGyroTS   timestamp of the previouse gyroscope value in seconds [s]
+    * @param  newGyroTS   timestamp of the new gyroscope value in seconds [s]
+    * @param  gyro        gyroscope value in [unit/s]
+    * @param  IsValid     true if gyro is valid
+    */
+   virtual bool SetSenValue(const TTimestamp& oldHeadTS, const TTimestamp& oldGyroTS, const TTimestamp& newGyroTS, const TValue& gyro, bool IsValid);
+   /**
+    * Just simple return of last gyroscope value.
+    * Gyroscope value is already angular velocity in [unit/s]
+    * Second call without upfront call of SetSenValue() has to return NaN
+    *
+    * @return gyroscope value in [unit/s] or NaN in case of any errors
+    */
+   virtual const TValue& GetSenValue() const;
 
 private:
    /**
-     * Last reference heading value in [deg]
-     */
+    * Service for processing sensors data
+    */
+   CSensor m_sensor;
+   /**
+    * Last reference heading value in [deg]
+    */
    TValue m_headValue;
    /**
-     * Last reference heading accuracy in +/-[deg]
-     */
+    * Last reference heading accuracy in +/-[deg]
+    */
    TAccuracy m_headAccuracy;
    /**
-     * Last reference data timestamp in [s]
-     */
-   TTimestamp m_refTimestamp;
-   /**
-     * Last reference data in [units]
-     */
-   TValue m_refValue;
-   /**
-    * Last valid sensor timestamp in [s]
+    * Last reference heading angular velocity [deg/s]
     */
-   TTimestamp m_senTimestamp;
+   TValue m_headAngularVelocity;
    /**
-    * Last sensor value
+    * Last gyroscope sensor value
     */
-   TValue m_senValue;
+   TValue m_gyroValue;
    /**
-    * Sensor calibration service
+    * Last gyroscope sensor validity flag
     */
-   CCalibration m_SenCalib;
+   bool m_gyroValid;
    /**
-    * Sensor normalisation service for bias
+    * Last gyroscope angular velocity adgusted to reference timestamp [unit/s]
     */
-   CNormalisation m_SenBias;
-   /**
-    * Sensor normalisation service for scale
-    */
-   CNormalisation m_SenScale;
-   /**
-    * Adds new reference data
-    * @return true if reference data was accepted
-    *
-    * @param  refTimestamp   Timestamp of reference value [s]
-    * @param  refValue       Reference value in [units]
-    * @param  refAccuracy    Reference accuracy in +/-[units]
-    */
-   bool AddRef(const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy);
-   /**
-    * Adds new sensor value
-    * @return true if sensor data was accepted
-    *
-    * @param  senTimestamp   Timestamp of sensor value [s]
-    * @param  senValue       Sensor value - measurement units does not matter
-    * @param  senValid       True if sensors data is valid
-    */
-   bool AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid );
-   /**
-    * Resets uncomplited calibration in case some inconsistency during current sensors processing
-    */
-   void ResetUncomplitedProcessing();
-   /**
-    * Checks if given reference value is fit to expected conditions and accuracy
-    *
-    * IMPORTANT: It is pure virtual function. Has to be overridden by successor class.
-    *
-    * @return true if reference value passed all checkings
-    *
-    * @param refTimestamp   Timestamp of reference value [s]
-    * @param refValue       Reference value in [units]
-    * @param refAccuracy    Reference accuracy in +/-[units]
-    */
-   virtual bool IsRefOk( const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy) const = 0;
-   /**
-    * Checks if sensor value is fit to expected conditions and accuracy
-    *
-    * IMPORTANT: It is pure virtual function. Has to be overridden by successor class.
-    *
-    * @return true if sensor passed all checkings
-    *
-    * @param  senTimestamp   Timestamp of sensor value [s]
-    * @param  senValue       Sensor value
-    * @param  senValid       True if sensor is valid
-    */
-   virtual bool IsSenOk(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid ) const = 0;
-   /**
-    * Checks if reference timestamp inside range between two sensors
-    *
-    * IMPORTANT: It is pure virtual function. Has to be overridden by successor class.
-    *
-    * @return   true if calibration is possible
-    *
-    * @param senTimestamp   Timestamp of sensors value [s]
-    */
-   virtual bool IsCalibrationPossible( const TTimestamp& senTimestamp ) const = 0;
-   /**
-    * Inject new bias into normalisation stuff
-    *
-    * @param bias   new bias value
-    */
-   void UpdateBias(const TValue& bias);
-   /**
-    * Inject new scale into normalisation stuff
-    *
-    * @param scale   new bias value
-    */
-   void UpdateScale(const TValue& scale);
+   TValue m_gyroAngularVelocity;
+
+   bool IsAllValueInRange(const TValue& v1, const TValue& v2, const TValue& min, const TValue& max) const;
+private:
+   /**************************************************************************************
+    * Constant operation limits
+    **************************************************************************************/
+
+   const TValue m_headInterval;
+   const TValue m_headHysteresis;
+   const TValue m_headMin;
+   const TValue m_headMax;
+   const TValue m_headAccuracyRatio;
+   const TValue m_gyroInterval;
+   const TValue m_gyroHysteresis;
+   const TValue m_gyroMin;
+   const TValue m_gyroMax;
 };
 
 } //namespace PE

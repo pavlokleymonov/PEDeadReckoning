@@ -2,7 +2,7 @@
  * Position Engine provides dead reckoning engine to obtain position
  * information based on fusion of different kind of sensors.
  *
- * Copyright 2019 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
+ * Copyright 2020 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
  *
  * Distributed under the OSI-approved BSD License (the "License");
  * see accompanying file LICENSE.txt for details.
@@ -12,109 +12,165 @@
  * See the License for more information.
  */
 
+#include <math.h>
 #include "PECGyroscope.h"
+#include "PETools.h"
+#include "PESensorTools.h"
 
 
 using namespace PE;
 
 
-PE::CGyroscope::CGyroscope()
-: m_headValue(std::numeric_limits<TValue>::quiet_NaN())
+PE::CGyroscope::CGyroscope( const TValue& headInterval,
+                            const TValue& headHysteresis,
+                            const TValue& headMin,
+                            const TValue& headMax,
+                            const TValue& headAccuracyRatio,
+                            const TValue& gyroInterval,
+                            const TValue& gyroHysteresis,
+                            const TValue& gyroMin,
+                            const TValue& gyroMax)
+: m_sensor(*this)
+, m_headValue(std::numeric_limits<TValue>::quiet_NaN())
 , m_headAccuracy(std::numeric_limits<TAccuracy>::quiet_NaN())
-, m_refTimestamp(0)
-, m_refValue(0)
-, m_senTimestamp(0)
-, m_senValue(0)
+, m_headAngularVelocity(std::numeric_limits<TValue>::quiet_NaN())
+, m_gyroValue(std::numeric_limits<TValue>::quiet_NaN())
+, m_gyroValid(false)
+, m_gyroAngularVelocity(std::numeric_limits<TValue>::quiet_NaN())
+, m_headInterval(headInterval)
+, m_headHysteresis(headHysteresis)
+, m_headMin(headMin)
+, m_headMax(headMax)
+, m_headAccuracyRatio(headAccuracyRatio)
+, m_gyroInterval(gyroInterval)
+, m_gyroHysteresis(gyroHysteresis)
+, m_gyroMin(gyroMin)
+, m_gyroMax(gyroMax)
 {
 }
 
-bool PE::CGyroscope::AddRef(const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy)
+
+bool PE::CGyroscope::AddHeading(const TTimestamp& ts, const TValue& head, const TAccuracy& acc)
 {
-   if ( 0 == m_refTimestamp )
-   {
-      m_refTimestamp = refTimestamp;
-   }
-   else
-   {
-      if ( true == IsRefOk(refTimestamp, refValue, refAccuracy) )
-      {
-         m_refTimestamp = refTimestamp;
-         m_refValue     = refValue;
-         return true;
-      }
-      else
-      {
-         ResetUncomplitedProcessing();
-      }
-   }
-   return false;
+   return m_sensor.AddRef(ts, head, acc);
 }
 
 
-
-bool PE::CGyroscope::AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid )
+bool PE::CGyroscope::AddGyro(const TTimestamp& ts, const TValue& gyro, bool isValid )
 {
-   if ( 0 < m_refTimestamp )
+   return m_sensor.AddSen(ts, gyro, isValid);
+}
+
+
+const TTimestamp& PE::CGyroscope::TimeStamp() const
+{
+   return m_sensor.GetSenTimeStamp();
+}
+
+
+const TValue PE::CGyroscope::Value() const
+{
+   return m_sensor.GetScale().GetMean() * ( m_gyroValue - m_sensor.GetBias().GetMean()); //value = scale * (gyro - bias)
+}
+
+
+const TAccuracy PE::CGyroscope::Accuracy() const
+{
+   return m_sensor.GetBias().GetMld() * (m_sensor.GetScale().GetMean() + m_sensor.GetScale().GetMld()); // accuracy = bias_mld * (scale + scale_mld)
+}
+
+
+const TValue& PE::CGyroscope::Base() const
+{
+   return m_sensor.GetBias().GetMean();
+}
+
+
+const TValue& PE::CGyroscope::Scale() const
+{
+   return m_sensor.GetScale().GetMean();
+}
+
+
+const TValue& PE::CGyroscope::CalibartedTo() const
+{
+   return m_sensor.GetBias().GetReliable(); //consider only calibration status of the base of gyro
+}
+
+bool PE::CGyroscope::SetRefValue(const TTimestamp& oldHeadTS, const TTimestamp& newHeadTS, const TValue& head, const TAccuracy& acc)
+{
+   m_headAngularVelocity = std::numeric_limits<TValue>::quiet_NaN();
+   bool isSuccessfully = false;
+
+   if ( IsAllValueInRange(head, m_headValue, m_headMin, m_headMax) )
    {
-      if ( 0 == m_senTimestamp )
+      TTimestamp deltaTS = newHeadTS - oldHeadTS;
+      if ( PE::Sensor::IsIntervalOk(deltaTS, m_headInterval, m_headHysteresis) )
       {
-         m_senTimestamp = senTimestamp;
-      }
-      else
-      {
-         if ( true == IsSenOk(senTimestamp, senValue, senValid) )
+         TValue    angle = TOOLS::ToAngle(m_headValue, head);
+         TAccuracy angleAccuracy = (m_headAccuracy + acc);
+         if ( PE::Sensor::IsAccuracyOk( fabs(angle), angleAccuracy, m_headAccuracyRatio) )
          {
-            if ( true == IsCalibrationPossible(senTimestamp) )
+            m_headAngularVelocity = angle / deltaTS;
+            isSuccessfully = true;
+         }
+      }
+   }
+   m_headValue = head;
+   m_headAccuracy = acc;
+   return isSuccessfully;
+}
+
+
+const TValue& PE::CGyroscope::GetRefValue() const
+{
+   return m_headAngularVelocity;
+}
+
+
+bool PE::CGyroscope::SetSenValue(const TTimestamp& oldHeadTS, const TTimestamp& oldGyroTS, const TTimestamp& newGyroTS, const TValue& gyro, bool IsValid)
+{
+   m_gyroAngularVelocity = std::numeric_limits<TValue>::quiet_NaN();
+   bool isSuccessfully = false;
+
+   if ( IsValid && m_gyroValid )
+   {
+      if ( IsAllValueInRange(gyro, m_gyroValue, m_gyroMin, m_gyroMax) )
+      {
+         if ( PE::Sensor::IsIntervalOk(newGyroTS - oldGyroTS, m_gyroInterval, m_gyroHysteresis) )
+         {
+            m_gyroAngularVelocity = PE::Sensor::PredictValue(oldHeadTS, oldGyroTS, newGyroTS, m_gyroValue, gyro);
+            isSuccessfully = true;
+         }
+      }
+   }
+   m_gyroValue = gyro;
+   m_gyroValid = IsValid;
+   return isSuccessfully;
+}
+
+
+const TValue& PE::CGyroscope::GetSenValue() const
+{
+   return m_gyroAngularVelocity;
+}
+
+
+bool PE::CGyroscope::IsAllValueInRange(const TValue& v1, const TValue& v2, const TValue& min, const TValue& max) const
+{
+   if ( v1 >= min )
+   {
+      if ( v1 <= max )
+      {
+         if ( v2 >= min )
+         {
+            if ( v2 <= max )
             {
-               m_SenCalib.AddRef( m_refValue );
-               m_SenCalib.AddRaw( PE::Sensor::PredictValue( m_refTimestamp, m_senTimestamp, senTimestamp, m_senValue, senValue ) );
-               m_SenCalib.Recalculate();
-               UpdateBias(m_SenCalib.GetBias());
-               UpdateScale(m_SenCalib.GetScale());
+               return true;
             }
-            m_senTimestamp = senTimestamp;
-            m_senValue     = senValue;
-            return true;
-         }
-         else
-         {
-            ResetUncomplitedProcessing();
          }
       }
-   }
-   else
-   {
-      m_senTimestamp = 0;
    }
    return false;
 }
 
-
-void PE::CGyroscope::ResetUncomplitedProcessing()
-{
-   m_headValue    = std::numeric_limits<TValue>::quiet_NaN();
-   m_headAccuracy = std::numeric_limits<TAccuracy>::quiet_NaN();
-   m_refTimestamp = 0;
-   m_refValue     = 0;
-   m_senTimestamp = 0;
-   m_senValue     = 0;
-   m_SenCalib.CleanLastStep();
-}
-
-
-void PE::CGyroscope::UpdateBias(const TValue& bias)
-{
-   if ( false == PE::isnan(bias) )
-   {
-      m_SenBias.AddSensor(bias);
-   }
-}
-
-
-void PE::CGyroscope::UpdateScale(const TValue& scale)
-{
-   if ( false == PE::isnan(scale) )
-   {
-      m_SenScale.AddSensor(scale);
-   }
-}
