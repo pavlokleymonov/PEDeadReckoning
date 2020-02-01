@@ -128,12 +128,20 @@ target_link_libraries(test_pe_gyroscope pe_sensors pe_common pe_calibration pe_n
 add_test(NAME test_pe_gyroscope COMMAND test_pe_gyroscope)
 
 #################################
-#Test class PE::Sensor
+#Test class PE::CSensor
 add_executable(test_pe_sensor
+   PECSensorTest.cpp
+)
+target_link_libraries(test_pe_sensor pe_sensors pe_common pe_calibration pe_normalisation gtest pthread )
+add_test(NAME test_pe_sensor COMMAND test_pe_sensor)
+
+#################################
+#Test class PE::SensorTools
+add_executable(test_pe_sensor_tools
    PESensorToolsTest.cpp
 )
-target_link_libraries(test_pe_sensor pe_sensors pe_common gtest pthread )
-add_test(NAME test_pe_sensor COMMAND test_pe_sensor)
+target_link_libraries(test_pe_sensor_tools pe_sensors pe_common gtest pthread )
+add_test(NAME test_pe_sensor_tools COMMAND test_pe_sensor_tools)
 
 #################################
 #Test C library PECore

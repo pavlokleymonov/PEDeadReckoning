@@ -79,7 +79,7 @@ public:
     *
     * @param  adjuster   Reference to the adjuster instance
     */
-   CSensor(ISensorAdjuster& adjuster);
+   explicit CSensor(ISensorAdjuster& adjuster);
    /**
     * Adds new reference data
     * @return true if reference data was accepted
