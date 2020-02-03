@@ -133,6 +133,31 @@ TEST_F(PECSensorTest, test_all_values_are_valid_check)
 }
 
 
+/**
+ * checks adding first reference and sensor values
+ */
+TEST_F(PECSensorTest, test_adding_first_ref_and_sen_values)
+{
+   PECSensorStub adjuster_stub;
+   PE::CSensor sensor(adjuster_stub);
+
+   EXPECT_FALSE(sensor.AddSen(1.001, 0, true));
+   EXPECT_FALSE(sensor.AddSen(1.002, 0, true));
+   EXPECT_FALSE(sensor.AddSen(1.003, 0, true));
+   EXPECT_EQ(0.0, sensor.GetSenTimeStamp());
+   EXPECT_FALSE(sensor.AddRef(1.111, 0,  0.0));
+   EXPECT_EQ(0.000, sensor.GetSenTimeStamp());
+   EXPECT_EQ(1.111, sensor.GetRefTimeStamp());
+   EXPECT_FALSE(sensor.AddSen(1.234, 0, true));
+   EXPECT_EQ(1.234, sensor.GetSenTimeStamp());
+   EXPECT_EQ(1.111, sensor.GetRefTimeStamp());
+   EXPECT_TRUE (sensor.AddSen(2.000, 0, true));
+   EXPECT_TRUE (sensor.AddRef(2.222, 0,  0.0));
+   EXPECT_EQ(2.000, sensor.GetSenTimeStamp());
+   EXPECT_EQ(2.222, sensor.GetRefTimeStamp());
+}
+
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
