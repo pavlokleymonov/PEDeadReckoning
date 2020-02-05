@@ -97,28 +97,31 @@ const TValue& PE::CGyroscope::CalibartedTo() const
    return m_sensor.GetBias().GetReliable(); //consider only calibration status of the base of gyro
 }
 
+
 bool PE::CGyroscope::SetRefValue(const TTimestamp& oldHeadTS, const TTimestamp& newHeadTS, const TValue& head, const TAccuracy& acc)
 {
    m_headAngularVelocity = std::numeric_limits<TValue>::quiet_NaN();
-   bool isSuccessfully = false;
-
-   if ( IsAllValueInRange(head, m_headValue, m_headMin, m_headMax) )
+   if ( PE::Sensor::IsInRange(head, m_headMin, m_headMax) )
    {
       TTimestamp deltaTS = newHeadTS - oldHeadTS;
       if ( PE::Sensor::IsIntervalOk(deltaTS, m_headInterval, m_headHysteresis) )
       {
-         TValue    angle = TOOLS::ToAngle(m_headValue, head);
-         TAccuracy angleAccuracy = (m_headAccuracy + acc);
-         if ( PE::Sensor::IsAccuracyOk( fabs(angle), angleAccuracy, m_headAccuracyRatio) )
+         if ( false == PE::isnan(m_headValue) )
          {
-            m_headAngularVelocity = angle / deltaTS;
-            isSuccessfully = true;
+            TValue    angle         = TOOLS::ToAngle(m_headValue, head);
+            TAccuracy angleAccuracy = (m_headAccuracy + acc);
+            if ( PE::Sensor::IsAccuracyOk( fabs(angle), angleAccuracy, m_headAccuracyRatio) )
+            {
+               m_headAngularVelocity = angle / deltaTS;
+            }
          }
+         m_headValue    = head;
+         m_headAccuracy = acc;
+         return true;
       }
    }
-   m_headValue = head;
-   m_headAccuracy = acc;
-   return isSuccessfully;
+   m_headValue = std::numeric_limits<TValue>::quiet_NaN();
+   return false;
 }
 
 
@@ -131,22 +134,25 @@ const TValue& PE::CGyroscope::GetRefValue() const
 bool PE::CGyroscope::SetSenValue(const TTimestamp& oldHeadTS, const TTimestamp& oldGyroTS, const TTimestamp& newGyroTS, const TValue& gyro, bool IsValid)
 {
    m_gyroAngularVelocity = std::numeric_limits<TValue>::quiet_NaN();
-   bool isSuccessfully = false;
-
-   if ( IsValid && m_gyroValid )
+   if ( IsValid )
    {
-      if ( IsAllValueInRange(gyro, m_gyroValue, m_gyroMin, m_gyroMax) )
+      if ( PE::Sensor::IsInRange(gyro, m_gyroMin, m_gyroMax) )
       {
-         if ( PE::Sensor::IsIntervalOk(newGyroTS - oldGyroTS, m_gyroInterval, m_gyroHysteresis) )
+         TTimestamp deltaTS = newGyroTS - oldGyroTS;
+         if ( PE::Sensor::IsIntervalOk(deltaTS, m_gyroInterval, m_gyroHysteresis) )
          {
-            m_gyroAngularVelocity = PE::Sensor::PredictValue(oldHeadTS, oldGyroTS, newGyroTS, m_gyroValue, gyro);
-            isSuccessfully = true;
+            if ( m_gyroValid )
+            {
+               m_gyroAngularVelocity = PE::Sensor::PredictValue(oldHeadTS, oldGyroTS, newGyroTS, m_gyroValue, gyro);
+            }
+            m_gyroValue = gyro;
+            m_gyroValid = true;
+            return true;
          }
       }
    }
-   m_gyroValue = gyro;
-   m_gyroValid = IsValid;
-   return isSuccessfully;
+   m_gyroValid = false;
+   return false;
 }
 
 
@@ -154,23 +160,3 @@ const TValue& PE::CGyroscope::GetSenValue() const
 {
    return m_gyroAngularVelocity;
 }
-
-
-bool PE::CGyroscope::IsAllValueInRange(const TValue& v1, const TValue& v2, const TValue& min, const TValue& max) const
-{
-   if ( v1 >= min )
-   {
-      if ( v1 <= max )
-      {
-         if ( v2 >= min )
-         {
-            if ( v2 <= max )
-            {
-               return true;
-            }
-         }
-      }
-   }
-   return false;
-}
-

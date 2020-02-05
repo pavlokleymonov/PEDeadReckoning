@@ -167,8 +167,6 @@ private:
     * Last gyroscope angular velocity adgusted to reference timestamp [unit/s]
     */
    TValue m_gyroAngularVelocity;
-
-   bool IsAllValueInRange(const TValue& v1, const TValue& v2, const TValue& min, const TValue& max) const;
 private:
    /**************************************************************************************
     * Constant operation limits

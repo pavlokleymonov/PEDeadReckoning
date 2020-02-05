@@ -104,6 +104,45 @@ TEST_F(PECCalibrationTest, same_value_at_start_up_test)
 
 
 /**
+ * tests consecutive Recalculate calls
+ */
+TEST_F(PECCalibrationTest, consecutive_recalculate_calls_test)
+{
+   PE::CCalibration* p_calib = new PE::CCalibration();
+
+   p_calib->AddRaw(100+2);
+   p_calib->AddRef(10);
+   p_calib->Recalculate();
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   p_calib->AddRaw(110+2);
+   p_calib->AddRef(11);
+   p_calib->Recalculate();
+   EXPECT_FALSE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_FALSE( PE::isnan( p_calib->GetScale() ) );
+   EXPECT_NEAR( 2.0, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 0.1, p_calib->GetScale(), PE::EPSILON);
+
+   //second call without valid data
+   p_calib->Recalculate();
+   EXPECT_TRUE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_TRUE( PE::isnan( p_calib->GetScale() ) );
+
+   //restore after adding new data
+   p_calib->AddRaw(80+2);
+   p_calib->AddRef(8);
+   p_calib->Recalculate();
+   EXPECT_FALSE( PE::isnan( p_calib->GetBias() ) );
+   EXPECT_FALSE( PE::isnan( p_calib->GetScale() ) );
+   EXPECT_NEAR( 2.0, p_calib->GetBias(), PE::EPSILON);
+   EXPECT_NEAR( 0.1, p_calib->GetScale(), PE::EPSILON);
+
+   delete p_calib;
+}
+
+
+/**
  * tests  n; n+1; base=1 and scale=0.1
  */
 TEST_F(PECCalibrationTest, n_and_n_plus_1_base_1_scale_0_dot_1_test)

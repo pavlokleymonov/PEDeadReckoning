@@ -37,56 +37,7 @@ public:
    }
    virtual void TearDown() {
    }
-
-   bool Call_IsAllValueInRange( PE::CGyroscope& obj, const PE::TValue& v1, const PE::TValue& v2, const PE::TValue& min, const PE::TValue& max)
-   {
-      return obj.IsAllValueInRange(v1, v2, min, max);
-   }
 };
-
-
-/**
- * checks IsAllValueInRange
- */
-TEST_F(PECGyroscopeTest, test_IsAllValueInRange)
-{
-   PE::TValue HEADING_INTERVAL_1000MS           = 1.0;
-   PE::TValue HEADING_INTERVAL_HYSTERESIS_100MS = 0.1;
-   PE::TValue HEADING_MIN                       = 0.0;
-   PE::TValue HEADING_MAX                       = 360.0;
-   PE::TValue HEADING_ACCURACY_RATIO_5X         = 5;
-   PE::TValue GYRO_INTERVAL_50MS                = 0.050;
-   PE::TValue GYRO_INTERVAL_HYSTERESIS_5MS      = 0.005;
-   PE::TValue GYRO_MIN                          = 0;
-   PE::TValue GYRO_MAX                          = 4096;
-
-   PE::CGyroscope gyro( HEADING_INTERVAL_1000MS,
-                        HEADING_INTERVAL_HYSTERESIS_100MS,
-                        HEADING_MIN,
-                        HEADING_MAX,
-                        HEADING_ACCURACY_RATIO_5X,
-                        GYRO_INTERVAL_50MS,
-                        GYRO_INTERVAL_HYSTERESIS_5MS,
-                        GYRO_MIN,
-                        GYRO_MAX);
-
-   //test all range are correct
-   EXPECT_TRUE(Call_IsAllValueInRange(gyro, -100, 100,-100,100));
-
-   //test NaN
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro, std::numeric_limits<PE::TValue>::quiet_NaN(), 100,-100,100));
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro, -100, std::numeric_limits<PE::TValue>::quiet_NaN(),-100,100));
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro, -100, 100,std::numeric_limits<PE::TValue>::quiet_NaN(),100));
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro, -100, 100,-100,std::numeric_limits<PE::TValue>::quiet_NaN()));
-
-   //test value 1 is out of range
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro, -101, 100,-100,100));
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro,  101, 100,-100,100));
-
-   //test value 2 is out of range
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro, -100, 101,-100,100));
-   EXPECT_FALSE(Call_IsAllValueInRange(gyro,  100, -101,-100,100));
-}
 
 
 /**
@@ -124,8 +75,8 @@ TEST_F(PECGyroscopeTest, test_set_get_ref_value)
    PE::TValue HEADING_381DEG                    = 381.0;
    PE::TValue HEADING_ACCURACY_10DEG            =  10.0;
 
-   //set first heading 100deg -> reference value still NaN
-   EXPECT_FALSE( gyro.SetRefValue(0.0, 0.100, HEADING_100DEG, HEADING_ACCURACY_10DEG));
+   //set first correct heading 100deg -> reference value still NaN
+   EXPECT_TRUE ( gyro.SetRefValue(0.0, 0.100, HEADING_100DEG, HEADING_ACCURACY_10DEG));
    EXPECT_TRUE ( PE::isnan(gyro.GetRefValue()) );
 
    //set second heading 180deg -> reference value -800deg/s
@@ -142,7 +93,7 @@ TEST_F(PECGyroscopeTest, test_set_get_ref_value)
    EXPECT_TRUE ( PE::isnan(gyro.GetRefValue()) );
 
    //set correct heading 100deg -> NaN because last heading was incorrect
-   EXPECT_FALSE( gyro.SetRefValue(0.400, 0.500, HEADING_100DEG, HEADING_ACCURACY_10DEG));
+   EXPECT_TRUE ( gyro.SetRefValue(0.400, 0.500, HEADING_100DEG, HEADING_ACCURACY_10DEG));
    EXPECT_TRUE ( PE::isnan(gyro.GetRefValue()) );
 
    //set correct heading 180deg -> -800[deg/s] since last heading was correct
@@ -156,11 +107,11 @@ TEST_F(PECGyroscopeTest, test_set_get_ref_value)
 
    //set correct heading 100deg -> NaN because last heading was incorrect
    EXPECT_TRUE ( gyro.SetRefValue(0.600, 0.700, HEADING_100DEG, HEADING_ACCURACY_10DEG));
-   EXPECT_NEAR ( +800.0, gyro.GetRefValue(), 0.1 );
+   EXPECT_TRUE ( PE::isnan(gyro.GetRefValue()) );
 
    //////////////////////////////////////////
-   //test speed accuracy more then heading (100(acc=10)-140(acc=10)) ratio=x2 -> NaN
-   EXPECT_FALSE( gyro.SetRefValue(0.600, 0.700, HEADING_140DEG, HEADING_ACCURACY_10DEG));
+   //set correct heading but speed accuracy more then heading (100(acc=10)-140(acc=10)) ratio=x2 -> NaN
+   EXPECT_TRUE ( gyro.SetRefValue(0.600, 0.700, HEADING_140DEG, HEADING_ACCURACY_10DEG));
    EXPECT_TRUE ( PE::isnan(gyro.GetRefValue()) );
 
    //set correct heading 90deg -> +500[deg/s] since last heading was correct
@@ -206,24 +157,24 @@ TEST_F(PECGyroscopeTest, test_set_get_sen_value)
    bool           GYRO_VALID         = true;
    bool           GYRO_INVALID       = false;
 
-   //set first valid gyro value 1000 -> sensor value still NaN
-   EXPECT_FALSE( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
+   //set first correct gyro value 1000 -> sensor value still NaN
+   EXPECT_TRUE ( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 
-   //set second valid gyro value 1000 -> sensor value still NaN
+   //set second correct gyro value 1000 -> sensor value  1000.0
    EXPECT_TRUE ( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
    EXPECT_NEAR ( 1000.0, gyro.GetSenValue(), 0.1 );
 
    //////////////////////
-   //set one gyro invalid
+   //set one gyro invalid -> sensor value still NaN
    EXPECT_FALSE( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_INVALID));
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 
-   //since last gyro was invalid sensor value will be also invalid
-   EXPECT_FALSE( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
+   //set correct gyro since last gyro was invalid  -> sensor value still NaN
+   EXPECT_TRUE ( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 
-   //now second valid gyro allow to have a new sensor value
+   //now second correct gyro allow to have a new sensor value
    EXPECT_TRUE ( gyro.SetSenValue(HEAD_TS_0125MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_2000, GYRO_VALID));
    EXPECT_NEAR ( 1500.0, gyro.GetSenValue(), 0.1 );
 
@@ -232,8 +183,8 @@ TEST_F(PECGyroscopeTest, test_set_get_sen_value)
    EXPECT_FALSE( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_MAX+1, GYRO_VALID));
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 
-   //since last gyro value was out of valid range sensor value will be also invalid
-   EXPECT_FALSE( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
+   //set correct gyro since last gyro was invalid  -> sensor value still NaN
+   EXPECT_TRUE ( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_1000, GYRO_VALID));
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 
    //now correct gyro value allow to have a new sensor value
@@ -245,11 +196,64 @@ TEST_F(PECGyroscopeTest, test_set_get_sen_value)
    EXPECT_FALSE( gyro.SetSenValue(HEAD_TS_0100MS, GYRO_TS_0100MS, GYRO_TS_0150MS+0.006, GYRO_1000, GYRO_VALID));
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 
-   //second time it provides sensor data since now interval is correct and last gyro was also correct
+   //set correct gyro and interval is correct  -> sensor value still NaN
    EXPECT_TRUE ( gyro.SetSenValue(HEAD_TS_0125MS, GYRO_TS_0100MS, GYRO_TS_0150MS, GYRO_2000, GYRO_VALID));
-   EXPECT_NEAR ( 1500.0, gyro.GetSenValue(), 0.1 );
+   EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 }
 
+#ifdef TTT
+
+/**
+ * Test simple circle driving
+ */
+TEST_F(PECGyroscopeTest, test_simple_circle_driving)
+{
+   PE::TValue HEADING_INTERVAL_1S               = 1.000;
+   PE::TValue HEADING_INTERVAL_HYSTERESIS_100MS = 0.100;
+   PE::TValue HEADING_MIN                       = 0.0;
+   PE::TValue HEADING_MAX                       = 360.0;
+   PE::TValue HEADING_ACCURACY_RATIO_2X         = 2;
+   PE::TValue GYRO_INTERVAL_500MS               = 0.500;
+   PE::TValue GYRO_INTERVAL_HYSTERESIS_25MS     = 0.025;
+   PE::TValue GYRO_MIN                          = 0;
+   PE::TValue GYRO_MAX                          = 4096;
+
+   PE::TValue RAW_GYRO_BASE                     = 2048;
+
+   PE::CGyroscope gyro( HEADING_INTERVAL_1S,
+                        HEADING_INTERVAL_HYSTERESIS_100MS,
+                        HEADING_MIN,
+                        HEADING_MAX,
+                        HEADING_ACCURACY_RATIO_2X,
+                        GYRO_INTERVAL_500MS,
+                        GYRO_INTERVAL_HYSTERESIS_25MS,
+                        GYRO_MIN,
+                        GYRO_MAX);
+
+   EXPECT_FALSE( gyro.AddHeading(1.000,                   0,  0.1)); //first adding is always false
+   EXPECT_FALSE( gyro.AddGyro   (1.100,       RAW_GYRO_BASE, true)); //first adding is always false
+   EXPECT_FALSE( gyro.AddGyro   (1.500, RAW_GYRO_BASE + 100, true));
+   EXPECT_FALSE( gyro.AddHeading(2.000,                  10,  0.1));
+   EXPECT_FALSE( gyro.AddGyro   (2.100, RAW_GYRO_BASE + 100, true));
+   EXPECT_FALSE( gyro.AddGyro   (2.500, RAW_GYRO_BASE + 200, true));
+   EXPECT_FALSE( gyro.AddHeading(3.000,                  30,  0.1));
+   EXPECT_FALSE( gyro.AddGyro   (3.100, RAW_GYRO_BASE + 200, true));
+   EXPECT_FALSE( gyro.AddGyro   (3.500, RAW_GYRO_BASE -  50, true));
+   EXPECT_FALSE( gyro.AddHeading(4.000,                  25,  0.1));
+   EXPECT_FALSE( gyro.AddGyro   (4.100, RAW_GYRO_BASE -  50, true));
+   EXPECT_FALSE( gyro.AddGyro   (4.500, RAW_GYRO_BASE + 150, true));
+   EXPECT_FALSE( gyro.AddHeading(5.000,                  40,  0.1));
+   EXPECT_FALSE( gyro.AddGyro   (5.100, RAW_GYRO_BASE + 150, true));
+
+   EXPECT_NEAR( 0.00, gyro.TimeStamp() ,0.01);
+   EXPECT_NEAR( 0.00, gyro.Value() ,0.01);
+   EXPECT_NEAR( 0.00, gyro.Accuracy() ,0.01);
+   EXPECT_NEAR( 0.00, gyro.Base() ,0.01);
+   EXPECT_NEAR( 0.00, gyro.Scale() ,0.01);
+   EXPECT_NEAR( 0.00, gyro.CalibartedTo() ,0.01);
+}
+
+#endif
 
 int main(int argc, char *argv[])
 {

@@ -158,6 +158,86 @@ TEST_F(PECSensorTest, test_adding_first_ref_and_sen_values)
 }
 
 
+/**
+ * checks handling wrong reference and sensors values
+ */
+TEST_F(PECSensorTest, test_handling_wrong_ref_and_sen_values)
+{
+   PECSensorStub adjuster_stub;
+   PE::CSensor sensor(adjuster_stub);
+
+   sensor.AddRef(1.000, 100, 0.0);
+   sensor.AddSen(1.001,  10, true);
+   sensor.AddRef(1.002, 200, 0.0);
+   EXPECT_NEAR  ( 1.002, sensor.GetRefTimeStamp(), 0.0001 );
+   EXPECT_NEAR  ( 1.001, sensor.GetSenTimeStamp(), 0.0001 );
+   sensor.AddSen(1.003,  20, true);
+   sensor.AddRef(1.004, 300, 11111.11111); //invalid reference value
+   EXPECT_NEAR  ( 0.0, sensor.GetRefTimeStamp(), 0.0001 );
+   EXPECT_NEAR  ( 0.0, sensor.GetSenTimeStamp(), 0.0001 );
+   sensor.AddSen(1.005,  30, true);
+   EXPECT_NEAR  ( 0.0, sensor.GetSenTimeStamp(), 0.0001 ); //it is still 0 since last reference was invalid
+   sensor.AddRef(1.006, 100, 0.0);
+   sensor.AddSen(1.007,  10, true);
+   EXPECT_NEAR  ( 1.006, sensor.GetRefTimeStamp(), 0.0001 );
+   EXPECT_NEAR  ( 1.007, sensor.GetSenTimeStamp(), 0.0001 );
+   sensor.AddRef(1.008, 200, 0.0);
+   sensor.AddSen(1.009,  20, false); //invalid sensors value
+   EXPECT_NEAR  ( 0.0, sensor.GetRefTimeStamp(), 0.0001 );
+   EXPECT_NEAR  ( 0.0, sensor.GetSenTimeStamp(), 0.0001 );
+   sensor.AddRef(1.010, 100, 0.0);
+   sensor.AddSen(1.011,  10, true);
+   EXPECT_NEAR  (1.010, sensor.GetRefTimeStamp(), 0.0001 );
+   EXPECT_NEAR  (1.011, sensor.GetSenTimeStamp(), 0.0001 );
+}
+
+
+/**
+ * checks NaN reference and sensor values
+ */
+TEST_F(PECSensorTest, test_NaN_ref_and_sen_values)
+{
+   PECSensorStub adjuster_stub;
+   PE::CSensor sensor(adjuster_stub);
+
+   sensor.AddRef(1.000, 100,  0.0);
+   sensor.AddSen(1.001,   5-100, true);
+   sensor.AddRef(1.002, 200,  0.0);
+   sensor.AddSen(1.003,  10-100, true);
+   sensor.AddRef(1.004, 300,  0.0);
+   sensor.AddSen(1.005,  15-100, true);
+   sensor.AddRef(1.006, 100,  0.0);
+   sensor.AddSen(1.007,   5-100, true);
+   sensor.AddRef(1.008, 200,  0.0);
+   sensor.AddSen(1.009,  10-100, true);
+   EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
+   EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
+   EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
+   EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+   sensor.AddRef(1.010, std::numeric_limits<PE::TValue>::quiet_NaN(), 0.0);
+   sensor.AddSen(1.011, std::numeric_limits<PE::TValue>::quiet_NaN(), true);
+   //no changes after NaN values
+   EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
+   EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
+   EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
+   EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+   sensor.AddRef(1.012, std::numeric_limits<PE::TValue>::quiet_NaN(), 0.0);
+   sensor.AddSen(1.013, std::numeric_limits<PE::TValue>::quiet_NaN(), true);
+   //no changes after NaN values
+   EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
+   EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
+   EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
+   EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+   sensor.AddRef(1.014, 400, 0.0);
+   sensor.AddSen(1.015,  20-100, true);
+   //further processing of valid correct data
+   EXPECT_NEAR  (66.66, sensor.GetBias().GetReliable(), 0.01 );
+   EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
+   EXPECT_NEAR  (66.66, sensor.GetScale().GetReliable(), 0.01 );
+   EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+}
+
+
 int main(int argc, char *argv[])
 {
    ::testing::InitGoogleTest(&argc, argv);
