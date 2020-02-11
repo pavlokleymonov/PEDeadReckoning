@@ -76,7 +76,7 @@ const TValue PE::CGyroscope::Value() const
 
 const TAccuracy PE::CGyroscope::Accuracy() const
 {
-   return m_sensor.GetBias().GetMld() * (m_sensor.GetScale().GetMean() + m_sensor.GetScale().GetMld()); // accuracy = bias_mld * (scale + scale_mld)
+   return m_sensor.GetBias().GetMld() * ( fabs(m_sensor.GetScale().GetMean()) + m_sensor.GetScale().GetMld() ); // accuracy = bias_mld * (|scale| + scale_mld)
 }
 
 

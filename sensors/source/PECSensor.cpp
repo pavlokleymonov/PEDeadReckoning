@@ -63,11 +63,15 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
          {
             if ( PE::Sensor::IsInRange(m_refTimestamp, m_senTimestamp, senTimestamp) )
             {
-               UpdateCalibrationRef( m_adjuster.GetRefValue() );
-               UpdateCalibrationSen( m_adjuster.GetSenValue() );
-               m_Calibration.Recalculate();
-               UpdateBias( m_Calibration.GetBias() );
-               UpdateScale( m_Calibration.GetScale() );
+               if ( false == PE::isnan(m_adjuster.GetRefValue()) && 
+                    false == PE::isnan(m_adjuster.GetSenValue()) )
+               {
+                  m_Calibration.AddRef(m_adjuster.GetRefValue());
+                  m_Calibration.AddRaw(m_adjuster.GetSenValue());
+                  m_Calibration.Recalculate();
+                  UpdateBias( m_Calibration.GetBias() );
+                  UpdateScale( m_Calibration.GetScale() );
+               }
             }
             m_senTimestamp = senTimestamp;
             return true;
@@ -115,24 +119,6 @@ void PE::CSensor::ResetUncomplitedProcessing()
    m_refTimestamp = 0;
    m_senTimestamp = 0;
    m_Calibration.CleanLastStep();
-}
-
-
-void PE::CSensor::UpdateCalibrationRef(const TValue& refValue)
-{
-   if ( false == PE::isnan(refValue) )
-   {
-      m_Calibration.AddRef(refValue);
-   }
-}
-
-
-void PE::CSensor::UpdateCalibrationSen(const TValue& senValue)
-{
-   if ( false == PE::isnan(senValue) )
-   {
-      m_Calibration.AddRaw(senValue);
-   }
 }
 
 

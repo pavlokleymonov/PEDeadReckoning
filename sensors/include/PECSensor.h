@@ -145,18 +145,6 @@ private:
     */
    void ResetUncomplitedProcessing();
    /**
-    * Adds reference value into calibration service
-    *
-    * @param  refValue       Reference value in [units]
-    */
-   void UpdateCalibrationRef(const TValue& refValue);
-   /**
-    * Adds sensor value into calibration service
-    *
-    * @param  senValue       Sensor value - measurement units does not matter
-    */
-   void UpdateCalibrationSen(const TValue& senValue);
-   /**
     * Inject new bias into normalisation stuff
     *
     * @param bias   new bias value

@@ -201,7 +201,6 @@ TEST_F(PECGyroscopeTest, test_set_get_sen_value)
    EXPECT_TRUE ( PE::isnan(gyro.GetSenValue()) );
 }
 
-#ifdef TTT
 
 /**
  * Test simple circle driving
@@ -219,6 +218,7 @@ TEST_F(PECGyroscopeTest, test_simple_circle_driving)
    PE::TValue GYRO_MAX                          = 4096;
 
    PE::TValue RAW_GYRO_BASE                     = 2048;
+   PE::TValue HEADING_DEVIATION_DEG             = 0.1;
 
    PE::CGyroscope gyro( HEADING_INTERVAL_1S,
                         HEADING_INTERVAL_HYSTERESIS_100MS,
@@ -229,31 +229,66 @@ TEST_F(PECGyroscopeTest, test_simple_circle_driving)
                         GYRO_INTERVAL_HYSTERESIS_25MS,
                         GYRO_MIN,
                         GYRO_MAX);
-
-   EXPECT_FALSE( gyro.AddHeading(1.000,                   0,  0.1)); //first adding is always false
-   EXPECT_FALSE( gyro.AddGyro   (1.100,       RAW_GYRO_BASE, true)); //first adding is always false
-   EXPECT_FALSE( gyro.AddGyro   (1.500, RAW_GYRO_BASE + 100, true));
-   EXPECT_FALSE( gyro.AddHeading(2.000,                  10,  0.1));
-   EXPECT_FALSE( gyro.AddGyro   (2.100, RAW_GYRO_BASE + 100, true));
-   EXPECT_FALSE( gyro.AddGyro   (2.500, RAW_GYRO_BASE + 200, true));
-   EXPECT_FALSE( gyro.AddHeading(3.000,                  30,  0.1));
-   EXPECT_FALSE( gyro.AddGyro   (3.100, RAW_GYRO_BASE + 200, true));
-   EXPECT_FALSE( gyro.AddGyro   (3.500, RAW_GYRO_BASE -  50, true));
-   EXPECT_FALSE( gyro.AddHeading(4.000,                  25,  0.1));
-   EXPECT_FALSE( gyro.AddGyro   (4.100, RAW_GYRO_BASE -  50, true));
-   EXPECT_FALSE( gyro.AddGyro   (4.500, RAW_GYRO_BASE + 150, true));
-   EXPECT_FALSE( gyro.AddHeading(5.000,                  40,  0.1));
-   EXPECT_FALSE( gyro.AddGyro   (5.100, RAW_GYRO_BASE + 150, true));
-
-   EXPECT_NEAR( 0.00, gyro.TimeStamp() ,0.01);
-   EXPECT_NEAR( 0.00, gyro.Value() ,0.01);
-   EXPECT_NEAR( 0.00, gyro.Accuracy() ,0.01);
-   EXPECT_NEAR( 0.00, gyro.Base() ,0.01);
-   EXPECT_NEAR( 0.00, gyro.Scale() ,0.01);
-   EXPECT_NEAR( 0.00, gyro.CalibartedTo() ,0.01);
+   EXPECT_FALSE( gyro.AddHeading( 1.000,                   0, HEADING_DEVIATION_DEG)); //first adding is always false
+   EXPECT_FALSE( gyro.AddGyro   ( 1.100,       RAW_GYRO_BASE, true)); //first adding is always false
+   EXPECT_TRUE ( gyro.AddGyro   ( 1.600, RAW_GYRO_BASE +  50, true));
+   EXPECT_TRUE ( gyro.AddHeading( 2.000,                   5, HEADING_DEVIATION_DEG));
+   EXPECT_TRUE ( gyro.AddGyro   ( 2.100, RAW_GYRO_BASE +  50, true));
+   EXPECT_NEAR (  0.0, gyro.Base() ,0.01);
+   EXPECT_NEAR (  0.0, gyro.Scale() ,0.01);
+   EXPECT_NEAR (  0.0, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 2.600, RAW_GYRO_BASE + 100, true));
+   EXPECT_TRUE ( gyro.AddHeading( 3.000,                  15, HEADING_DEVIATION_DEG));//-10
+   EXPECT_TRUE ( gyro.AddGyro   ( 3.100, RAW_GYRO_BASE + 100, true));
+   EXPECT_NEAR (  0.0, gyro.Base() ,0.01);
+   EXPECT_NEAR (  0.0, gyro.Scale() ,0.01);
+   EXPECT_NEAR (  0.0, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 3.600, RAW_GYRO_BASE + 200, true));
+   EXPECT_TRUE ( gyro.AddHeading( 4.000,                  35, HEADING_DEVIATION_DEG));//-20
+   EXPECT_TRUE ( gyro.AddGyro   ( 4.100, RAW_GYRO_BASE + 200, true));
+   EXPECT_NEAR (  0.0, gyro.Base() ,0.01);
+   EXPECT_NEAR (  0.0, gyro.Scale() ,0.01);
+   EXPECT_NEAR (  0.0, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 4.600, RAW_GYRO_BASE + 250, true));
+   EXPECT_TRUE ( gyro.AddHeading( 5.000,                  60, HEADING_DEVIATION_DEG));//-25
+   EXPECT_TRUE ( gyro.AddGyro   ( 5.100, RAW_GYRO_BASE + 250, true));
+   EXPECT_NEAR ( 2048.00, gyro.Base() ,0.01);
+   EXPECT_NEAR (   -0.10, gyro.Scale() ,0.01);
+   EXPECT_NEAR (   50.00, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 5.600, RAW_GYRO_BASE + 300, true));
+   EXPECT_TRUE ( gyro.AddHeading( 6.000,                  90, HEADING_DEVIATION_DEG));//-30
+   EXPECT_TRUE ( gyro.AddGyro   ( 6.100, RAW_GYRO_BASE + 300, true));
+   EXPECT_NEAR ( 2048.00, gyro.Base() ,0.01);
+   EXPECT_NEAR (   -0.10, gyro.Scale() ,0.01);
+   EXPECT_NEAR (   66.67, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 6.600, RAW_GYRO_BASE + 400, true));
+   EXPECT_TRUE ( gyro.AddHeading( 7.000,                 130, HEADING_DEVIATION_DEG));//-40
+   EXPECT_TRUE ( gyro.AddGyro   ( 7.100, RAW_GYRO_BASE + 400, true));
+   EXPECT_NEAR ( 2048.00, gyro.Base() ,0.01);
+   EXPECT_NEAR (   -0.10, gyro.Scale() ,0.01);
+   EXPECT_NEAR (   75.00, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 7.600, RAW_GYRO_BASE + 100, true));
+   EXPECT_TRUE ( gyro.AddHeading( 8.000,                 140, HEADING_DEVIATION_DEG));//-10
+   EXPECT_TRUE ( gyro.AddGyro   ( 8.100, RAW_GYRO_BASE + 100, true));
+   EXPECT_NEAR ( 2048.00, gyro.Base() ,0.01);
+   EXPECT_NEAR (   -0.10, gyro.Scale() ,0.01);
+   EXPECT_NEAR (   80.00, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 8.600, RAW_GYRO_BASE +  50, true));
+   EXPECT_TRUE ( gyro.AddHeading( 9.000,                 145, HEADING_DEVIATION_DEG));//-5
+   EXPECT_TRUE ( gyro.AddGyro   ( 9.100, RAW_GYRO_BASE +  50, true));
+   EXPECT_NEAR (    9.10, gyro.TimeStamp() ,0.01);
+   EXPECT_NEAR (   -5.00, gyro.Value() ,0.01);
+   EXPECT_NEAR (    0.00, gyro.Accuracy() ,0.01);
+   EXPECT_NEAR ( 2048.00, gyro.Base() ,0.01);
+   EXPECT_NEAR (   -0.10, gyro.Scale() ,0.01);
+   EXPECT_NEAR (   83.33, gyro.CalibartedTo() ,0.01);
+   EXPECT_TRUE ( gyro.AddGyro   ( 9.600, RAW_GYRO_BASE - 1.234567, true));
+   EXPECT_NEAR (   83.33, gyro.CalibartedTo() ,0.01);
+   EXPECT_NEAR (    9.60, gyro.TimeStamp() ,0.01);
+   EXPECT_NEAR (    0.1234567, gyro.Value() ,0.0000001);
+   EXPECT_NEAR (    0.00, gyro.Accuracy() ,0.01);
 }
 
-#endif
 
 int main(int argc, char *argv[])
 {
