@@ -193,9 +193,9 @@ TEST_F(PECSensorTest, test_handling_wrong_ref_and_sen_values)
 
 
 /**
- * checks NaN reference and sensor values
+ * checks adding of NaN reference and sensor values
  */
-TEST_F(PECSensorTest, test_NaN_ref_and_sen_values)
+TEST_F(PECSensorTest, test_adding_NaN_ref_and_sen_values)
 {
    PECSensorStub adjuster_stub;
    PE::CSensor sensor(adjuster_stub);
@@ -214,23 +214,36 @@ TEST_F(PECSensorTest, test_NaN_ref_and_sen_values)
    EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
    EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
    EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+   //CASE1: both ref and sen values reported NaN
    sensor.AddRef(1.010, std::numeric_limits<PE::TValue>::quiet_NaN(), 0.0);
    sensor.AddSen(1.011, std::numeric_limits<PE::TValue>::quiet_NaN(), true);
-   //no changes after NaN values
+   //no changes after ref and sen are NaN values
    EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
    EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
    EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
    EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+
+   //CASE2: ref value reported NaN
    sensor.AddRef(1.012, std::numeric_limits<PE::TValue>::quiet_NaN(), 0.0);
-   sensor.AddSen(1.013, std::numeric_limits<PE::TValue>::quiet_NaN(), true);
-   //no changes after NaN values
+   sensor.AddSen(1.013, 1111111111, true);
+   //no changes after ref is NaN value
    EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
    EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
    EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
    EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
-   sensor.AddRef(1.014, 400, 0.0);
-   sensor.AddSen(1.015,  20-100, true);
+
+   //CASE3: sen value reported NaN
+   sensor.AddRef(1.014, 999999999, 0.0);
+   sensor.AddSen(1.015,  std::numeric_limits<PE::TValue>::quiet_NaN(), true);
+   //no changes after sen is NaN value
+   EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
+   EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
+   EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
+   EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
+
    //further processing of valid correct data
+   sensor.AddRef(1.016, 400, 0.0);
+   sensor.AddSen(1.017,  20-100, true);
    EXPECT_NEAR  (66.66, sensor.GetBias().GetReliable(), 0.01 );
    EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
    EXPECT_NEAR  (66.66, sensor.GetScale().GetReliable(), 0.01 );
