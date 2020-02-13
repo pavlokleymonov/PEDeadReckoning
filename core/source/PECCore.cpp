@@ -83,13 +83,13 @@ bool PECCore::ReceiveDistance( double& distance, double& accuracy)
 }
 
 
-bool PECCore::ReceiveGyroStatus( double& bias, double& scale, double& reliable, double& accuracy)
+bool PECCore::ReceiveGyroStatus( double& bias, double& scale, double& reliable)
 {
    return true;
 }
 
 
-bool PECCore::ReceiveOdoStatus( double& bias, double& scale, double& reliable, double& accuracy)
+bool PECCore::ReceiveOdoStatus( double& bias, double& scale, double& reliable)
 {
    return true;
 }

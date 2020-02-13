@@ -150,23 +150,23 @@ bool PEReceiveDistance(PECCore* core, double& distance, double& accuracy)
 }
 
 
-bool PEReceiveGyroStatus(PECCore* core, double& base, double& scale, double& reliable, double& accuracy)
+bool PEReceiveGyroStatus(PECCore* core, double& base, double& scale, double& reliable)
 {
    PETInstanceList::iterator it = m_list.find(core);
    if ( m_list.end() != it )
    {
-      return (*it)->ReceiveGyroStatus(base, scale, reliable, accuracy);
+      return (*it)->ReceiveGyroStatus(base, scale, reliable);
    }
    return false;
 }
 
 
-bool PEReceiveOdoStatus(PECCore* core, double& base, double& scale, double& reliable, double& accuracy)
+bool PEReceiveOdoStatus(PECCore* core, double& base, double& scale, double& reliable)
 {
    PETInstanceList::iterator it = m_list.find(core);
    if ( m_list.end() != it )
    {
-      return (*it)->ReceiveOdoStatus(base, scale, reliable, accuracy);
+      return (*it)->ReceiveOdoStatus(base, scale, reliable);
    }
    return false;
 }

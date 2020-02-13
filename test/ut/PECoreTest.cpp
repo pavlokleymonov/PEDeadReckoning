@@ -83,16 +83,14 @@ TEST_F(PECoreTest, invalid_instance_test )
    double gyrobase;
    double gyroscale;
    double gyrorel;
-   double gyroacc;
    //PEReceiveGyroStatus
-   EXPECT_FALSE( PEReceiveGyroStatus(invalidInstance, gyrobase, gyroscale, gyrorel, gyroacc) );
+   EXPECT_FALSE( PEReceiveGyroStatus(invalidInstance, gyrobase, gyroscale, gyrorel) );
 
    double odobase;
    double odoscale;
    double odorel;
-   double odoacc;
    //PEReceiveOdoStatus
-   EXPECT_FALSE( PEReceiveOdoStatus(invalidInstance, odobase, odoscale, odorel, odoacc) );
+   EXPECT_FALSE( PEReceiveOdoStatus(invalidInstance, odobase, odoscale, odorel) );
 }
 
 
@@ -144,16 +142,14 @@ TEST_F(PECoreTest, start_stop_test )
    double gyrobase;
    double gyroscale;
    double gyrorel;
-   double gyroacc;
    //PEReceiveGyroStatus
-   EXPECT_TRUE( PEReceiveGyroStatus(pe, gyrobase, gyroscale, gyrorel, gyroacc) );
+   EXPECT_TRUE( PEReceiveGyroStatus(pe, gyrobase, gyroscale, gyrorel) );
 
    double odobase;
    double odoscale;
    double odorel;
-   double odoacc;
    //PEReceiveOdoStatus
-   EXPECT_TRUE( PEReceiveOdoStatus(pe, odobase, odoscale, odorel, odoacc) );
+   EXPECT_TRUE( PEReceiveOdoStatus(pe, odobase, odoscale, odorel) );
 
    //PEStop
    EXPECT_EQ(std::string("test"), std::string(PEStop(pe)) );
@@ -213,16 +209,14 @@ TEST_F(PECoreTest, after_stop_test )
    double gyrobase;
    double gyroscale;
    double gyrorel;
-   double gyroacc;
    //PEReceiveGyroStatus
-   EXPECT_FALSE( PEReceiveGyroStatus(pe, gyrobase, gyroscale, gyrorel, gyroacc) );
+   EXPECT_FALSE( PEReceiveGyroStatus(pe, gyrobase, gyroscale, gyrorel) );
 
    double odobase;
    double odoscale;
    double odorel;
-   double odoacc;
    //PEReceiveOdoStatus
-   EXPECT_FALSE( PEReceiveOdoStatus(pe, odobase, odoscale, odorel, odoacc) );
+   EXPECT_FALSE( PEReceiveOdoStatus(pe, odobase, odoscale, odorel) );
 
 }
 

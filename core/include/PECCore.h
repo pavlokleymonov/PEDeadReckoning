@@ -14,8 +14,6 @@
 #ifndef __PE_CCore_H__
 #define __PE_CCore_H__
 #include <string>
-// #include "PECCalibrationSummary.h"
-// #include "PECNormalisation.h"
 
 /**
  * class PECCore core functionality of Position Engine
@@ -122,9 +120,8 @@ public:
     * @param[out] bias       shift of the raw value according to real value
     * @param[out] scale      scale value for converting raw into real value
     * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
-    * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool ReceiveGyroStatus( double& bias, double& scale, double& reliable, double& accuracy);
+   bool ReceiveGyroStatus( double& bias, double& scale, double& reliable);
    /**
     * Receives odometer calibration status  ---  real_value = (raw_value - bias) x scale
     * @return true if calibration was triggered
@@ -132,9 +129,8 @@ public:
     * @param[out] bias       shift of the raw value according to real value
     * @param[out] scale      scale value for converting raw into real value
     * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
-    * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool ReceiveOdoStatus( double& bias, double& scale, double& reliable, double& accuracy);
+   bool ReceiveOdoStatus( double& bias, double& scale, double& reliable);
 private:
    /**
     * Current configuration string

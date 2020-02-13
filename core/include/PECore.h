@@ -134,9 +134,8 @@
     * @param[out] base       shift of the raw value according to real value
     * @param[out] scale      scale value for converting raw into real value
     * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
-    * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool PEReceiveGyroStatus(PECCore* core, double& base, double& scale, double& reliable, double& accuracy);
+   bool PEReceiveGyroStatus(PECCore* core, double& base, double& scale, double& reliable);
    /**
     * Receives odometer calibration status  ---  real_value = (raw_value - base) x scale
     * @return true if calibration was triggered
@@ -145,9 +144,8 @@
     * @param[out] base       shift of the raw value according to real value
     * @param[out] scale      scale value for converting raw into real value
     * @param[out] reliable   percentage indicator of calibration status in (0%..100%)
-    * @param[out] accuracy   estimated deviation of sensor in real_value dimention
     */
-   bool PEReceiveOdoStatus(PECCore* core, double& base, double& scale, double& reliable, double& accuracy);
+   bool PEReceiveOdoStatus(PECCore* core, double& base, double& scale, double& reliable);
 
 #ifdef __cplusplus
    }
