@@ -63,6 +63,7 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
          {
             if ( PE::Sensor::IsInRange(m_refTimestamp, m_senTimestamp, senTimestamp) )
             {
+               //printf("\n=== TS:%.3f REF:%.2f SEN:%.2f", m_refTimestamp, m_adjuster.GetRefValue(), m_adjuster.GetSenValue());
                if ( false == PE::isnan(m_adjuster.GetRefValue()) && 
                     false == PE::isnan(m_adjuster.GetSenValue()) )
                {

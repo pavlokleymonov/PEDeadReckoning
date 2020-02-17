@@ -91,10 +91,10 @@ public:
     */
    const TValue& Scale() const;
    /**
-    * Returns calibration completion status of scale in %
-    * @return   scale calibration status in %
+    * Returns calibration completion status of base in %
+    * @return  base calibration status in %
     */
-   const TValue& CalibartedTo() const;
+   const TValue& CalibratedTo() const;
 
 public:
    /**************************************************************************************
@@ -164,7 +164,7 @@ private:
     */
    bool m_gyroValid;
    /**
-    * Last gyroscope angular velocity adgusted to reference timestamp [unit/s]
+    * Last gyroscope angular velocity adjusted to reference timestamp [unit/s]
     */
    TValue m_gyroAngularVelocity;
 private:

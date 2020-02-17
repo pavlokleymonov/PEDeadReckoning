@@ -2,7 +2,7 @@
  * Position Engine provides dead reckoning engine to obtain position
  * information based on fusion of different kind of sensors.
  *
- * Copyright 2019 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
+ * Copyright 2020 Pavlo Kleymonov <pavlo.kleymonov@gmail.com>
  *
  * Distributed under the OSI-approved BSD License (the "License");
  * see accompanying file LICENSE.txt for details.
@@ -14,8 +14,10 @@
 #ifndef __PE_COdometerEx_H__
 #define __PE_COdometerEx_H__
 
+#include "PETypes.h"
 #include "PECSensor.h"
 
+class PECOdometerExTest; //to get possibility for test class
 
 namespace PE
 {
@@ -24,25 +26,28 @@ namespace PE
  * class for processing odometers data
  *
  */
-class COdometerEx : protected CSensor
+class COdometerEx : public ISensorAdjuster
 {
+
+friend class ::PECOdometerExTest;
+
 public:
    /**
     * Constructor
     */
-   COdometerEx();
+   COdometerEx( const TValue& speedInterval,
+                const TValue& speedHysteresis,
+                const TValue& speedMin,
+                const TValue& speedMax,
+                const TValue& speedAccuracyRatio,
+                const TValue& odoInterval,
+                const TValue& odoHysteresis,
+                const TValue& odoMin,
+                const TValue& odoMax);
    /**
-    * Initialized odomer object
-    * @return true if init process was done successfully
-    *
-    * @param  odoInterval               Odometer sensors time interval in seconds
-    * @param  odoIntervalHysteresis     Hysteresis of odometer time interval in +/-[s]
-    * @param  speedInterval             Reference speed time interval in seconds
-    * @param  speedIntervalHysteresis   Hysteresis of speed time interval in +/-[s]
-    * @param  speedAccRatio             Consider the reference speed only when value is more then accuracy by this ratio.
-    *                                   For instance ratio 5 means that value is 5 times bigger then its accuracy.
+    * Constructor
     */
-   bool Init(const TTimestamp& odoInterval, const TTimestamp& odoIntervalHysteresis, const TTimestamp& speedInterval, const TTimestamp& speedIntervalHysteresis, const TValue& speedAccRatio);
+   COdometerEx();
    /**
     * Adds new reference speed data
     * @return true if speed was accepted
@@ -62,105 +67,120 @@ public:
     */
    bool AddTicks(const TTimestamp& timestamp, const TValue& ticks, bool valid );
    /**
-    * Returns timestamp of last added sensor value.
-    *         It is undefined if last AddTicks() call was unsuccessful
+    * Returns timestamp of last successfully added sensor value.
+    *         It is undefined if last AddOdo() call was unsuccessful
     * @return Sensor timestamp in seconds
     */
-   const TTimestamp& GetTimeStamp() const;
+   const TTimestamp& TimeStamp() const;
    /**
     * Returns converted odometer ticks value according to reference information.
-    *         Uses same units as reference value
     *         It is undefined if last AddTicks() call was unsuccessful
     * @return calculated speed based on odometer ticks value in [m/s]
     */
-   const TValue GetValue() const;
+   const TValue Value() const;
    /**
     * Returns accuracy of converted odometer ticks value.
-    *         Uses same units as accuracy of reference value
     *         It is undefined if last AddTicks() call was unsuccessful
     * @return calculated speed accuracy based on odometer ticks value in +/-[m/s]
     */
-   const TAccuracy GetAccuracy() const;
+   const TAccuracy Accuracy() const;
    /**
-    * Returns calibration completion status of the odometer in %
-    * @return calibration status in %
+    * Returns odometer bias value
+    * @return   bias of the odometer
+    */
+   const TValue& Base() const;
+   /**
+    * Returns odometer scale value
+    * @return   scale of the odometer sensor
+    */
+   const TValue& Scale() const;
+   /**
+    * Returns calibration completion status of the base in %
+    * @return base calibration status in %
     */
    const TValue& CalibratedTo() const;
 
-protected:
+public:
+   /**************************************************************************************
+    * ISensorAdjuster service methods
+    **************************************************************************************/
+
    /**
-    * Checks if given reference value is fit to expected conditions and accuracy
-    * @return true if reference value passed all checkings
+    * Sets new speed value and checks if value, interval and accuracy are fit to expected conditions
+    * @return   true if it passed all checkings
     *
-    * @param refTimestamp   Timestamp of reference value [s]
-    * @param refValue       Reference value in [units]
-    * @param refAccuracy    Reference accuracy in +/-[units]
+    * @param  oldSpeedTS   timestamp of the previouse speed in seconds [s]
+    * @param  newSpeedTS   timestamp of the new speed in seconds [s]
+    * @param  speed        new speed value in [m/s]
+    * @param  accuracy     accuracy of new speed value in +/-[m/s]
     */
-   virtual bool IsRefOk( const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy) const;
+   virtual bool SetRefValue(const TTimestamp& oldSpeedTS, const TTimestamp& newSpeedTS, const TValue& speed, const TAccuracy& accuracy);
    /**
-    * Checks if sensor value is fit to expected conditions and accuracy
-    * @return true if sensor passed all checkings
+    * Just simple return of last speed value.
     *
-    * @param  senTimestamp   Timestamp of sensor value [s]
-    * @param  senValue       Sensor value
-    * @param  senValid       True if sensor is valid
+    * @return speed value in [m/s] or NaN in case of any errors
     */
-   virtual bool IsSenOk(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid ) const;
+   virtual const TValue& GetRefValue() const;
    /**
-    * Checks if reference timestamp inside range between two sensors
-    * @return   true if calibration is possible
+    * Sets new odometer ticks and checks if the value, interval and validity are fit to expected conditions
+    * @return   true if it passed all checkings
     *
-    * @param senTimestamp   Timestamp of sensors value [s]
+    * @param  oldSpeedTS   timestamp of the previouse speed in seconds [s]
+    * @param  oldTicksTS   timestamp of the previouse ticks value in seconds [s]
+    * @param  newTicksTS   timestamp of the new ticks value in seconds [s]
+    * @param  ticks        odometer ticks number
+    * @param  valid        true if ticks number is valid
     */
-   virtual bool IsCalibrationPossible( const TTimestamp& senTimestamp ) const;
+   virtual bool SetSenValue(const TTimestamp& oldSpeedTS, const TTimestamp& oldTicksTS, const TTimestamp& newTicksTS, const TValue& ticks, bool valid);
+   /**
+    * Adjust odometer ticks number to lineral velocity which was provided by previouse call SetSenValue()
+    * Second call without upfront call of SetSenValue() has to return NaN
+    *
+    * @return adjusted linear velocity in [m/s] or NaN in case of any errors
+    */
+   virtual const TValue& GetSenValue() const;
 
 private:
    /**
-    * Shows if init process was done successfully
+    * Service for processing sensors data
     */
-   bool m_isInitOk;
+   CSensor m_sensor;
    /**
-    * Odometer sensors interval in seconds
+    * Last reference speed [m/s]
     */
-   TTimestamp m_odoInterval;
+   TValue m_speed;
    /**
-    * Odometer sensors time interval hysteresis in +/-[s]
+    * Last odometer sensor ticks value
     */
-   TTimestamp m_odoIntervalHysteresis;
+   TValue m_ticks;
    /**
-    * Reference speed interval in seconds
+    * Last odometer sensor validity flag
     */
-   TTimestamp m_speedInterval;
+   bool m_ticksValid;
    /**
-    * Speed reference time interval hysteresis in +/-[s]
+    * Last odometer ticks per second speed [ticks/s]
     */
-   TTimestamp m_speedIntervalHysteresis;
+   TValue m_ticksPerSecond;
    /**
-    * Accuracy ration consider the reference speed only when value is more then accuracy by this ratio. 
-    * For instance ration 5 means that value is 5 times bigger then accuracy.
+    * Last odometer linear velocity adjusted to reference timestamp [ticks/s]
     */
-   TValue m_speedAccRatio;
-   /**
-    * Checks if delta time in a range of interval +/- hysteresis
-    * IMPORTANT:   negative values have to be excluded!!!
-    * @return   true if delta time passed all checkings
-    *
-    * @param  deltaTs      delta time for checking in second
-    * @param  interval     interval of delat time in second
-    * @param  hysteresis   hysteresis of delta time for given interval in second
-    */
-   bool IsIntervalOk(const TTimestamp& deltaTs, const TValue& interval, const TValue& hysteresis) const;
-   /**
-    * Checks if value is bigger than accuracy with specified ratio coefficient
-    * IMPORTANT:   negative values have to be excluded!!!
-    * @return   true if value passed all checkings
-    *
-    * @param  value      to be checked
-    * @param  accuracy   accuracy of the value
-    * @param  ratio      ratio coefficient
-    */
-   bool IsAccuracyOk(const TValue& value, const TAccuracy& accuracy, const TValue& ratio) const;
+   TValue m_odoLinearVelocity;
 
+   
+private:
+   /**************************************************************************************
+    * Constant operation limits
+    **************************************************************************************/
+
+   const TValue m_speedInterval;
+   const TValue m_speedHysteresis;
+   const TValue m_speedMin;
+   const TValue m_speedMax;
+   const TValue m_speedAccuracyRatio;
+   const TValue m_odoInterval;
+   const TValue m_odoHysteresis;
+   const TValue m_odoMin;
+   const TValue m_odoMax;
 };
 
 } //namespace PE

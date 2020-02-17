@@ -92,7 +92,7 @@ const TValue& PE::CGyroscope::Scale() const
 }
 
 
-const TValue& PE::CGyroscope::CalibartedTo() const
+const TValue& PE::CGyroscope::CalibratedTo() const
 {
    return m_sensor.GetBias().GetReliable(); //consider only calibration status of the base of gyro
 }
