@@ -45,15 +45,15 @@ public:
  */
 TEST_F(PECGyroscopeTest, test_set_get_ref_value)
 {
-   PE::TValue HEADING_INTERVAL_100MS           = 0.100;
-   PE::TValue HEADING_INTERVAL_HYSTERESIS_10MS = 0.010;
-   PE::TValue HEADING_MIN                       = 0.0;
-   PE::TValue HEADING_MAX                       = 360.0;
-   PE::TValue HEADING_ACCURACY_RATIO_2X         = 2;
-   PE::TValue GYRO_INTERVAL_50MS                = 0.050;
-   PE::TValue GYRO_INTERVAL_HYSTERESIS_5MS      = 0.005;
-   PE::TValue GYRO_MIN                          = 0;
-   PE::TValue GYRO_MAX                          = 4096;
+   double HEADING_INTERVAL_100MS           = 0.100;
+   double HEADING_INTERVAL_HYSTERESIS_10MS = 0.010;
+   double HEADING_MIN                       = 0.0;
+   double HEADING_MAX                       = 360.0;
+   double HEADING_ACCURACY_RATIO_2X         = 2;
+   double GYRO_INTERVAL_50MS                = 0.050;
+   double GYRO_INTERVAL_HYSTERESIS_5MS      = 0.005;
+   double GYRO_MIN                          = 0;
+   double GYRO_MAX                          = 4096;
 
    PE::CGyroscope gyro( HEADING_INTERVAL_100MS,
                         HEADING_INTERVAL_HYSTERESIS_10MS,
@@ -68,12 +68,12 @@ TEST_F(PECGyroscopeTest, test_set_get_ref_value)
    //init values have to be NaN
    EXPECT_TRUE( PE::isnan(gyro.GetRefValue()) );
 
-   PE::TValue HEADING_090DEG                    = 090.0;
-   PE::TValue HEADING_100DEG                    = 100.0;
-   PE::TValue HEADING_140DEG                    = 140.0;
-   PE::TValue HEADING_180DEG                    = 180.0;
-   PE::TValue HEADING_381DEG                    = 381.0;
-   PE::TValue HEADING_ACCURACY_10DEG            =  10.0;
+   double HEADING_090DEG                    = 090.0;
+   double HEADING_100DEG                    = 100.0;
+   double HEADING_140DEG                    = 140.0;
+   double HEADING_180DEG                    = 180.0;
+   double HEADING_381DEG                    = 381.0;
+   double HEADING_ACCURACY_10DEG            =  10.0;
 
    //set first correct heading 100deg -> reference value still NaN
    EXPECT_TRUE ( gyro.SetRefValue(0.0, 0.100, HEADING_100DEG, HEADING_ACCURACY_10DEG));
@@ -125,15 +125,15 @@ TEST_F(PECGyroscopeTest, test_set_get_ref_value)
  */
 TEST_F(PECGyroscopeTest, test_set_get_sen_value)
 {
-   PE::TValue HEADING_INTERVAL_100MS           = 0.100;
-   PE::TValue HEADING_INTERVAL_HYSTERESIS_10MS = 0.010;
-   PE::TValue HEADING_MIN                       = 0.0;
-   PE::TValue HEADING_MAX                       = 360.0;
-   PE::TValue HEADING_ACCURACY_RATIO_2X         = 2;
-   PE::TValue GYRO_INTERVAL_50MS                = 0.050;
-   PE::TValue GYRO_INTERVAL_HYSTERESIS_5MS      = 0.005;
-   PE::TValue GYRO_MIN                          = 0;
-   PE::TValue GYRO_MAX                          = 4096;
+   double HEADING_INTERVAL_100MS           = 0.100;
+   double HEADING_INTERVAL_HYSTERESIS_10MS = 0.010;
+   double HEADING_MIN                       = 0.0;
+   double HEADING_MAX                       = 360.0;
+   double HEADING_ACCURACY_RATIO_2X         = 2;
+   double GYRO_INTERVAL_50MS                = 0.050;
+   double GYRO_INTERVAL_HYSTERESIS_5MS      = 0.005;
+   double GYRO_MIN                          = 0;
+   double GYRO_MAX                          = 4096;
 
    PE::CGyroscope gyro( HEADING_INTERVAL_100MS,
                         HEADING_INTERVAL_HYSTERESIS_10MS,
@@ -148,12 +148,12 @@ TEST_F(PECGyroscopeTest, test_set_get_sen_value)
    //init values have to be NaN
    EXPECT_TRUE( PE::isnan(gyro.GetSenValue()) );
 
-   PE::TTimestamp HEAD_TS_0100MS     = 0.100;
-   PE::TTimestamp HEAD_TS_0125MS     = 0.125;
-   PE::TTimestamp GYRO_TS_0100MS     = 0.100;
-   PE::TTimestamp GYRO_TS_0150MS     = 0.150;
-   PE::TValue     GYRO_1000          = 1000.0;
-   PE::TValue     GYRO_2000          = 2000.0;
+   double HEAD_TS_0100MS     = 0.100;
+   double HEAD_TS_0125MS     = 0.125;
+   double GYRO_TS_0100MS     = 0.100;
+   double GYRO_TS_0150MS     = 0.150;
+   double     GYRO_1000          = 1000.0;
+   double     GYRO_2000          = 2000.0;
    bool           GYRO_VALID         = true;
    bool           GYRO_INVALID       = false;
 
@@ -207,18 +207,18 @@ TEST_F(PECGyroscopeTest, test_set_get_sen_value)
  */
 TEST_F(PECGyroscopeTest, test_simple_circle_driving)
 {
-   PE::TValue HEADING_INTERVAL_1S               = 1.000;
-   PE::TValue HEADING_INTERVAL_HYSTERESIS_100MS = 0.100;
-   PE::TValue HEADING_MIN                       = 0.0;
-   PE::TValue HEADING_MAX                       = 360.0;
-   PE::TValue HEADING_ACCURACY_RATIO_2X         = 2;
-   PE::TValue GYRO_INTERVAL_500MS               = 0.500;
-   PE::TValue GYRO_INTERVAL_HYSTERESIS_25MS     = 0.025;
-   PE::TValue GYRO_MIN                          = 0;
-   PE::TValue GYRO_MAX                          = 4096;
+   double HEADING_INTERVAL_1S               = 1.000;
+   double HEADING_INTERVAL_HYSTERESIS_100MS = 0.100;
+   double HEADING_MIN                       = 0.0;
+   double HEADING_MAX                       = 360.0;
+   double HEADING_ACCURACY_RATIO_2X         = 2;
+   double GYRO_INTERVAL_500MS               = 0.500;
+   double GYRO_INTERVAL_HYSTERESIS_25MS     = 0.025;
+   double GYRO_MIN                          = 0;
+   double GYRO_MAX                          = 4096;
 
-   PE::TValue RAW_GYRO_BASE                     = 2048;
-   PE::TValue HEADING_DEVIATION_DEG             = 0.1;
+   double RAW_GYRO_BASE                     = 2048;
+   double HEADING_DEVIATION_DEG             = 0.1;
 
    PE::CGyroscope gyro( HEADING_INTERVAL_1S,
                         HEADING_INTERVAL_HYSTERESIS_100MS,

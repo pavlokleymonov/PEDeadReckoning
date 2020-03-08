@@ -24,7 +24,7 @@ PE::SBasicSensor::SBasicSensor()
 {};
 
 
-PE::SBasicSensor::SBasicSensor(const TValue& value, const TAccuracy& accuracy)
+PE::SBasicSensor::SBasicSensor(const double& value, const double& accuracy)
 : Value(value)
 , Accuracy(accuracy)
 {};

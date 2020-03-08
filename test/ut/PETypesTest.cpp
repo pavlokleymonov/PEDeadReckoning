@@ -37,7 +37,7 @@ public:
 //Test isnan
 TEST_F(PETypesTest, isnan_test)
 {
-   EXPECT_TRUE( PE::isnan(std::numeric_limits<PE::TValue>::quiet_NaN()) );
+   EXPECT_TRUE( PE::isnan(std::numeric_limits<double>::quiet_NaN()) );
    EXPECT_FALSE( PE::isnan(PE::EPSILON) );
    EXPECT_FALSE( PE::isnan(PE::MAX_VALUE) );
    EXPECT_FALSE( PE::isnan(-PE::MAX_VALUE) );
@@ -49,14 +49,14 @@ TEST_F(PETypesTest, isnan_test)
 TEST_F(PETypesTest, isepsilon_test)
 {
    EXPECT_TRUE ( PE::isepsilon(0.0) );
-   EXPECT_TRUE ( PE::isepsilon( PE::EPSILON - std::numeric_limits<PE::TValue>::epsilon()) );
-   EXPECT_TRUE ( PE::isepsilon(-PE::EPSILON + std::numeric_limits<PE::TValue>::epsilon()) );
+   EXPECT_TRUE ( PE::isepsilon( PE::EPSILON - std::numeric_limits<double>::epsilon()) );
+   EXPECT_TRUE ( PE::isepsilon(-PE::EPSILON + std::numeric_limits<double>::epsilon()) );
 
    EXPECT_FALSE( PE::isepsilon( PE::EPSILON) );
    EXPECT_FALSE( PE::isepsilon(-PE::EPSILON) );
    EXPECT_FALSE( PE::isepsilon( PE::MAX_VALUE) );
    EXPECT_FALSE( PE::isepsilon(-PE::MAX_VALUE) );
-   EXPECT_FALSE( PE::isepsilon(std::numeric_limits<PE::TValue>::quiet_NaN()) );
+   EXPECT_FALSE( PE::isepsilon(std::numeric_limits<double>::quiet_NaN()) );
 }
 
 

@@ -27,7 +27,7 @@ PE::CSensor::CSensor(ISensorAdjuster& adjuster)
 }
 
 
-bool PE::CSensor::AddRef(const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy)
+bool PE::CSensor::AddRef(const double& refTimestamp, const double& refValue, const double& refAccuracy)
 {
    if ( 0 == m_refTimestamp )
    {
@@ -49,7 +49,7 @@ bool PE::CSensor::AddRef(const TTimestamp& refTimestamp, const TValue& refValue,
 }
 
 
-bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid )
+bool PE::CSensor::AddSen(const double& senTimestamp, const double& senValue, bool senValid )
 {
    if ( 0 < m_refTimestamp )
    {
@@ -91,13 +91,13 @@ bool PE::CSensor::AddSen(const TTimestamp& senTimestamp, const TValue& senValue,
 }
 
 
-const TTimestamp& PE::CSensor::GetRefTimeStamp() const
+const double& PE::CSensor::GetRefTimeStamp() const
 {
    return m_refTimestamp;
 }
 
 
-const TTimestamp& PE::CSensor::GetSenTimeStamp() const
+const double& PE::CSensor::GetSenTimeStamp() const
 {
    return m_senTimestamp;
 }
@@ -123,7 +123,7 @@ void PE::CSensor::ResetUncomplitedProcessing()
 }
 
 
-void PE::CSensor::UpdateBias(const TValue& bias)
+void PE::CSensor::UpdateBias(const double& bias)
 {
    if ( false == PE::isnan(bias) )
    {
@@ -132,7 +132,7 @@ void PE::CSensor::UpdateBias(const TValue& bias)
 }
 
 
-void PE::CSensor::UpdateScale(const TValue& scale)
+void PE::CSensor::UpdateScale(const double& scale)
 {
    if ( false == PE::isnan(scale) )
    {

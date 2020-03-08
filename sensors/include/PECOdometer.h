@@ -46,7 +46,7 @@ public:
     * @param  scaleLimit      scale calibartion limit in %
     * @param  speedAccuracyRatio   consider the reference speed only when value is more then accuracy by this ratio. For instance ration 5 means that value is 5 times bigger then accuracy.
     */
-   bool Init(const TValue& odoInterval, const TValue& speedInterval, const TValue& biasLimit, const TValue& scaleLimit, const uint32_t speedAccuracyRatio);
+   bool Init(const double& odoInterval, const double& speedInterval, const double& biasLimit, const double& scaleLimit, const uint32_t speedAccuracyRatio);
    /**
     * Adds new reference speed
     *
@@ -54,7 +54,7 @@ public:
     * @param  speed   reference speed value in [m/s]
     * @param  acc     reference speed accuracy in +/-[m/s]
     */
-   void AddSpeed(const TTimestamp& ts, const TValue& speed, const TAccuracy& acc);
+   void AddSpeed(const double& ts, const double& speed, const double& acc);
    /**
     * Adds new raw value of odometer
     *
@@ -62,12 +62,12 @@ public:
     * @param  ticks     raw odometer value - measurement units does not matter
     * @param  IsValid   true if odometer sensors is valid
     */
-   void AddOdo(const TTimestamp& ts, const TValue& ticks, bool IsValid );
+   void AddOdo(const double& ts, const double& ticks, bool IsValid );
    /**
     * Returns timestamp of last added odometer value
     * @return   odometer timestamp in seconds
     */
-   const TTimestamp& GetOdoTimeStamp() const;
+   const double& GetOdoTimeStamp() const;
    /**
     * Checks if claibration of base and scale is enough for odometer speed calculation
     * @return   true if odometer speed could be calculated
@@ -77,32 +77,32 @@ public:
     * Returns odometer speed value based on last added odometer value
     * @return   odometer speed in [m/s]
     */
-   const TValue GetOdoSpeedValue() const;
+   const double GetOdoSpeedValue() const;
    /**
     * Returns odometer speed accuracy based on last added odometer value
     * @return   odometer speed accuracy in +/-[m/s]
     */
-   const TAccuracy GetOdoSpeedAccuracy() const;
+   const double GetOdoSpeedAccuracy() const;
    /**
     * Returns odometer bias value
     * @return   bias of odometer
     */
-   const TValue& GetOdoBias() const;
+   const double& GetOdoBias() const;
    /**
     * Returns calibration completion status of bias in %
     * @return   bias calibration status in %
     */
-   const TValue& BiasCalibartedTo() const;
+   const double& BiasCalibartedTo() const;
    /**
     * Returns odometer scale value
     * @return   scale of odometer
     */
-   const TValue& GetOdoScale() const;
+   const double& GetOdoScale() const;
    /**
     * Returns calibration completion status of scale in %
     * @return   scale calibration status in %
     */
-   const TValue& ScaleCalibartedTo() const;
+   const double& ScaleCalibartedTo() const;
 
 private:
    /**
@@ -112,19 +112,19 @@ private:
    /**
     * Odometer sensors interval in seconds
     */
-   TValue m_odoInterval;
+   double m_odoInterval;
    /**
     * Reference speed interval in seconds
     */
-   TValue m_speedInterval;
+   double m_speedInterval;
    /**
     * Base calibartion limit in %
     */
-   TValue m_biasLimit;
+   double m_biasLimit;
    /**
     * Scale calibartion limit in %
     */
-   TValue m_scaleLimit;
+   double m_scaleLimit;
    /**
     * Accuracy ration consider the reference speed only when value is more then accuracy by this ratio. For instance ration 5 means that value is 5 times bigger then accuracy.
     */
@@ -132,19 +132,19 @@ private:
    /**
      * Last speed timestamp
      */
-    TTimestamp m_SpeedTs;
+    double m_SpeedTs;
    /**
      * Last speed in [m/s]
      */
-    TTimestamp m_Speed;
+    double m_Speed;
    /**
     * Last valid odometer timestamp
     */
-   TTimestamp m_OdoTs;
+   double m_OdoTs;
    /**
     * Last odometer tick speed in ticks per second
     */
-   TValue m_OdoTickSpeed;
+   double m_OdoTickSpeed;
    /**
     * Odometer calibration service
     */
@@ -166,13 +166,13 @@ private:
     *
     * @param bias   new bias value
     */
-   void UpdateBias(const TValue& bias);
+   void UpdateBias(const double& bias);
    /**
     * Inject new scale into normalization stuff
     *
     * @param scale   new bias value
     */
-   void UpdateScale(const TValue& scale);
+   void UpdateScale(const double& scale);
    /**
     * Checks if given speed is fit to expected conditions and accuracy
     * @return   true if speed passed all checkings
@@ -181,7 +181,7 @@ private:
     * @param  speed     speed value in [m/s] 
     * @param  acc       speed accuracy in +/-[m/s]
     */
-   bool IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, const TAccuracy& acc) const;
+   bool IsSpeedOk( const double& deltaTs, const double& speed, const double& acc) const;
    /**
     * Checks if odemeter is fit to expected conditions and accuracy
     * @return   true if odometer passed all checkings
@@ -190,7 +190,7 @@ private:
     * @param  ticks     odometer raw value
     * @param  IsValid   true if odometer value is valid
     */
-   bool IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid ) const;
+   bool IsOdoOk(const double& deltaTs, const double& ticks, bool IsValid ) const;
    /**
     * Checks if bias and scale of odometer riched specified calibration limit
     * @return   true if odometer reached calibration level
@@ -198,7 +198,7 @@ private:
     * @param biasCalibartedTo    bias calibration status with range [0..100] in %
     * @param scaleCalibartedTo   scale calibration status with range [0..100] in %
     */
-   bool IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo) const;
+   bool IsOdoCalibrated(const double& biasCalibartedTo, const double& scaleCalibartedTo) const;
    /**
     * Checks if calibration is possible based on given timestamps and speeds
     * @return   true if calibration is possible
@@ -210,7 +210,7 @@ private:
     * @param OdoTsAfter           odometer timestamp after reference timestamp
     * @param OdoTickSpeedAfter    odometer ticks speed after reference timestamp
     */
-   bool IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter ) const;
+   bool IsCalibrationPossible( const double& speedTs, const double& speed, const double& OdoTsBefore, const double& OdoTickSpeedBefore, const double& OdoTsAfter, const double& OdoTickSpeedAfter ) const;
 };
 
 } //namespace PE

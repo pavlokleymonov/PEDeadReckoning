@@ -29,7 +29,7 @@ PE::CNormalisation::CNormalisation()
 {
 }
 
-PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount)
+PE::CNormalisation::CNormalisation(const double& accumulatedValue, const double& accumulatedMld, const double& accumulatedReliable, const double& sampleCount)
 : mMean(0.0)
 , mMld(0.0)
 , mReliable(0.0)
@@ -40,12 +40,12 @@ PE::CNormalisation::CNormalisation(const TValue& accumulatedValue, const TValue&
 {
 }
 
-void PE::CNormalisation::AddSensor(const TValue& value)
+void PE::CNormalisation::AddSensor(const double& value)
 {
    if ( 0.0 < mSampleCount && 
         0.0 <= mAccumulatedReliable )
    {
-      TValue oldMean = mAccumulatedValue / mSampleCount;
+      double oldMean = mAccumulatedValue / mSampleCount;
       mMean = (mAccumulatedValue + value) / (mSampleCount + 1.0);
 
       mAccumulatedMld += fabs( mMean - value );
@@ -57,7 +57,7 @@ void PE::CNormalisation::AddSensor(const TValue& value)
       }
       else
       {
-         TValue deltaMean = fabs( oldMean - mMean );
+         double deltaMean = fabs( oldMean - mMean );
          //If differences between new mean and previouse mean values less then mld(sigma) then value increase reliability
          if ( deltaMean < mMld )
          {
@@ -81,37 +81,37 @@ void PE::CNormalisation::AddSensor(const TValue& value)
    }
 }
 
-const TValue& PE::CNormalisation::GetMean() const
+const double& PE::CNormalisation::GetMean() const
 {
    return mMean;
 }
 
-const TValue& PE::CNormalisation::GetMld() const
+const double& PE::CNormalisation::GetMld() const
 {
    return mMld;
 }
 
-const TValue& PE::CNormalisation::GetReliable() const
+const double& PE::CNormalisation::GetReliable() const
 {
    return mReliable;
 }
 
-const TValue& PE::CNormalisation::GetAccumulatedValue() const
+const double& PE::CNormalisation::GetAccumulatedValue() const
 {
    return mAccumulatedValue;
 }
 
-const TValue& PE::CNormalisation::GetAccumulatedMld() const
+const double& PE::CNormalisation::GetAccumulatedMld() const
 {
    return mAccumulatedMld;
 }
 
-const TValue& PE::CNormalisation::GetAccumulatedReliable() const
+const double& PE::CNormalisation::GetAccumulatedReliable() const
 {
    return mAccumulatedReliable;
 }
 
-const TValue& PE::CNormalisation::GetSampleCount() const
+const double& PE::CNormalisation::GetSampleCount() const
 {
    return mSampleCount;
 }

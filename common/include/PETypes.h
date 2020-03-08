@@ -24,58 +24,33 @@
 
 namespace PE {
 
-   typedef enum {
-      SENSOR_UNKNOWN          = 0,
-      SENSOR_LATITUDE         = 1,
-      SENSOR_LONGITUDE        = 2,
-      SENSOR_HEADING          = 3,
-      SENSOR_SPEED            = 4,
-      SENSOR_ODOMETER_AXIS    = 5,
-      SENSOR_GYRO_Z           = 6,
-      SENSOR_ODOMETER_WHEEL   = 7, //Not supported
-      SENSOR_GYRO_X           = 8, //Not supported
-      SENSOR_GYRO_Y           = 9, //Not supported
-      SENSOR_ACCELEROMETER_X  = 10,//Not supported
-      SENSOR_ACCELEROMETER_Y  = 11,//Not supported
-      SENSOR_ACCELEROMETER_Z  = 12,//Not supported
-      SENSOR_STEERING_ANGLE   = 13 //Not supported
-   } TSensorTypeID;
+   static const double EPSILON = 0.0000000001;
 
-   typedef uint32_t TSensorID;
+   static const double PI = 3.1415926535897931;
 
-   typedef double TTimestamp;
+   static const double EARTH_RADIUS_M = 6371000.0;
 
-   typedef double TValue;
+   static const double ABS_MAX_LATITUDE = 90;
 
-   typedef double TAccuracy;
+   static const double ABS_MAX_LONGITUDE = 180;
 
-   static const TValue EPSILON = 0.0000000001;
+   static const double MAX_TIMESTAMP = std::numeric_limits<double>::max();
 
-   static const TValue PI = 3.1415926535897931;
+   static const double MIN_TIMESTAMP = EPSILON; // timestamp could be only positive
 
-   static const TValue EARTH_RADIUS_M = 6371000.0;
+   static const double MAX_SPEED = 299792458.0; // speed of light m/s
 
-   static const TValue ABS_MAX_LATITUDE = 90;
+   static const double MIN_SPEED = EPSILON; // speed could be only positive
 
-   static const TValue ABS_MAX_LONGITUDE = 180;
+   static const double MAX_VALUE = std::numeric_limits<double>::max();
 
-   static const TTimestamp MAX_TIMESTAMP = std::numeric_limits<TTimestamp>::max();
+   static const double MIN_VALUE = std::numeric_limits<double>::min();
 
-   static const TTimestamp MIN_TIMESTAMP = EPSILON; // timestamp could be only positive
+   static const double MAX_ACCURACY = std::numeric_limits<double>::max();
 
-   static const TValue MAX_SPEED = 299792458.0; // speed of light m/s
+   static const double MIN_ACCURACY = EPSILON;
 
-   static const TValue MIN_SPEED = EPSILON; // speed could be only positive
-
-   static const TValue MAX_VALUE = std::numeric_limits<TValue>::max();
-
-   static const TValue MIN_VALUE = std::numeric_limits<TValue>::min();
-
-   static const TAccuracy MAX_ACCURACY = std::numeric_limits<TAccuracy>::max();
-
-   static const TAccuracy MIN_ACCURACY = EPSILON;
-
-   static const TValue DEFAULT_RELIABLE_LIMIT = 99.5;
+   static const double DEFAULT_RELIABLE_LIMIT = 99.5;
 
    template <typename T>
    bool isnan(T realValue)
@@ -83,7 +58,7 @@ namespace PE {
       return ( realValue != realValue );
    }
 
-   inline bool isepsilon(TValue v)
+   inline bool isepsilon(double v)
    {
       return ( v > 0 ? v < EPSILON : v > -EPSILON );
    }

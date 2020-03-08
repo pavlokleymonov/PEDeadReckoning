@@ -31,15 +31,15 @@ namespace PE
       /**
        * Constructor
        */
-      SBasicSensor(const TValue& value, const TAccuracy& accuracy);
+      SBasicSensor(const double& value, const double& accuracy);
       /**
        * The sensor value. Unit is related to data meaning. Prefereable in system SI
        */
-      TValue Value;
+      double Value;
       /**
        * The sensor accuracy in same unit like a value
        */
-      TAccuracy Accuracy;
+      double Accuracy;
       /**
        * Is sensor valid. The value and accuracy have to be valid
        */

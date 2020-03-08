@@ -38,14 +38,14 @@ public:
     * @param  refValue          reference value in [units]
     * @param  refAccuracy       reference value accuracy in +/-[units]
     */
-   virtual bool SetRefValue(const TTimestamp& oldRefTimestamp, const TTimestamp& newRefTimestamp, const TValue& refValue, const TAccuracy& refAccuracy) = 0;
+   virtual bool SetRefValue(const double& oldRefTimestamp, const double& newRefTimestamp, const double& refValue, const double& refAccuracy) = 0;
    /**
     * Returns adjusted into the velocity reference value which was prepared by previouse call SetRefValue()
     *    For instance: heading into angular velocity[deg/s] or distance to linear velocity[m/s]
     *
     * @return adjusted value in corespondednt units or NaN in case of any errors
     */
-   virtual const TValue& GetRefValue() const = 0;
+   virtual const double& GetRefValue() const = 0;
    /**
     * Sets new sensor value and checks if value, interval and validity are fit to expected conditions
     * @return   true if it passed all checkings
@@ -56,14 +56,14 @@ public:
     * @param  senValue          sensor value in [units]
     * @param  IsValid           true if sensor is valid
     */
-   virtual bool SetSenValue(const TTimestamp& oldRefTimestamp, const TTimestamp& oldSenTimestamp, const TTimestamp& newSenTimestamp, const TValue& senValue, bool IsValid) = 0;
+   virtual bool SetSenValue(const double& oldRefTimestamp, const double& oldSenTimestamp, const double& newSenTimestamp, const double& senValue, bool IsValid) = 0;
    /**
     * Returns adjusted into the velocity sensor value which was provided by previouse call SetSenValue()
     *    For instance: odometer ticks into linear velocity[ticks/s]
     *
     * @return adjusted value in corespondednt units or NaN in case of any errors
     */
-   virtual const TValue& GetSenValue() const = 0;
+   virtual const double& GetSenValue() const = 0;
 };
 
 
@@ -88,7 +88,7 @@ public:
     * @param  refValue       Reference value in [units]
     * @param  refAccuracy    Reference accuracy in +/-[units]
     */
-   bool AddRef(const TTimestamp& refTimestamp, const TValue& refValue, const TAccuracy& refAccuracy);
+   bool AddRef(const double& refTimestamp, const double& refValue, const double& refAccuracy);
    /**
     * Adds new sensor value
     * @return true if sensor data was accepted
@@ -97,15 +97,15 @@ public:
     * @param  senValue       Sensor value - measurement units does not matter
     * @param  senValid       True if sensors data is valid
     */
-   bool AddSen(const TTimestamp& senTimestamp, const TValue& senValue, bool senValid );
+   bool AddSen(const double& senTimestamp, const double& senValue, bool senValid );
    /**
     * @return   last reference data timestamp
     */
-   const TTimestamp& GetRefTimeStamp() const;
+   const double& GetRefTimeStamp() const;
    /**
     * @return   last sensor data timestamp
     */
-   const TTimestamp& GetSenTimeStamp() const;
+   const double& GetSenTimeStamp() const;
    /**
     * @return   Sensor normalisation service for bias
     */
@@ -123,11 +123,11 @@ private:
    /**
      * Last reference data timestamp
      */
-   TTimestamp m_refTimestamp;
+   double m_refTimestamp;
    /**
     * Last valid sensor timestamp
     */
-   TTimestamp m_senTimestamp;
+   double m_senTimestamp;
    /**
     * Sensor calibration service
     */
@@ -149,13 +149,13 @@ private:
     *
     * @param bias   new bias value
     */
-   void UpdateBias(const TValue& bias);
+   void UpdateBias(const double& bias);
    /**
     * Inject new scale into normalisation stuff
     *
     * @param scale   new bias value
     */
-   void UpdateScale(const TValue& scale);
+   void UpdateScale(const double& scale);
 };
 
 } //namespace PE

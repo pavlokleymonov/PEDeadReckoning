@@ -257,8 +257,8 @@ TEST_F(PEFusionToolsTest, test_PredictHeading_by_two_positions_dirrect_moving_sm
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_invalid_inputs )
 {
-   PE::TTimestamp invalidDeltaTime (0);         //invalid time delta
-   PE::TTimestamp deltaTime ( 2 );              //duration 2 seconds
+   double invalidDeltaTime (0);         //invalid time delta
+   double deltaTime ( 2 );              //duration 2 seconds
    PE::SPosition invalidPos;                    //invalid position
    PE::SPosition pos ( 50.0, 10.0, 1.0);        //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor invalidHeading;             //invalid heading
@@ -340,7 +340,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_invalid_inputs )
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left_10_deg_per_sec_duration_18_sec )
 {
-   PE::TTimestamp  deltaTime ( 18 );               //duration 18 seconds
+   double  deltaTime ( 18 );               //duration 18 seconds
    PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
    PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
@@ -364,7 +364,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_right_10_deg_per_sec_duration_18_sec )
 {
-   PE::TTimestamp  deltaTime ( 18 );               //duration 18 seconds
+   double  deltaTime ( 18 );               //duration 18 seconds
    PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
    PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
@@ -388,7 +388,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_righ
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left_10_deg_per_sec_duration_36_sec )
 {
-   PE::TTimestamp  deltaTime ( 36 );               //duration 36 seconds
+   double  deltaTime ( 36 );               //duration 36 seconds
    PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
    PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
@@ -412,7 +412,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_left
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_right_10_deg_per_sec_duration_36_sec )
 {
-   PE::TTimestamp  deltaTime ( 36 );               //duration 36 seconds
+   double  deltaTime ( 36 );               //duration 36 seconds
    PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
    PE::SBasicSensor    speed (   5.0, 1.0);        //Speed=5.0[m/s] accuracy +/-1[m/s]
@@ -436,7 +436,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_and_Heading_head_90_turning_righ
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_straight_driving_5_m_per_sec_duration_10sec )
 {
-   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   double  deltaTime ( 10 );               //duration 10 seconds
    PE::SPosition         pos (  50.0, 10.0, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
    PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
@@ -469,7 +469,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_straight_driving_5_m_per_sec_dur
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Grinvitch_meridian )
 {
-   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   double  deltaTime ( 10 );               //duration 10 seconds
    PE::SPosition         pos (  50.0, 0.0, 1.0);  //Lat=50[deg] Lon=0[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
    PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
@@ -503,7 +503,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Grinvitch_meridian )
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Anti_meridian )
 {
-   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   double  deltaTime ( 10 );               //duration 10 seconds
    PE::SPosition         pos (  50.0, 180.0, 1.0);  //Lat=50[deg] Lon=180[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
    PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
@@ -536,7 +536,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Anti_meridian )
  */
 TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Equator )
 {
-   PE::TTimestamp  deltaTime ( 10 );               //duration 10 seconds
+   double  deltaTime ( 10 );               //duration 10 seconds
    PE::SPosition         pos ( 0.0, 10.0, 1.0);  //Lat=0[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SBasicSensor  heading000 (   0.0, 1.0);        //Heading=0[deg] accuracy +/- 1[deg]
    PE::SBasicSensor  heading090 (  90.0, 1.0);        //Heading=90[deg] accuracy +/- 1[deg]
@@ -569,8 +569,8 @@ TEST_F(PEFusionToolsTest, test_Predict_Position_crossing_Equator )
  */
 TEST_F(PEFusionToolsTest, test_PredictSpeed_invalid_input )
 {
-   PE::TTimestamp invalidDeltaTime (0);          //invalid time delta
-   PE::TTimestamp deltaTime ( 2 );               //duration 2 seconds
+   double invalidDeltaTime (0);          //invalid time delta
+   double deltaTime ( 2 );               //duration 2 seconds
    PE::SPosition invalidPos;                     //invalid position
    PE::SPosition pos     ( 50.00000000, 10.00000000, 1.0); //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    //PE::SPosition pos4sec ( 50.000060275243563, 10.000257636985225, 1.0);
@@ -627,7 +627,7 @@ TEST_F(PEFusionToolsTest, test_PredictSpeed_invalid_input )
  */
 TEST_F(PEFusionToolsTest, test_Predict_Speed_different_ang_accuracy_duration_4_sec )
 {
-   PE::TTimestamp deltaTime ( 4 );                       //duration 4 seconds
+   double deltaTime ( 4 );                       //duration 4 seconds
    PE::SPosition pos      ( 50.000000, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SPosition pos4sec ( 50.00006027, 10.00025763, 1.0); //mm precision
 
@@ -655,7 +655,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Speed_different_ang_accuracy_duration_4_s
  */
 TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_left_40_deg )
 {
-   PE::TTimestamp deltaTime ( 4 );                       //duration 18 seconds
+   double deltaTime ( 4 );                       //duration 18 seconds
    PE::SPosition  pos     ( 50.000000, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SPosition  pos4sec ( 50.00006027, 10.00025763, 1.0); //mm precision
    PE::SBasicSensor angSpeed (  10.0, 0.5);               //Left angular speed =10[deg/s] accuracy +/- 0.5[deg/s]
@@ -671,7 +671,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_left_40_deg )
  */
 TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_right_40_deg )
 {
-   PE::TTimestamp deltaTime ( 4 );                       //duration 18 seconds
+   double deltaTime ( 4 );                       //duration 18 seconds
    PE::SPosition  pos     ( 50.000000, 10.000000, 1.0);  //Lat=50[deg] Lon=10[deg] accuracy +/- 1[m]
    PE::SPosition  pos4sec ( 50.00006027, 10.00025763, 1.0); //mm precision
    PE::SBasicSensor angSpeed ( -10.0, 0.5);               //Rigth angular speed =-10[deg/s] accuracy +/- 0.5[deg/s]
@@ -687,7 +687,7 @@ TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_right_40_deg )
  */
 TEST_F(PEFusionToolsTest, test_Predict_Speed_turning_straight_driving )
 {
-   PE::TTimestamp deltaTime ( 4 );                       //duration 18 seconds
+   double deltaTime ( 4 );                       //duration 18 seconds
    PE::SPosition  pos     ( 50.000000, 10.000000, 1.0);  //Lat/Lon accuracy +/- 1[m]
    PE::SPosition  pos4sec ( 50.001002,  9.997674, 3.0);  //Lat/Lon accuracy +/- 3[m]
    PE::SBasicSensor invalidAngSpeed;            //invalid angular speed

@@ -28,14 +28,14 @@ namespace TOOLS {
  * @param degrees    degrees which are going to be converted
  * @return           conversion result in radians
  */
-TValue ToRadians(const TValue& degrees);
+double ToRadians(const double& degrees);
 /**
  * Converts radians to degrees
  *
  * @param radians    radians which are going to be converted
  * @return           conversion result in degrees
  */
-TValue ToDegrees(const TValue& radians);
+double ToDegrees(const double& radians);
 /**
  * Calculates distance between two coordinates.
  * Uses slow but precise algorithm.
@@ -47,7 +47,7 @@ TValue ToDegrees(const TValue& radians);
  * @param lastLongitude    Longitude of last position in degrees
  * @return                 distance in meters
  */
-TValue ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
+double ToDistance(const double& firstLatitude, const double& firstLongitude, const double& lastLatitude, const double& lastLongitude);
 /**
  * Calculates distance between two coordinates.
  * Uses slow but precise algorithm.
@@ -61,7 +61,7 @@ TValue ToDistance(const TValue& firstLatitude, const TValue& firstLongitude, con
  * @param lastLongitude    Longitude of last position in degrees
  * @return                 distance in meters
  */
-TValue ToDistance(const TValue& firstHeading, const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
+double ToDistance(const double& firstHeading, const double& firstLatitude, const double& firstLongitude, const double& lastLatitude, const double& lastLongitude);
 /**
  * Calculates angle between two headings.
  * It takes always the shortest way
@@ -70,7 +70,7 @@ TValue ToDistance(const TValue& firstHeading, const TValue& firstLatitude, const
  * @param secondHeading   second heading in degrees
  * @return                angle between two headings in degrees turning left("+") - positive, turning right("-") - negative
  */
-TValue ToAngle(const TValue& firstHeading, const TValue& lastHeading);
+double ToAngle(const double& firstHeading, const double& lastHeading);
 /**
  * Calculates heading between two coordinates.
  *
@@ -80,7 +80,7 @@ TValue ToAngle(const TValue& firstHeading, const TValue& lastHeading);
  * @param lastLongitude    Longitude of last position in degrees
  * @return                 heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
  */
-TValue ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, const TValue& lastLatitude, const TValue& lastLongitude);
+double ToHeading(const double& firstLatitude, const double& firstLongitude, const double& lastLatitude, const double& lastLongitude);
 /**
  * Calculates heading based on original heading and provided angle.
  *
@@ -88,7 +88,7 @@ TValue ToHeading(const TValue& firstLatitude, const TValue& firstLongitude, cons
  * @param angle     angle to the new heading in degree turning left("+") - positive, turning right("-") - negative
  * @return          new heading in degrees with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
  */
-TValue ToHeading(const TValue& heading, const TValue& angle);
+double ToHeading(const double& heading, const double& angle);
 /**
  * 2D - Transforms X/Y values to new coordinate system and update them accordingly
  *
@@ -96,7 +96,7 @@ TValue ToHeading(const TValue& heading, const TValue& angle);
  * @param yValue    Y-component of value
  * @param zRot      rotation around z-axis [deg]
  */
-void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );
+void Transform2D(double& xValue, double& yValue, const double& zRot );
 /**
  * 3D - Transforms X/Y/Z values to new coordinate system and update them accordingly
  *
@@ -107,7 +107,7 @@ void Transform2D(TValue& xValue, TValue& yValue, const TValue& zRot );
  * @param yRot      rotation around y-axis [deg]
  * @param zRot      rotation around z-axis [deg]
  */
-void Transform3D(TValue& xValue, TValue& yValue, TValue& zValue, const TValue& xRot, const TValue& yRot, const TValue& zRot );
+void Transform3D(double& xValue, double& yValue, double& zValue, const double& xRot, const double& yRot, const double& zRot );
 /**
  * Splits string by delimiter
  * 
@@ -127,10 +127,10 @@ std::vector<std::string> Split(const std::string& str, char delimiter);
 //  * @return           new calculated position
 //  */
 //TO BE REMOVED!!!
-SPosition ToPosition(const SPosition& start, const TValue& distance, const TValue& heading);
+SPosition ToPosition(const SPosition& start, const double& distance, const double& heading);
 
-std::pair<TValue, TValue> ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading);
-//std::pair<TValue, TValue> ToPosition(const TValue& latitude, const TValue& longitude, const TValue& distance, const TValue& heading, const TValue& angle);
+std::pair<double, double> ToPosition(const double& latitude, const double& longitude, const double& distance, const double& heading);
+//std::pair<double, double> ToPosition(const double& latitude, const double& longitude, const double& distance, const double& heading, const double& angle);
 
 
 } // namespace TOOLS

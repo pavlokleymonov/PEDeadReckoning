@@ -39,22 +39,22 @@ public:
    }
 
 
-   bool Call_IsSpeedOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& speed, const PE::TAccuracy& acc)
+   bool Call_IsSpeedOk( PE::COdometer& obj, const double& deltaTs, const double& speed, const double& acc)
    {
       return obj.IsSpeedOk( deltaTs, speed, acc);
    }
 
-   bool Call_IsOdoOk( PE::COdometer& obj, const PE::TTimestamp& deltaTs, const PE::TValue& ticks, bool IsValid )
+   bool Call_IsOdoOk( PE::COdometer& obj, const double& deltaTs, const double& ticks, bool IsValid )
    {
       return obj.IsOdoOk(deltaTs, ticks, IsValid );
    }
 
-   bool Call_IsOdoCalibrated( PE::COdometer& obj, const PE::TValue& biasCalibartedTo, const PE::TValue& scaleCalibartedTo)
+   bool Call_IsOdoCalibrated( PE::COdometer& obj, const double& biasCalibartedTo, const double& scaleCalibartedTo)
    {
       return obj.IsOdoCalibrated( biasCalibartedTo, scaleCalibartedTo);
    }
 
-   bool Call_IsCalibrationPossible( PE::COdometer& obj, const PE::TTimestamp& speedTs, const PE::TValue& speed, const PE::TTimestamp& OdoTsBefore, const PE::TValue& OdoTickSpeedBefore, const PE::TTimestamp& OdoTsAfter, const PE::TValue& OdoTickSpeedAfter )
+   bool Call_IsCalibrationPossible( PE::COdometer& obj, const double& speedTs, const double& speed, const double& OdoTsBefore, const double& OdoTickSpeedBefore, const double& OdoTsAfter, const double& OdoTickSpeedAfter )
    {
       return obj.IsCalibrationPossible( speedTs, speed, OdoTsBefore, OdoTickSpeedBefore, OdoTsAfter, OdoTickSpeedAfter );
    }
@@ -66,10 +66,10 @@ public:
  */
 TEST_F(PECOdometerTest, test_init_all_settings_are_correct)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_99PROCENT = 99.00;
-   PE::TValue   SCALE_LIMIT_99PROCENT = 99.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_99PROCENT = 99.00;
+   double   SCALE_LIMIT_99PROCENT = 99.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -102,10 +102,10 @@ TEST_F(PECOdometerTest, test_init_all_settings_are_correct)
  */
 TEST_F(PECOdometerTest, test_init_wrong_settings)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_99PROCENT = 99.00;
-   PE::TValue   SCALE_LIMIT_99PROCENT = 99.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_99PROCENT = 99.00;
+   double   SCALE_LIMIT_99PROCENT = 99.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -135,10 +135,10 @@ TEST_F(PECOdometerTest, test_init_wrong_settings)
  */
 TEST_F(PECOdometerTest, test_calibration_check)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -214,10 +214,10 @@ TEST_F(PECOdometerTest, test_calibration_check)
  */
 TEST_F(PECOdometerTest, test_missed_one_odometer_value)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -263,10 +263,10 @@ TEST_F(PECOdometerTest, test_missed_one_odometer_value)
  */
 TEST_F(PECOdometerTest, test_invalid_odometer_value)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -312,10 +312,10 @@ TEST_F(PECOdometerTest, test_invalid_odometer_value)
  */
 TEST_F(PECOdometerTest, test_zero_odometer_value)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -361,10 +361,10 @@ TEST_F(PECOdometerTest, test_zero_odometer_value)
  */
 TEST_F(PECOdometerTest, test_same_timesatmp_of_odometer_value)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -411,10 +411,10 @@ TEST_F(PECOdometerTest, test_same_timesatmp_of_odometer_value)
  */
 TEST_F(PECOdometerTest, test_missed_one_speed_value)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -461,10 +461,10 @@ TEST_F(PECOdometerTest, test_missed_one_speed_value)
  */
 TEST_F(PECOdometerTest, test_zero_speed_value)
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -511,10 +511,10 @@ TEST_F(PECOdometerTest, test_zero_speed_value)
  */
 TEST_F(PECOdometerTest, test_IsSpeedOk )
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -550,10 +550,10 @@ TEST_F(PECOdometerTest, test_IsSpeedOk )
  */
 TEST_F(PECOdometerTest, test_IsOdoOk )
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_26PROCENT = 26.00;
-   PE::TValue   SCALE_LIMIT_26PROCENT = 26.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_26PROCENT = 26.00;
+   double   SCALE_LIMIT_26PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -587,10 +587,10 @@ TEST_F(PECOdometerTest, test_IsOdoOk )
  */
 TEST_F(PECOdometerTest, test_IsOdoCalibrated )
 {
-   PE::TValue       ODO_INTERVAL_50MS = 0.050;
-   PE::TValue    SPEED_INTERVAL_200MS = 0.200;
-   PE::TValue    BIAS_LIMIT_22PROCENT = 22.00;
-   PE::TValue   SCALE_LIMIT_33PROCENT = 33.00;
+   double       ODO_INTERVAL_50MS = 0.050;
+   double    SPEED_INTERVAL_200MS = 0.200;
+   double    BIAS_LIMIT_22PROCENT = 22.00;
+   double   SCALE_LIMIT_33PROCENT = 33.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    PE::COdometer odo;
@@ -616,12 +616,12 @@ TEST_F(PECOdometerTest, test_IsCalibrationPossible )
 {
    PE::COdometer odo;
 
-   PE::TTimestamp SPEED_TS_1001S = 1001;
-   PE::TValue   SPEED_10_M_PER_S = 10;
-   PE::TTimestamp   ODO_TS_1000S = 1000;
-   PE::TValue      ODO_100_TICKS = 100;
-   PE::TTimestamp   ODO_TS_1002S = 1002;
-   PE::TValue      ODO_200_TICKS = 200;
+   double SPEED_TS_1001S = 1001;
+   double   SPEED_10_M_PER_S = 10;
+   double   ODO_TS_1000S = 1000;
+   double      ODO_100_TICKS = 100;
+   double   ODO_TS_1002S = 1002;
+   double      ODO_200_TICKS = 200;
 
    //all values are correct
    EXPECT_TRUE (Call_IsCalibrationPossible(odo, SPEED_TS_1001S, SPEED_10_M_PER_S, ODO_TS_1000S, ODO_100_TICKS, ODO_TS_1002S, ODO_200_TICKS));
@@ -656,10 +656,10 @@ uint32_t GetDeltaTick(uint32_t odo_raw_value)
  */
 TEST_F(PECOdometerTest, test_ODO_40ms_60sec_GNSS_100ms_32sec)
 {
-   PE::TValue       ODO_INTERVAL_40MS = 0.040;
-   PE::TValue   SPEED_INTERVAL_1000MS = 1.000;
-   PE::TValue      BIAS_LIMIT_PROCENT = 26.00;
-   PE::TValue     SCALE_LIMIT_PROCENT = 26.00;
+   double       ODO_INTERVAL_40MS = 0.040;
+   double   SPEED_INTERVAL_1000MS = 1.000;
+   double      BIAS_LIMIT_PROCENT = 26.00;
+   double     SCALE_LIMIT_PROCENT = 26.00;
    uint32_t   SPEED_ACCURACY_RATIO_x2 = 2;
 
    std::string TRACK_ODO_40MS_60SEC_GNSS_100MS_32SEC = "ODO_40ms_60sec_GNSS_100ms_32sec.txt";
@@ -685,7 +685,7 @@ TEST_F(PECOdometerTest, test_ODO_40ms_60sec_GNSS_100ms_32sec)
       {
          //printf("0-%s 1-%s 3-%s\n", group[0].c_str(), group[1].c_str(), group[3].c_str());
          ts_ms = atoi(group[0].c_str());
-         PE::TTimestamp ts = ts_ms / 1000.0;
+         double ts = ts_ms / 1000.0;
          if ( 0 == group[1].compare("ODO") )
          {
             odo_orig = atoi(group[3].c_str());

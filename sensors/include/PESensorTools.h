@@ -29,7 +29,7 @@ namespace Sensor {
  * @param leftValue     left border value in units
  * @param rightValue    right border value in units
  */
-TValue PredictValue( const TTimestamp& requestedTs, const TTimestamp& leftTs, const TTimestamp& rightTs, const TValue& leftValue, const TValue& rightValue );
+double PredictValue( const double& requestedTs, const double& leftTs, const double& rightTs, const double& leftValue, const double& rightValue );
 
 /**
  * Checks if interval between two timestamp corresponds to defined limits
@@ -39,7 +39,7 @@ TValue PredictValue( const TTimestamp& requestedTs, const TTimestamp& leftTs, co
  * @param  interval     interval limit in [s]
  * @param  hysteresis   hysteresis between interval and difference of two timestamps in [s]
  */
-bool IsIntervalOk( const TTimestamp& deltaTs, const TTimestamp& interval, const TTimestamp& hysteresis );
+bool IsIntervalOk( const double& deltaTs, const double& interval, const double& hysteresis );
 
 /**
  * Checks if value is bigger than accuracy with specified ratio coefficient
@@ -49,7 +49,7 @@ bool IsIntervalOk( const TTimestamp& deltaTs, const TTimestamp& interval, const 
  * @param  accuracy   accuracy of the value
  * @param  ratio      ratio coefficient (how much times the value has to be bigger than accuracy )
  */
-bool IsAccuracyOk( const TValue& value, const TAccuracy& accuracy, const TValue& ratio );
+bool IsAccuracyOk( const double& value, const double& accuracy, const double& ratio );
 
 /**
  * Checks if given tested timestamp is in specified range
@@ -59,7 +59,7 @@ bool IsAccuracyOk( const TValue& value, const TAccuracy& accuracy, const TValue&
  * @param beginTS    beginning of the specified range
  * @param endTS      end of the specified range
  */
-bool IsInRange( const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS );
+bool IsInRange( const double& testedTS, const double& beginTS, const double& endTS );
 
 
 } // namespace Sensor

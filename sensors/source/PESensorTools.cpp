@@ -16,18 +16,18 @@
 
 using namespace PE;
 
-TValue PE::Sensor::PredictValue( const TTimestamp& requestedTs, const TTimestamp& leftTs, const TTimestamp& rightTs, const TValue& leftValue, const TValue& rightValue )
+double PE::Sensor::PredictValue( const double& requestedTs, const double& leftTs, const double& rightTs, const double& leftValue, const double& rightValue )
 {
-//    TTimestamp deltaTs = rightTs - leftTs;
-//    TTimestamp deltaRequestedTs = requestedTs - leftTs;
-//    TValue deltaValue = rightValue - leftValue;
-//    TValue predictValue = deltaValue * deltaRequestedTs / deltaTs  + leftValue;
+//    double deltaTs = rightTs - leftTs;
+//    double deltaRequestedTs = requestedTs - leftTs;
+//    double deltaValue = rightValue - leftValue;
+//    double predictValue = deltaValue * deltaRequestedTs / deltaTs  + leftValue;
 //    return predictValue;
    return (rightValue - leftValue) * (requestedTs - leftTs) / (rightTs - leftTs) + leftValue;
 }
 
 
-bool PE::Sensor::IsIntervalOk( const TTimestamp& deltaTs, const TTimestamp& interval, const TTimestamp& hysteresis )
+bool PE::Sensor::IsIntervalOk( const double& deltaTs, const double& interval, const double& hysteresis )
 {
    if ( PE::EPSILON < deltaTs )
    {
@@ -43,7 +43,7 @@ bool PE::Sensor::IsIntervalOk( const TTimestamp& deltaTs, const TTimestamp& inte
 }
 
 
-bool PE::Sensor::IsAccuracyOk( const TValue& value, const TAccuracy& accuracy, const TValue& ratio )
+bool PE::Sensor::IsAccuracyOk( const double& value, const double& accuracy, const double& ratio )
 {
    if ( value > (accuracy * ratio) )
    {
@@ -53,7 +53,7 @@ bool PE::Sensor::IsAccuracyOk( const TValue& value, const TAccuracy& accuracy, c
 }
 
 
-bool PE::Sensor::IsInRange( const TTimestamp& testedTS, const TTimestamp& beginTS, const TTimestamp& endTS )
+bool PE::Sensor::IsInRange( const double& testedTS, const double& beginTS, const double& endTS )
 {
    if ( beginTS <= testedTS )
    {

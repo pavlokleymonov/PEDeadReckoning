@@ -43,15 +43,15 @@ public:
  */
 TEST_F(PECOdometerExTest, test_odo_all_is_valid)
 {
-   PE::TValue SPEED_INTERVAL_100MS           = 0.100;
-   PE::TValue SPEED_INTERVAL_HYSTERESIS_10MS = 0.010;
-   PE::TValue SPEED_MIN                      = 0.0;
-   PE::TValue SPEED_MAX                      = 343.0; //sound speed ~1235km/h
-   PE::TValue SPEED_ACCURACY_RATIO_2X        = 2;
-   PE::TValue ODO_INTERVAL_25MS                = 0.025;
-   PE::TValue ODO_INTERVAL_HYSTERESIS_5MS      = 0.005;
-   PE::TValue ODO_MIN                          = 0;
-   PE::TValue ODO_MAX                          = 1000000;
+   double SPEED_INTERVAL_100MS           = 0.100;
+   double SPEED_INTERVAL_HYSTERESIS_10MS = 0.010;
+   double SPEED_MIN                      = 0.0;
+   double SPEED_MAX                      = 343.0; //sound speed ~1235km/h
+   double SPEED_ACCURACY_RATIO_2X        = 2;
+   double ODO_INTERVAL_25MS                = 0.025;
+   double ODO_INTERVAL_HYSTERESIS_5MS      = 0.005;
+   double ODO_MIN                          = 0;
+   double ODO_MAX                          = 1000000;
    PE::COdometerEx odo( SPEED_INTERVAL_100MS,
                         SPEED_INTERVAL_HYSTERESIS_10MS,
                         SPEED_MIN,
@@ -124,15 +124,15 @@ TEST_F(PECOdometerExTest, test_odo_all_is_valid)
  */
 TEST_F(PECOdometerExTest, test_set_get_reference_value)
 {
-   PE::TValue SPEED_INTERVAL_100MS           = 0.100;
-   PE::TValue SPEED_INTERVAL_HYSTERESIS_10MS = 0.010;
-   PE::TValue SPEED_MIN                      = 0.0;
-   PE::TValue SPEED_MAX                      = 343.0; //sound speed ~1235km/h
-   PE::TValue SPEED_ACCURACY_RATIO_2X        = 2;
-   PE::TValue ODO_INTERVAL_50MS                = 0.050;
-   PE::TValue ODO_INTERVAL_HYSTERESIS_5MS      = 0.005;
-   PE::TValue ODO_MIN                          = 0;
-   PE::TValue ODO_MAX                          = 2048;
+   double SPEED_INTERVAL_100MS           = 0.100;
+   double SPEED_INTERVAL_HYSTERESIS_10MS = 0.010;
+   double SPEED_MIN                      = 0.0;
+   double SPEED_MAX                      = 343.0; //sound speed ~1235km/h
+   double SPEED_ACCURACY_RATIO_2X        = 2;
+   double ODO_INTERVAL_50MS                = 0.050;
+   double ODO_INTERVAL_HYSTERESIS_5MS      = 0.005;
+   double ODO_MIN                          = 0;
+   double ODO_MAX                          = 2048;
    PE::COdometerEx odo( SPEED_INTERVAL_100MS,
                         SPEED_INTERVAL_HYSTERESIS_10MS,
                         SPEED_MIN,
@@ -173,15 +173,15 @@ TEST_F(PECOdometerExTest, test_set_get_reference_value)
  */
 TEST_F(PECOdometerExTest, test_set_get_sensor_value)
 {
-   PE::TValue SPEED_INTERVAL_100MS           = 0.100;
-   PE::TValue SPEED_INTERVAL_HYSTERESIS_10MS = 0.010;
-   PE::TValue SPEED_MIN                      = 0.0;
-   PE::TValue SPEED_MAX                      = 343.0; //sound speed ~1235km/h
-   PE::TValue SPEED_ACCURACY_RATIO_2X        = 2;
-   PE::TValue ODO_INTERVAL_1000MS            = 1.000;
-   PE::TValue ODO_INTERVAL_HYSTERESIS_50MS   = 0.050;
-   PE::TValue ODO_MIN                        = 0;
-   PE::TValue ODO_MAX                        = 4000;
+   double SPEED_INTERVAL_100MS           = 0.100;
+   double SPEED_INTERVAL_HYSTERESIS_10MS = 0.010;
+   double SPEED_MIN                      = 0.0;
+   double SPEED_MAX                      = 343.0; //sound speed ~1235km/h
+   double SPEED_ACCURACY_RATIO_2X        = 2;
+   double ODO_INTERVAL_1000MS            = 1.000;
+   double ODO_INTERVAL_HYSTERESIS_50MS   = 0.050;
+   double ODO_MIN                        = 0;
+   double ODO_MAX                        = 4000;
    PE::COdometerEx odo( SPEED_INTERVAL_100MS,
                         SPEED_INTERVAL_HYSTERESIS_10MS,
                         SPEED_MIN,

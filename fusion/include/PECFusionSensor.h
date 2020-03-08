@@ -43,41 +43,41 @@ public:
     * @param angSpeed     angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
     * @param speed        linear velocity in meter/seconds
     */
-   CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SBasicSensor& speed);
+   CFusionSensor(const double& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SBasicSensor& speed);
    /**
     * Adds new position.
     *
     * @param timestamp    timestamp in seconds
     * @param position     position information
     */
-   void AddPosition(const TTimestamp& timestamp, const SPosition& position);
+   void AddPosition(const double& timestamp, const SPosition& position);
    /**
     * Adds new heading.
     *
     * @param timestamp    timestamp in seconds
     * @param heading      heading of based position in degree (0 - Nord, 90 - East, 180 - South, 270 - West)
     */
-   void AddHeading(const TTimestamp& timestamp, const SBasicSensor& heading);
+   void AddHeading(const double& timestamp, const SBasicSensor& heading);
    /**
     * Adds new linear velocity
     *
     * @param timestamp    timestamp in seconds
     * @param speed        linear velocity in meter/seconds
     */
-   void AddSpeed(const TTimestamp& timestamp, const SBasicSensor& speed);
+   void AddSpeed(const double& timestamp, const SBasicSensor& speed);
    /**
     * Adds new angularr velocity
     *
     * @param timestamp    timestamp in seconds
     * @param angSpeed     angular velocity in degree/second turning left("+") - positive, turning right("-") - negative
     */
-   void AddAngSpeed(const TTimestamp& timestamp, const SBasicSensor& angSpeed);
+   void AddAngSpeed(const double& timestamp, const SBasicSensor& angSpeed);
    /**
     * Returns timestamp of latest fusioned position.
     *
     * @return         position timestamp in seconds
     */
-   const TTimestamp& GetTimestamp() const;
+   const double& GetTimestamp() const;
    /**
     * Returns heading of latest fusioned position.
     *
@@ -102,7 +102,7 @@ public:
     * @param timestamp    timestamp of predicted speed in seconds
     * @return             predicted speed in m/s.
     */
-   const SBasicSensor GetSpeed(const TTimestamp& timestamp) const;
+   const SBasicSensor GetSpeed(const double& timestamp) const;
    /**
     * Returns latest fusioned angular velocity.
     *
@@ -115,15 +115,15 @@ public:
     * @param timestamp    timestamp of predicted speed in seconds
     * @return             predicted angSpeed in degree/second turning left("+") - positive, turning right("-") - negative.
     */
-   const SBasicSensor GetAngSpeed(const TTimestamp& timestamp) const;
+   const SBasicSensor GetAngSpeed(const double& timestamp) const;
    /**
     * Fuses all available sensors into current position
     */
    void DoFusion();
 
-   TValue GetWholeDistance() const;
+   double GetWholeDistance() const;
 
-   TValue GetWholeRotation() const;
+   double GetWholeRotation() const;
 
 private:
    /**
@@ -131,7 +131,7 @@ private:
     */
    struct SSensorItem
    {
-      SSensorItem(const TTimestamp& ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& sp, const SBasicSensor& asp)
+      SSensorItem(const double& ts, const SPosition& pos, const SBasicSensor& head, const SBasicSensor& sp, const SBasicSensor& asp)
          : timestamp(ts)
          , position (pos)
          , heading  (head)
@@ -139,7 +139,7 @@ private:
          , angSpeed (asp)
       {}
 
-      TTimestamp timestamp;
+      double timestamp;
       SPosition position;
       SBasicSensor heading;
       SBasicSensor speed;
@@ -151,7 +151,7 @@ private:
    /**
     * The timestamp of the latest position in seconds
     */
-   TTimestamp m_Timestamp;
+   double m_Timestamp;
    /**
     * The latest position
     */
@@ -169,15 +169,15 @@ private:
     */
    SBasicSensor m_Speed;
 
-   TValue m_Distance;
+   double m_Distance;
 
-   TValue m_Rotation;
+   double m_Rotation;
 
    TSensorsList m_SensorsList;
    /**
     * Fused position based on one sensor item information
     */
-   void DoOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
+   void DoOneItemFusion(const double& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed);
 };
 
 

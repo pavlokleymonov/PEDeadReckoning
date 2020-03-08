@@ -14,7 +14,6 @@
 #ifndef __PE_CNormalisation_H__
 #define __PE_CNormalisation_H__
 
-#include "PETypes.h"
 namespace PE
 {
 /**
@@ -37,57 +36,57 @@ public:
     * @param  accumulatedReliable accumulated all reliables before
     * @param  sampleCount         sampels count before
     */
-   CNormalisation(const TValue& accumulatedValue, const TValue& accumulatedMld, const TValue& accumulatedReliable, const TValue& sampleCount);
+   CNormalisation(const double& accumulatedValue, const double& accumulatedMld, const double& accumulatedReliable, const double& sampleCount);
    /**
     * Adds new raw value of the sensor to the normalization
     *
     * @param  value     Raw sensor measurement
     */
-   void AddSensor(const TValue& value);
+   void AddSensor(const double& value);
    /**
     * Returns expected value of the sensor
     *
     * @return    mean value of the sensor
     */
-   const TValue& GetMean() const;
+   const double& GetMean() const;
    /**
     * Returns mean linear deviation of the sensor signal
     *
     * @return    deviation in unit of sensor value.
     */
-   const TValue& GetMld() const;
+   const double& GetMld() const;
    /**
     * Returns sensor reliable status
     *
     * @return    reliable status. range [0..100] percent.
     */
-   const TValue& GetReliable() const;
+   const double& GetReliable() const;
    /**
     * Returns accumulated value of the sensor
     */
-   const TValue& GetAccumulatedValue() const;
+   const double& GetAccumulatedValue() const;
    /**
     * Returns accumulated mlds
     */
-   const TValue& GetAccumulatedMld() const;
+   const double& GetAccumulatedMld() const;
    /**
     * Returns accumulated reliable status
     */
-   const TValue& GetAccumulatedReliable() const;
+   const double& GetAccumulatedReliable() const;
    /**
     * Returns sensors sample count
     */
-   const TValue& GetSampleCount() const;
+   const double& GetSampleCount() const;
 
 protected:
-   TValue      mMean;
-   TValue      mMld;
-   TValue      mReliable;
+   double      mMean;
+   double      mMld;
+   double      mReliable;
 
-   TValue      mAccumulatedValue;
-   TValue      mAccumulatedMld;
-   TValue      mAccumulatedReliable;
-   TValue      mSampleCount;
+   double      mAccumulatedValue;
+   double      mAccumulatedMld;
+   double      mAccumulatedReliable;
+   double      mSampleCount;
 };
 
 

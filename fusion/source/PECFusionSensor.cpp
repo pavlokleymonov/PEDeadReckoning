@@ -22,7 +22,7 @@ using namespace PE;
 using namespace PE::FUSION;
 
 
-PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SBasicSensor& speed)
+PE::CFusionSensor::CFusionSensor(const double& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SBasicSensor& speed)
 : m_Timestamp(timestamp)
 , m_Position(position)
 , m_Heading(heading)
@@ -32,7 +32,7 @@ PE::CFusionSensor::CFusionSensor(const TTimestamp& timestamp, const SPosition& p
 }
 
 
-void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition& position)
+void PE::CFusionSensor::AddPosition(const double& timestamp, const SPosition& position)
 {
    if ( !position.IsValid() )
    {
@@ -54,7 +54,7 @@ void PE::CFusionSensor::AddPosition(const TTimestamp& timestamp, const SPosition
 }
 
 
-void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSensor& heading)
+void PE::CFusionSensor::AddHeading(const double& timestamp, const SBasicSensor& heading)
 {
    if ( !heading.IsValid() )
    {
@@ -76,7 +76,7 @@ void PE::CFusionSensor::AddHeading(const TTimestamp& timestamp, const SBasicSens
 }
 
 
-void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor& speed)
+void PE::CFusionSensor::AddSpeed(const double& timestamp, const SBasicSensor& speed)
 {
    if ( !speed.IsValid() )
    {
@@ -98,7 +98,7 @@ void PE::CFusionSensor::AddSpeed(const TTimestamp& timestamp, const SBasicSensor
 }
 
 
-void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSensor& angSpeed)
+void PE::CFusionSensor::AddAngSpeed(const double& timestamp, const SBasicSensor& angSpeed)
 {
    if ( !angSpeed.IsValid() )
    {
@@ -120,7 +120,7 @@ void PE::CFusionSensor::AddAngSpeed(const TTimestamp& timestamp, const SBasicSen
 }
 
 
-const TTimestamp& PE::CFusionSensor::GetTimestamp() const
+const double& PE::CFusionSensor::GetTimestamp() const
 {
    return m_Timestamp;
 }
@@ -144,7 +144,7 @@ const SBasicSensor& PE::CFusionSensor::GetSpeed() const
 }
 
 
-const SBasicSensor PE::CFusionSensor::GetSpeed(const TTimestamp& timestamp) const
+const SBasicSensor PE::CFusionSensor::GetSpeed(const double& timestamp) const
 {
    if ( m_Timestamp > timestamp )
    {
@@ -163,7 +163,7 @@ const SBasicSensor& PE::CFusionSensor::GetAngSpeed() const
 }
 
 
-const SBasicSensor PE::CFusionSensor::GetAngSpeed(const TTimestamp& timestamp) const
+const SBasicSensor PE::CFusionSensor::GetAngSpeed(const double& timestamp) const
 {
    if ( m_Timestamp > timestamp )
    {
@@ -189,11 +189,11 @@ void PE::CFusionSensor::DoFusion()
 }
 
 
-void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed)
+void PE::CFusionSensor::DoOneItemFusion(const double& timestamp, const SPosition& position, const SBasicSensor& heading, const SBasicSensor& speed, const SBasicSensor& angSpeed)
 {
    if( m_Timestamp < timestamp )
    {
-      TTimestamp deltaTimestamp = timestamp - m_Timestamp;
+      double deltaTimestamp = timestamp - m_Timestamp;
 
       SBasicSensor posHeading;
       SBasicSensor posAngSpeed;
@@ -201,8 +201,8 @@ void PE::CFusionSensor::DoOneItemFusion(const TTimestamp& timestamp, const SPosi
 
       if ( position.IsValid() )
       {
-         TValue distPos = TOOLS::ToDistance(m_Position.Latitude,m_Position.Longitude,position.Latitude, position.Longitude);
-         TAccuracy accPos = m_Position.HorizontalAcc + position.HorizontalAcc;
+         double distPos = TOOLS::ToDistance(m_Position.Latitude,m_Position.Longitude,position.Latitude, position.Longitude);
+         double accPos = m_Position.HorizontalAcc + position.HorizontalAcc;
          if (distPos > accPos)
          {
             posHeading  = PredictHeading(deltaTimestamp, m_Position, position, m_Heading);

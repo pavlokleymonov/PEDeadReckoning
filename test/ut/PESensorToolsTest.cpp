@@ -167,8 +167,8 @@ TEST_F(PESensorTest, test_PredictValue )
  */
 TEST_F(PESensorTest, test_IsIntervalOk )
 {
-   PE::TValue       INTERVAL_1000MS = 1.000;
-   PE::TValue       HYSTERESIS_10MS = 0.010;
+   double       INTERVAL_1000MS = 1.000;
+   double       HYSTERESIS_10MS = 0.010;
 
    //interval 1 second +/-10ms
    //all is valid
@@ -220,10 +220,10 @@ TEST_F(PESensorTest, test_IsInRange )
    //wrong range definition
    EXPECT_FALSE(PE::Sensor::IsInRange(  50, 100, 10));
    //tets NaN value
-   EXPECT_FALSE(PE::Sensor::IsInRange(  std::numeric_limits<PE::TTimestamp>::quiet_NaN(), 10, 100));
-   EXPECT_FALSE(PE::Sensor::IsInRange(  std::numeric_limits<PE::TValue>::quiet_NaN(), 10, 100));
-   EXPECT_FALSE(PE::Sensor::IsInRange(  50, std::numeric_limits<PE::TValue>::quiet_NaN(), 100));
-   EXPECT_FALSE(PE::Sensor::IsInRange(  50, 10, std::numeric_limits<PE::TValue>::quiet_NaN()));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  std::numeric_limits<double>::quiet_NaN(), 10, 100));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  std::numeric_limits<double>::quiet_NaN(), 10, 100));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  50, std::numeric_limits<double>::quiet_NaN(), 100));
+   EXPECT_FALSE(PE::Sensor::IsInRange(  50, 10, std::numeric_limits<double>::quiet_NaN()));
 }
 
 

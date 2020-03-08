@@ -25,32 +25,32 @@ PE::CCalibration::CCalibration()
 , m_Sum_Ref_now(0.0)
 , m_Sum_Raw_now(0.0)
 , m_Index_now(0)
-, m_Bias(std::numeric_limits<TValue>::quiet_NaN())
-, m_Scale(std::numeric_limits<TValue>::quiet_NaN())
+, m_Bias(std::numeric_limits<double>::quiet_NaN())
+, m_Scale(std::numeric_limits<double>::quiet_NaN())
 {
 }
 
 
-void PE::CCalibration::AddRef( const PE::TValue& ref )
+void PE::CCalibration::AddRef( const double& ref )
 {
    m_Sum_Ref_now += ref;
 }
 
 
-void PE::CCalibration::AddRaw( const PE::TValue& raw )
+void PE::CCalibration::AddRaw( const double& raw )
 {
    m_Sum_Raw_now += raw;
    ++m_Index_now;
 }
 
 
-const PE::TValue& PE::CCalibration::GetBias() const
+const double& PE::CCalibration::GetBias() const
 {
    return m_Bias;
 }
 
 
-const PE::TValue& PE::CCalibration::GetScale() const
+const double& PE::CCalibration::GetScale() const
 {
    return m_Scale;
 }
@@ -81,7 +81,7 @@ void PE::CCalibration::CleanLastStep()
 
 void PE::CCalibration::CalculateBaseScale()
 {
-   TValue divisor = ( m_Index_before * m_Sum_Ref_now - m_Index_now * m_Sum_Ref_before );
+   double divisor = ( m_Index_before * m_Sum_Ref_now - m_Index_now * m_Sum_Ref_before );
    if ( false == isepsilon( divisor ) )
    {
       m_Bias = ( m_Sum_Ref_now * m_Sum_Raw_before - m_Sum_Raw_now * m_Sum_Ref_before ) / divisor;
@@ -97,6 +97,6 @@ void PE::CCalibration::CalculateBaseScale()
          return;
       }
    }
-   m_Bias  = std::numeric_limits<TValue>::quiet_NaN();
-   m_Scale = std::numeric_limits<TValue>::quiet_NaN();
+   m_Bias  = std::numeric_limits<double>::quiet_NaN();
+   m_Scale = std::numeric_limits<double>::quiet_NaN();
 }

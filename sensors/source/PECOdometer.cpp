@@ -34,7 +34,7 @@ PE::COdometer::COdometer()
 }
 
 
-bool PE::COdometer::Init(const TValue& odoInterval, const TValue& speedInterval, const TValue& biasLimit, const TValue& scaleLimit, const uint32_t speedAccuracyRatio)
+bool PE::COdometer::Init(const double& odoInterval, const double& speedInterval, const double& biasLimit, const double& scaleLimit, const uint32_t speedAccuracyRatio)
 {
    if ( PE::EPSILON < odoInterval ) //all intervals have to be positive and bigger then zero
    {
@@ -62,7 +62,7 @@ bool PE::COdometer::Init(const TValue& odoInterval, const TValue& speedInterval,
 }
 
 
-void PE::COdometer::AddSpeed(const TTimestamp& ts, const TValue& speed, const TAccuracy& acc)
+void PE::COdometer::AddSpeed(const double& ts, const double& speed, const double& acc)
 {
    if ( false == m_isInitOk )
    {
@@ -74,7 +74,7 @@ void PE::COdometer::AddSpeed(const TTimestamp& ts, const TValue& speed, const TA
    }
    else
    {
-      TTimestamp deltatime = ts - m_SpeedTs;
+      double deltatime = ts - m_SpeedTs;
       if ( true == IsSpeedOk(deltatime, speed, acc) )
       {
          m_Speed = speed;
@@ -88,7 +88,7 @@ void PE::COdometer::AddSpeed(const TTimestamp& ts, const TValue& speed, const TA
 }
 
 
-void PE::COdometer::AddOdo(const TTimestamp& ts, const TValue& ticks, bool IsValid )
+void PE::COdometer::AddOdo(const double& ts, const double& ticks, bool IsValid )
 {
    if ( false == m_isInitOk )
    {
@@ -102,10 +102,10 @@ void PE::COdometer::AddOdo(const TTimestamp& ts, const TValue& ticks, bool IsVal
       }
       else
       {
-         TTimestamp deltatime = ts - m_OdoTs;
+         double deltatime = ts - m_OdoTs;
          if ( true == IsOdoOk(deltatime, ticks, IsValid) )
          {
-            TValue currentOdoTickSpeed = ticks / deltatime;
+            double currentOdoTickSpeed = ticks / deltatime;
             if ( true == IsCalibrationPossible(m_SpeedTs, m_Speed, m_OdoTs, m_OdoTickSpeed, ts, currentOdoTickSpeed) )
             {
                m_OdoCalib.AddRef( m_Speed );
@@ -131,7 +131,7 @@ void PE::COdometer::AddOdo(const TTimestamp& ts, const TValue& ticks, bool IsVal
 }
 
 
-const TTimestamp& PE::COdometer::GetOdoTimeStamp() const
+const double& PE::COdometer::GetOdoTimeStamp() const
 {
    return m_OdoTs;
 }
@@ -143,37 +143,37 @@ bool PE::COdometer::IsOdoSpeedCalibrated() const
 }
 
 
-const TValue PE::COdometer::GetOdoSpeedValue() const
+const double PE::COdometer::GetOdoSpeedValue() const
 {
    return m_OdoScale.GetMean() * (m_OdoTickSpeed - m_OdoBias.GetMean()); // value = scale * (odo_speed - bias)
 }
 
 
-const TAccuracy PE::COdometer::GetOdoSpeedAccuracy() const
+const double PE::COdometer::GetOdoSpeedAccuracy() const
 {
    return m_OdoBias.GetMld() * (m_OdoScale.GetMean() + m_OdoScale.GetMld()); // accuracy = bias_mld * (scale + scale_mld)
 }
 
 
-const TValue& PE::COdometer::GetOdoBias() const
+const double& PE::COdometer::GetOdoBias() const
 {
    return m_OdoBias.GetMean();
 }
 
 
-const TValue& PE::COdometer::BiasCalibartedTo() const
+const double& PE::COdometer::BiasCalibartedTo() const
 {
    return m_OdoBias.GetReliable();
 }
 
 
-const TValue& PE::COdometer::GetOdoScale() const
+const double& PE::COdometer::GetOdoScale() const
 {
    return m_OdoScale.GetMean();
 }
 
 
-const TValue& PE::COdometer::ScaleCalibartedTo() const
+const double& PE::COdometer::ScaleCalibartedTo() const
 {
    return m_OdoScale.GetReliable();
 }
@@ -189,7 +189,7 @@ void PE::COdometer::ResetUncomplitedProcessing()
 }
 
 
-void PE::COdometer::UpdateBias(const TValue& bias)
+void PE::COdometer::UpdateBias(const double& bias)
 {
    if ( false == PE::isnan(bias) )
    {
@@ -199,7 +199,7 @@ void PE::COdometer::UpdateBias(const TValue& bias)
 }
 
 
-void PE::COdometer::UpdateScale(const TValue& scale)
+void PE::COdometer::UpdateScale(const double& scale)
 {
    if ( false == PE::isnan(scale) )
    {
@@ -209,7 +209,7 @@ void PE::COdometer::UpdateScale(const TValue& scale)
 }
 
 
-bool PE::COdometer::IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, const TAccuracy& acc) const
+bool PE::COdometer::IsSpeedOk( const double& deltaTs, const double& speed, const double& acc) const
 {
    if ( PE::EPSILON < speed ) //speed has to be always more then zero
    {
@@ -222,7 +222,7 @@ bool PE::COdometer::IsSpeedOk( const TTimestamp& deltaTs, const TValue& speed, c
 }
 
 
-bool PE::COdometer::IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool IsValid ) const
+bool PE::COdometer::IsOdoOk(const double& deltaTs, const double& ticks, bool IsValid ) const
 {
    if ( true == IsValid )
    {
@@ -235,7 +235,7 @@ bool PE::COdometer::IsOdoOk(const TTimestamp& deltaTs, const TValue& ticks, bool
 }
 
 
-bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue& scaleCalibartedTo) const
+bool PE::COdometer::IsOdoCalibrated(const double& biasCalibartedTo, const double& scaleCalibartedTo) const
 {
    if ( m_biasLimit < biasCalibartedTo )
    {
@@ -248,7 +248,7 @@ bool PE::COdometer::IsOdoCalibrated(const TValue& biasCalibartedTo, const TValue
 }
 
 
-bool PE::COdometer::IsCalibrationPossible( const TTimestamp& speedTs, const TValue& speed, const TTimestamp& OdoTsBefore, const TValue& OdoTickSpeedBefore, const TTimestamp& OdoTsAfter, const TValue& OdoTickSpeedAfter ) const
+bool PE::COdometer::IsCalibrationPossible( const double& speedTs, const double& speed, const double& OdoTsBefore, const double& OdoTickSpeedBefore, const double& OdoTsAfter, const double& OdoTickSpeedAfter ) const
 {
    if ( PE::EPSILON < speed )
    {

@@ -20,21 +20,21 @@
 using namespace PE;
 
 
-PE::COdometerEx::COdometerEx( const TValue& speedInterval,
-                              const TValue& speedHysteresis,
-                              const TValue& speedMin,
-                              const TValue& speedMax,
-                              const TValue& speedAccuracyRatio,
-                              const TValue& odoInterval,
-                              const TValue& odoHysteresis,
-                              const TValue& odoMin,
-                              const TValue& odoMax)
+PE::COdometerEx::COdometerEx( const double& speedInterval,
+                              const double& speedHysteresis,
+                              const double& speedMin,
+                              const double& speedMax,
+                              const double& speedAccuracyRatio,
+                              const double& odoInterval,
+                              const double& odoHysteresis,
+                              const double& odoMin,
+                              const double& odoMax)
  : m_sensor(*this)
- , m_speed(std::numeric_limits<TValue>::quiet_NaN())
- , m_ticks(std::numeric_limits<TValue>::quiet_NaN())
+ , m_speed(std::numeric_limits<double>::quiet_NaN())
+ , m_ticks(std::numeric_limits<double>::quiet_NaN())
  , m_ticksValid(false)
- , m_ticksPerSecond(std::numeric_limits<TValue>::quiet_NaN())
- , m_odoLinearVelocity(std::numeric_limits<TValue>::quiet_NaN())
+ , m_ticksPerSecond(std::numeric_limits<double>::quiet_NaN())
+ , m_odoLinearVelocity(std::numeric_limits<double>::quiet_NaN())
  , m_speedInterval(speedInterval)
  , m_speedHysteresis(speedHysteresis)
  , m_speedMin(speedMin)
@@ -48,56 +48,56 @@ PE::COdometerEx::COdometerEx( const TValue& speedInterval,
 }
 
 
-bool PE::COdometerEx::AddSpeed(const TTimestamp& timestamp, const TValue& speed, const TAccuracy& accuracy)
+bool PE::COdometerEx::AddSpeed(const double& timestamp, const double& speed, const double& accuracy)
 {
    return m_sensor.AddRef(timestamp, speed, accuracy);
 }
 
 
-bool PE::COdometerEx::AddTicks(const TTimestamp& timestamp, const TValue& ticks, bool valid )
+bool PE::COdometerEx::AddTicks(const double& timestamp, const double& ticks, bool valid )
 {
    return m_sensor.AddSen(timestamp, ticks, valid);
 }
 
 
-const TTimestamp& PE::COdometerEx::TimeStamp() const
+const double& PE::COdometerEx::TimeStamp() const
 {
    return m_sensor.GetSenTimeStamp();
 }
 
 
-const TValue PE::COdometerEx::Value() const
+const double PE::COdometerEx::Value() const
 {
    return m_sensor.GetScale().GetMean() * ( m_ticksPerSecond - m_sensor.GetBias().GetMean()); //value = scale * (m_ticksPerSecond - bias)
 }
 
 
-const TAccuracy PE::COdometerEx::Accuracy() const
+const double PE::COdometerEx::Accuracy() const
 {
    return m_sensor.GetBias().GetMld() * ( fabs(m_sensor.GetScale().GetMean()) + m_sensor.GetScale().GetMld() ); // accuracy = bias_mld * (|scale| + scale_mld)
 }
 
-const TValue& PE::COdometerEx::Base() const
+const double& PE::COdometerEx::Base() const
 {
    return m_sensor.GetBias().GetMean();
 }
 
 
-const TValue& PE::COdometerEx::Scale() const
+const double& PE::COdometerEx::Scale() const
 {
    return m_sensor.GetScale().GetMean();
 }
 
 
-const TValue& PE::COdometerEx::CalibratedTo() const
+const double& PE::COdometerEx::CalibratedTo() const
 {
    return m_sensor.GetBias().GetReliable(); //consider only calibration status of the base of odometer
 }
 
 
-bool PE::COdometerEx::SetRefValue(const TTimestamp& oldSpeedTS, const TTimestamp& newSpeedTS, const TValue& speed, const TAccuracy& accuracy)
+bool PE::COdometerEx::SetRefValue(const double& oldSpeedTS, const double& newSpeedTS, const double& speed, const double& accuracy)
 {
-   m_speed = std::numeric_limits<TValue>::quiet_NaN();
+   m_speed = std::numeric_limits<double>::quiet_NaN();
    if ( PE::Sensor::IsInRange(speed, m_speedMin, m_speedMax) )
    {
       if ( PE::Sensor::IsIntervalOk(newSpeedTS - oldSpeedTS, m_speedInterval, m_speedHysteresis) )
@@ -114,23 +114,23 @@ bool PE::COdometerEx::SetRefValue(const TTimestamp& oldSpeedTS, const TTimestamp
 }
 
 
-const TValue& PE::COdometerEx::GetRefValue() const
+const double& PE::COdometerEx::GetRefValue() const
 {
    return m_speed;
 }
 
 
-bool PE::COdometerEx::SetSenValue(const TTimestamp& oldSpeedTS, const TTimestamp& oldTicksTS, const TTimestamp& newTicksTS, const TValue& ticks, bool valid)
+bool PE::COdometerEx::SetSenValue(const double& oldSpeedTS, const double& oldTicksTS, const double& newTicksTS, const double& ticks, bool valid)
 {
-   m_odoLinearVelocity = std::numeric_limits<TValue>::quiet_NaN();
+   m_odoLinearVelocity = std::numeric_limits<double>::quiet_NaN();
    if ( valid )
    {
       if ( PE::Sensor::IsInRange(ticks, m_odoMin, m_odoMax) )
       {
-         TTimestamp deltaTS = newTicksTS - oldTicksTS;
+         double deltaTS = newTicksTS - oldTicksTS;
          if ( PE::Sensor::IsIntervalOk(deltaTS, m_odoInterval, m_odoHysteresis) )
          {
-            TValue ticksPerSecond = 0;
+            double ticksPerSecond = 0;
             if ( m_ticksValid )
             {
                if ( ticks > m_ticks )
@@ -156,7 +156,7 @@ bool PE::COdometerEx::SetSenValue(const TTimestamp& oldSpeedTS, const TTimestamp
 }
 
 
-const TValue& PE::COdometerEx::GetSenValue() const
+const double& PE::COdometerEx::GetSenValue() const
 {
    return m_odoLinearVelocity;
 }

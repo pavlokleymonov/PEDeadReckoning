@@ -39,18 +39,18 @@ public:
 class PECSensorStub : public PE::ISensorAdjuster
 {
 private:
-   PE::TValue m_refV;
-   PE::TValue m_senV;
+   double m_refV;
+   double m_senV;
 public:
    PECSensorStub()
-      : m_refV(std::numeric_limits<PE::TValue>::quiet_NaN())
-      , m_senV(std::numeric_limits<PE::TValue>::quiet_NaN())
+      : m_refV(std::numeric_limits<double>::quiet_NaN())
+      , m_senV(std::numeric_limits<double>::quiet_NaN())
       {
       }
-   bool SetRefValue( const PE::TTimestamp& oldRefTimestamp, 
-                     const PE::TTimestamp& newRefTimestamp, 
-                     const PE::TValue& refValue, 
-                     const PE::TAccuracy& refAccuracy)
+   bool SetRefValue( const double& oldRefTimestamp, 
+                     const double& newRefTimestamp, 
+                     const double& refValue, 
+                     const double& refAccuracy)
       {
          if ( 0.0 == refAccuracy )
          {
@@ -59,18 +59,18 @@ public:
          }
          else
          {
-            m_refV = std::numeric_limits<PE::TValue>::quiet_NaN();
+            m_refV = std::numeric_limits<double>::quiet_NaN();
             return false;
          }
       }
-   const PE::TValue& GetRefValue() const
+   const double& GetRefValue() const
       {
          return m_refV;
       }
-   bool SetSenValue( const PE::TTimestamp& oldRefTimestamp, 
-                     const PE::TTimestamp& oldSenTimestamp, 
-                     const PE::TTimestamp& newSenTimestamp, 
-                     const PE::TValue& senValue, 
+   bool SetSenValue( const double& oldRefTimestamp, 
+                     const double& oldSenTimestamp, 
+                     const double& newSenTimestamp, 
+                     const double& senValue, 
                      bool IsValid)
       {
          if ( IsValid )
@@ -80,11 +80,11 @@ public:
          }
          else
          {
-            m_senV = std::numeric_limits<PE::TValue>::quiet_NaN();
+            m_senV = std::numeric_limits<double>::quiet_NaN();
             return false;
          }
       }
-   const PE::TValue& GetSenValue() const
+   const double& GetSenValue() const
       {
          return m_senV;
       }
@@ -215,8 +215,8 @@ TEST_F(PECSensorTest, test_adding_NaN_ref_and_sen_values)
    EXPECT_NEAR  ( 50.00, sensor.GetScale().GetReliable(), 0.01 );
    EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
    //CASE1: both ref and sen values reported NaN
-   sensor.AddRef(1.010, std::numeric_limits<PE::TValue>::quiet_NaN(), 0.0);
-   sensor.AddSen(1.011, std::numeric_limits<PE::TValue>::quiet_NaN(), true);
+   sensor.AddRef(1.010, std::numeric_limits<double>::quiet_NaN(), 0.0);
+   sensor.AddSen(1.011, std::numeric_limits<double>::quiet_NaN(), true);
    //no changes after ref and sen are NaN values
    EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
    EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );
@@ -224,7 +224,7 @@ TEST_F(PECSensorTest, test_adding_NaN_ref_and_sen_values)
    EXPECT_NEAR  ( 20.00, sensor.GetScale().GetMean(), 0.01 );
 
    //CASE2: ref value reported NaN
-   sensor.AddRef(1.012, std::numeric_limits<PE::TValue>::quiet_NaN(), 0.0);
+   sensor.AddRef(1.012, std::numeric_limits<double>::quiet_NaN(), 0.0);
    sensor.AddSen(1.013, 1111111111, true);
    //no changes after ref is NaN value
    EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
@@ -234,7 +234,7 @@ TEST_F(PECSensorTest, test_adding_NaN_ref_and_sen_values)
 
    //CASE3: sen value reported NaN
    sensor.AddRef(1.014, 999999999, 0.0);
-   sensor.AddSen(1.015,  std::numeric_limits<PE::TValue>::quiet_NaN(), true);
+   sensor.AddSen(1.015,  std::numeric_limits<double>::quiet_NaN(), true);
    //no changes after sen is NaN value
    EXPECT_NEAR  ( 50.00, sensor.GetBias().GetReliable(), 0.01 );
    EXPECT_NEAR  (-100.00, sensor.GetBias().GetMean(), 0.01 );

@@ -35,15 +35,15 @@ public:
    /**
     * Constructor
     */
-   CGyroscope( const TValue& headInterval,
-               const TValue& headHysteresis,
-               const TValue& headMin,
-               const TValue& headMax,
-               const TValue& headAccuracyRatio,
-               const TValue& gyroInterval,
-               const TValue& gyroHysteresis,
-               const TValue& gyroMin,
-               const TValue& gyroMax);
+   CGyroscope( const double& headInterval,
+               const double& headHysteresis,
+               const double& headMin,
+               const double& headMax,
+               const double& headAccuracyRatio,
+               const double& gyroInterval,
+               const double& gyroHysteresis,
+               const double& gyroMin,
+               const double& gyroMax);
    /**
     * Adds new reference heading
     * @return true if reference data was accepted
@@ -52,7 +52,7 @@ public:
     * @param  head   Heading in [deg] with reference to true north, 0.0 -> north, 90.0 -> east, 180.0 south, 270.0 -> west
     * @param  acc    Heading accuracy in +/-[deg]
     */
-   bool AddHeading(const TTimestamp& ts, const TValue& head, const TAccuracy& acc);
+   bool AddHeading(const double& ts, const double& head, const double& acc);
    /**
     * Adds new gyroscope sensor value
     * @return true if sensor data was accepted
@@ -61,40 +61,40 @@ public:
     * @param  gyro      Gyroscope angular velicity in [units/s]
     * @param  isValid   True if sensors data is valid
     */
-   bool AddGyro(const TTimestamp& ts, const TValue& gyro, bool isValid );
+   bool AddGyro(const double& ts, const double& gyro, bool isValid );
    /**
     * Returns timestamp of last successfully added gyroscope sensor value.
     *         It is undefined if last AddGyro() call was unsuccessful
     * @return Sensor timestamp in seconds
     */
-   const TTimestamp& TimeStamp() const;
+   const double& TimeStamp() const;
    /**
     * Returns converted gyroscope angular velocity according to reference information.
     *         It is undefined if last AddGyro() call was unsuccessful
     * @return calculated angular velocity based on gyroscope sensor data in [deg/s]
     */
-   const TValue Value() const;
+   const double Value() const;
    /**
     * Returns accuracy of converted gyroscope sensor data.
     *         It is undefined if last AddGyro() call was unsuccessful
     * @return calculated accuracy of angular velocity based on gyroscope sensor data in +/-[deg/s]
     */
-   const TAccuracy Accuracy() const;
+   const double Accuracy() const;
    /**
     * Returns gyroscope bias value
     * @return   bias of the gyroscope
     */
-   const TValue& Base() const;
+   const double& Base() const;
    /**
     * Returns gyroscope  scale value
     * @return   scale of the gyroscope sensor
     */
-   const TValue& Scale() const;
+   const double& Scale() const;
    /**
     * Returns calibration completion status of base in %
     * @return  base calibration status in %
     */
-   const TValue& CalibratedTo() const;
+   const double& CalibratedTo() const;
 
 public:
    /**************************************************************************************
@@ -110,14 +110,14 @@ public:
     * @param  head        new heading value in [deg]
     * @param  acc         accuracy of new heading value in +/-[deg]
     */
-   virtual bool SetRefValue(const TTimestamp& oldHeadTS, const TTimestamp& newHeadTS, const TValue& head, const TAccuracy& acc);
+   virtual bool SetRefValue(const double& oldHeadTS, const double& newHeadTS, const double& head, const double& acc);
    /**
     * Adjust heading to angular velocity which was provided by previouse call SetRefValue()
     * Second call without upfront call of SetRefValue() has to return NaN
     *
     * @return adjusted angular velocity in [deg/s] or NaN in case of any errors
     */
-   virtual const TValue& GetRefValue() const;
+   virtual const double& GetRefValue() const;
    /**
     * Checks if given gyroscope angular velocity value, interval and validity are fit to expected conditions
     * @return   true if it passed all checkings
@@ -128,7 +128,7 @@ public:
     * @param  gyro        gyroscope value in [unit/s]
     * @param  IsValid     true if gyro is valid
     */
-   virtual bool SetSenValue(const TTimestamp& oldHeadTS, const TTimestamp& oldGyroTS, const TTimestamp& newGyroTS, const TValue& gyro, bool IsValid);
+   virtual bool SetSenValue(const double& oldHeadTS, const double& oldGyroTS, const double& newGyroTS, const double& gyro, bool IsValid);
    /**
     * Just simple return of last gyroscope value.
     * Gyroscope value is already angular velocity in [unit/s]
@@ -136,7 +136,7 @@ public:
     *
     * @return gyroscope value in [unit/s] or NaN in case of any errors
     */
-   virtual const TValue& GetSenValue() const;
+   virtual const double& GetSenValue() const;
 
 private:
    /**
@@ -146,19 +146,19 @@ private:
    /**
     * Last reference heading value in [deg]
     */
-   TValue m_headValue;
+   double m_headValue;
    /**
     * Last reference heading accuracy in +/-[deg]
     */
-   TAccuracy m_headAccuracy;
+   double m_headAccuracy;
    /**
     * Last reference heading angular velocity [deg/s]
     */
-   TValue m_headAngularVelocity;
+   double m_headAngularVelocity;
    /**
     * Last gyroscope sensor value
     */
-   TValue m_gyroValue;
+   double m_gyroValue;
    /**
     * Last gyroscope sensor validity flag
     */
@@ -166,21 +166,21 @@ private:
    /**
     * Last gyroscope angular velocity adjusted to reference timestamp [unit/s]
     */
-   TValue m_gyroAngularVelocity;
+   double m_gyroAngularVelocity;
 private:
    /**************************************************************************************
     * Constant operation limits
     **************************************************************************************/
 
-   const TValue m_headInterval;
-   const TValue m_headHysteresis;
-   const TValue m_headMin;
-   const TValue m_headMax;
-   const TValue m_headAccuracyRatio;
-   const TValue m_gyroInterval;
-   const TValue m_gyroHysteresis;
-   const TValue m_gyroMin;
-   const TValue m_gyroMax;
+   const double m_headInterval;
+   const double m_headHysteresis;
+   const double m_headMin;
+   const double m_headMax;
+   const double m_headAccuracyRatio;
+   const double m_gyroInterval;
+   const double m_gyroHysteresis;
+   const double m_gyroMin;
+   const double m_gyroMax;
 };
 
 } //namespace PE

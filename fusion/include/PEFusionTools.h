@@ -36,7 +36,7 @@ namespace FUSION {
  * @param sensor           original sensors data
  * @return                 sensors data wich is adopted according to deltatimestamp
  */
-SBasicSensor PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor);
+SBasicSensor PredictSensorAccuracy(const double& deltaTimestamp, const SBasicSensor& sensor);
 
 /**
  * Predicts new heading based on knowed angular velocity, delta time and original heading.
@@ -46,7 +46,7 @@ SBasicSensor PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasi
  * @param angSpeed         angular velocity
  * @return                 predicted heading
  */
-SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed);
+SBasicSensor PredictHeading(const double& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed);
 
 /**
  * Predicts new heading based on knowed old and new positions.
@@ -57,7 +57,7 @@ SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SBasicSensor
  * @param previouse heading   heading
  * @return                    predicted heading
  */
-SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading);
+SBasicSensor PredictHeading(const double& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading);
 
 /**
  * Predicts new position based on knowed start heading, angular velocity, linear speed, delta time and original position.
@@ -69,7 +69,7 @@ SBasicSensor PredictHeading(const TTimestamp& deltaTimestamp, const SPosition& p
  * @param speed            linear speed
  * @return                 predicted position
  */
-SPosition PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed);
+SPosition PredictPosition(const double& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed);
 
 /**
  * Predicts new linear speed based on knowed delta time, angular velocity, old and new positions.
@@ -80,7 +80,7 @@ SPosition PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& 
  * @param angSpeed         angular velocity
  * @return                 predicted linear speed
  */
-SBasicSensor PredictSpeed(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& angSpeed);
+SBasicSensor PredictSpeed(const double& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& angSpeed);
 
 /**
  * Predicts new angular velocity based on knowed delta time, old and new headings.
@@ -90,7 +90,7 @@ SBasicSensor PredictSpeed(const TTimestamp& deltaTimestamp, const SPosition& pos
  * @param headingLast      new heading
  * @return                 predicted angular velocity
  */
-SBasicSensor PredictAngSpeed(const TTimestamp& deltaTimestamp, const SBasicSensor& headingFirst, const SBasicSensor& headingLast);
+SBasicSensor PredictAngSpeed(const double& deltaTimestamp, const SBasicSensor& headingFirst, const SBasicSensor& headingLast);
 
 /**
  * Merges two sensors with concerning of its accuracies.
@@ -129,7 +129,7 @@ SPosition MergePosition(const SPosition& pos1, const SPosition& pos2);
  * @param accuracy2          second accuracy
  * @return                   merged values
  */
-TValue KalmanFilter(const TValue& value1, const TAccuracy& accuracy1, const TValue& value2, const TAccuracy& accuracy2);
+double KalmanFilter(const double& value1, const double& accuracy1, const double& value2, const double& accuracy2);
 
 
 } // namespace FUSION

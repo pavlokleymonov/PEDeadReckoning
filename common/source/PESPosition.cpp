@@ -24,13 +24,13 @@ PE::SPosition::SPosition()
 , HorizontalAcc(MAX_ACCURACY)
 {};
 
-PE::SPosition::SPosition(const TValue& lat, const TValue& lon)
+PE::SPosition::SPosition(const double& lat, const double& lon)
 : Latitude(lat)
 , Longitude(lon)
 , HorizontalAcc(MAX_ACCURACY)
 {};
 
-PE::SPosition::SPosition(const TValue& lat, const TValue& lon, const TAccuracy& hAcc)
+PE::SPosition::SPosition(const double& lat, const double& lon, const double& hAcc)
 : Latitude(lat)
 , Longitude(lon)
 , HorizontalAcc(hAcc)

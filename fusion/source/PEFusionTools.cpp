@@ -19,7 +19,7 @@
 using namespace PE;
 
 /*
-SBasicSensor PE::FUSION::GetSensor(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
+SBasicSensor PE::FUSION::GetSensor(const double& deltaTimestamp, const SBasicSensor& sensor)
 {
    SBasicSensor resultSensor = sensor;
    if ( EPSILON < deltaTimestamp && sensor.IsValid() )
@@ -30,11 +30,11 @@ SBasicSensor PE::FUSION::GetSensor(const TTimestamp& deltaTimestamp, const SBasi
 }
 
 
-SBasicSensor PE::FUSION::GetDistanceOrAngle(const TTimestamp& deltaTimestamp, const SBasicSensor& speed)
+SBasicSensor PE::FUSION::GetDistanceOrAngle(const double& deltaTimestamp, const SBasicSensor& speed)
 {
    SBasicSensor distance;
-   TValue value = EPSILON;
-   TValue accuracy = EPSILON;
+   double value = EPSILON;
+   double accuracy = EPSILON;
    if ( EPSILON < deltaTimestamp && speed.IsValid() && EPSILON < speed.Value )
    {
       value = speed.Value * deltaTimestamp;
@@ -64,9 +64,9 @@ SBasicSensor PE::FUSION::GetHeading(const SBasicSensor& firstHeading, const SBas
 SBasicSensor PE::FUSION::GetHeading(const SBasicSensor& firstHeading, const SPosition& firstPos, const SPosition& lastPos)
 {
    SBasicSensor lastHeading;
-   TValue distance = EPSILON;
-   TValue accuracy = MAX_VALUE;
-   TValue angle    = EPSILON;
+   double distance = EPSILON;
+   double accuracy = MAX_VALUE;
+   double angle    = EPSILON;
    if ( firstPos.IsValid() && lastPos.IsValid() )
    {
       distance = TOOLS::ToDistance(firstPos.Latitude, firstPos.Longitude,lastPos.Latitude, lastPos.Longitude);
@@ -97,11 +97,11 @@ SPosition PE::FUSION::GetPosition(const SBasicSensor& heading, const SPosition& 
       //if ( EPSILON < distance.Value ) //if distance and heading will have own classes derived from SBasicSensor and returns false if out of accuracy range limits
       if ( EPSILON < distance.Value && distance.Accuracy < distance.Value && 45 > heading.Accuracy )
       {
-         std::pair<TValue, TValue> latlon = PE::TOOLS::ToPosition(pos.Latitude, pos.Longitude, distance.Value, heading.Value); //TODO added here angle into pos calculation
+         std::pair<double, double> latlon = PE::TOOLS::ToPosition(pos.Latitude, pos.Longitude, distance.Value, heading.Value); //TODO added here angle into pos calculation
          lastPos.Latitude = latlon.first;
          lastPos.Longitude = latlon.second;
-         TValue d = distance.Value + distance.Accuracy;
-         TValue q = PE::TOOLS::ToRadians(heading.Accuracy);
+         double d = distance.Value + distance.Accuracy;
+         double q = PE::TOOLS::ToRadians(heading.Accuracy);
          lastPos.HorizontalAcc = 2 * d * sin(q / 2);
          
          ///CONSIDERING angle
@@ -112,7 +112,7 @@ SPosition PE::FUSION::GetPosition(const SBasicSensor& heading, const SPosition& 
 }
 
 */
-SBasicSensor PE::FUSION::PredictSensorAccuracy(const TTimestamp& deltaTimestamp, const SBasicSensor& sensor)
+SBasicSensor PE::FUSION::PredictSensorAccuracy(const double& deltaTimestamp, const SBasicSensor& sensor)
 {
    SBasicSensor resultSensor = sensor;
    if ( 0 < deltaTimestamp && sensor.IsValid() )
@@ -123,7 +123,7 @@ SBasicSensor PE::FUSION::PredictSensorAccuracy(const TTimestamp& deltaTimestamp,
 }
 
 
-SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed)
+SBasicSensor PE::FUSION::PredictHeading(const double& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed)
 {
    SBasicSensor resultHeading = heading;
    if ( 0 < deltaTimestamp && heading.IsValid() )
@@ -139,20 +139,20 @@ SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const 
 }
 
 //TODO has to be reworked!!!!
-SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading)
+SBasicSensor PE::FUSION::PredictHeading(const double& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& heading)
 {
    SBasicSensor resultHeading = PredictSensorAccuracy(deltaTimestamp, heading);
    if ( 0 < deltaTimestamp && positionFirst.IsValid() && positionLast.IsValid() )
    {
-      TValue distance        = TOOLS::ToDistance(positionFirst.Latitude, positionFirst.Longitude, positionLast.Latitude, positionLast.Longitude);
+      double distance        = TOOLS::ToDistance(positionFirst.Latitude, positionFirst.Longitude, positionLast.Latitude, positionLast.Longitude);
       if ( 0.0 < distance )
       {
-         TValue deviation       = positionFirst.HorizontalAcc + positionLast.HorizontalAcc;
+         double deviation       = positionFirst.HorizontalAcc + positionLast.HorizontalAcc;
          resultHeading.Value    = TOOLS::ToHeading(positionFirst.Latitude, positionFirst.Longitude, positionLast.Latitude, positionLast.Longitude);
          resultHeading.Accuracy = TOOLS::ToDegrees(atan(deviation / distance)) / 2 * deltaTimestamp;
          if (heading.IsValid())
          {
-            TValue omega           = TOOLS::ToAngle(heading.Value, resultHeading.Value) * 2;
+            double omega           = TOOLS::ToAngle(heading.Value, resultHeading.Value) * 2;
             resultHeading.Value    = TOOLS::ToHeading(heading.Value,omega);
             resultHeading.Accuracy += heading.Accuracy;
          }
@@ -162,24 +162,24 @@ SBasicSensor PE::FUSION::PredictHeading(const TTimestamp& deltaTimestamp, const 
 }
 
 //TODO has to be reworked!!!!
-SPosition PE::FUSION::PredictPosition(const TTimestamp& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed)
+SPosition PE::FUSION::PredictPosition(const double& deltaTimestamp, const SBasicSensor& heading, const SBasicSensor& angSpeed, const SPosition& position, const SBasicSensor& speed)
 {
    SPosition resultPosition = position;
    if ( 0 < deltaTimestamp && position.IsValid() )
    {
-      TValue posAccuracy = position.HorizontalAcc * (1 + deltaTimestamp);
+      double posAccuracy = position.HorizontalAcc * (1 + deltaTimestamp);
       if ( speed.IsValid() )
       {
          posAccuracy = position.HorizontalAcc + speed.Value * deltaTimestamp + speed.Accuracy * deltaTimestamp;
          if ( heading.IsValid() && angSpeed.IsValid() )
          {
-            TValue fi  = heading.Accuracy + (angSpeed.Accuracy * deltaTimestamp);
+            double fi  = heading.Accuracy + (angSpeed.Accuracy * deltaTimestamp);
             if ( 90 > fi )
             {
-               TValue horda_heading = TOOLS::ToHeading(heading.Value, angSpeed.Value / 2 * deltaTimestamp);
-               TValue omega         = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
-               TValue arch          = speed.Value * deltaTimestamp;
-               TValue horda         = arch * ( 0 < omega ? sin(omega) / omega : 1 );
+               double horda_heading = TOOLS::ToHeading(heading.Value, angSpeed.Value / 2 * deltaTimestamp);
+               double omega         = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
+               double arch          = speed.Value * deltaTimestamp;
+               double horda         = arch * ( 0 < omega ? sin(omega) / omega : 1 );
                resultPosition       = TOOLS::ToPosition(position, horda, horda_heading);
                posAccuracy          = (position.HorizontalAcc + speed.Accuracy * deltaTimestamp) / cos( TOOLS::ToRadians(fi) );
             }
@@ -191,23 +191,23 @@ SPosition PE::FUSION::PredictPosition(const TTimestamp& deltaTimestamp, const SB
 }
 
 
-SBasicSensor PE::FUSION::PredictSpeed(const TTimestamp& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& angSpeed)
+SBasicSensor PE::FUSION::PredictSpeed(const double& deltaTimestamp, const SPosition& positionFirst, const SPosition& positionLast, const SBasicSensor& angSpeed)
 {
    SBasicSensor resutlSpeed;
    if ( 0 < deltaTimestamp && positionFirst.IsValid() && positionLast.IsValid() )
    {
-      TValue horda         = TOOLS::ToDistance(positionFirst.Latitude,positionFirst.Longitude,positionLast.Latitude,positionLast.Longitude);
+      double horda         = TOOLS::ToDistance(positionFirst.Latitude,positionFirst.Longitude,positionLast.Latitude,positionLast.Longitude);
       resutlSpeed.Value    = horda / deltaTimestamp ;
       resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) / cos(TOOLS::ToRadians(45));
       if (  0.0 < horda && angSpeed.IsValid() )
       {
-         TValue fi       = TOOLS::ToRadians(fabs(angSpeed.Accuracy * deltaTimestamp));
+         double fi       = TOOLS::ToRadians(fabs(angSpeed.Accuracy * deltaTimestamp));
          if ( TOOLS::ToRadians(45) > fi )
          {
-            TValue omega    = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
+            double omega    = TOOLS::ToRadians(fabs(angSpeed.Value / 2 * deltaTimestamp));
             if ( TOOLS::ToRadians(90) > omega )
             {
-               TValue arch          = horda * ( 0 < omega ? omega / sin(omega) : 1);
+               double arch          = horda * ( 0 < omega ? omega / sin(omega) : 1);
                resutlSpeed.Value    = arch / deltaTimestamp;
                resutlSpeed.Accuracy = (positionFirst.HorizontalAcc + positionLast.HorizontalAcc) / cos( fi );
             }
@@ -218,7 +218,7 @@ SBasicSensor PE::FUSION::PredictSpeed(const TTimestamp& deltaTimestamp, const SP
 }
 
 
-SBasicSensor PE::FUSION::PredictAngSpeed(const TTimestamp& deltaTimestamp, const SBasicSensor& headingFirst, const SBasicSensor& headingLast)
+SBasicSensor PE::FUSION::PredictAngSpeed(const double& deltaTimestamp, const SBasicSensor& headingFirst, const SBasicSensor& headingLast)
 {
    SBasicSensor resultAngSpeed;
    if ( 0 < deltaTimestamp && headingFirst.IsValid() && headingLast.IsValid() )
@@ -241,12 +241,12 @@ SBasicSensor PE::FUSION::MergeSensor(const SBasicSensor& sen1, const SBasicSenso
       return sen1;
    }
 
-   TValue amplify = sen1.Accuracy + sen2.Accuracy;
-   TAccuracy acc1 = sen1.Accuracy * amplify / sen2.Accuracy;
-   TAccuracy acc2 = sen2.Accuracy * amplify / sen1.Accuracy;
+   double amplify = sen1.Accuracy + sen2.Accuracy;
+   double acc1 = sen1.Accuracy * amplify / sen2.Accuracy;
+   double acc2 = sen2.Accuracy * amplify / sen1.Accuracy;
 
-   TValue val = KalmanFilter(sen1.Value, acc1, sen2.Value, acc2);
-   TAccuracy acc = KalmanFilter(sen1.Accuracy, acc1, sen2.Accuracy, acc2);
+   double val = KalmanFilter(sen1.Value, acc1, sen2.Value, acc2);
+   double acc = KalmanFilter(sen1.Accuracy, acc1, sen2.Accuracy, acc2);
    return SBasicSensor(val,acc);
 }
 
@@ -287,8 +287,8 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
    {
       return pos1;
    }
-   TValue lon1 = pos1.Longitude;
-   TValue lon2 = pos2.Longitude;
+   double lon1 = pos1.Longitude;
+   double lon2 = pos2.Longitude;
 
    if      ( 180 < (lon1 - lon2) )
    {
@@ -300,12 +300,12 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
       lon1 += 360.0;
    }
 
-   TValue amplify = pos1.HorizontalAcc + pos2.HorizontalAcc;
-   TAccuracy acc1 = pos1.HorizontalAcc * amplify / pos2.HorizontalAcc;
-   TAccuracy acc2 = pos2.HorizontalAcc * amplify / pos1.HorizontalAcc;
-   TValue lat = KalmanFilter(pos1.Latitude, acc1, pos2.Latitude, acc2);
-   TValue lon = KalmanFilter(lon1, acc1, lon2, acc2);
-   TAccuracy horizontalAcc = KalmanFilter(pos1.HorizontalAcc, acc1, pos2.HorizontalAcc, acc2);
+   double amplify = pos1.HorizontalAcc + pos2.HorizontalAcc;
+   double acc1 = pos1.HorizontalAcc * amplify / pos2.HorizontalAcc;
+   double acc2 = pos2.HorizontalAcc * amplify / pos1.HorizontalAcc;
+   double lat = KalmanFilter(pos1.Latitude, acc1, pos2.Latitude, acc2);
+   double lon = KalmanFilter(lon1, acc1, lon2, acc2);
+   double horizontalAcc = KalmanFilter(pos1.HorizontalAcc, acc1, pos2.HorizontalAcc, acc2);
 
    if ( 180.0 <= lon )
    {
@@ -316,8 +316,8 @@ SPosition PE::FUSION::MergePosition(const SPosition& pos1, const SPosition& pos2
 }
 
 
-TValue PE::FUSION::KalmanFilter(const TValue& value1, const TAccuracy& accuracy1, const TValue& value2, const TAccuracy& accuracy2)
+double PE::FUSION::KalmanFilter(const double& value1, const double& accuracy1, const double& value2, const double& accuracy2)
 {
-   TAccuracy   K = accuracy1 + accuracy2;
+   double   K = accuracy1 + accuracy2;
    return (value1 * (K - accuracy1) + value2 * (K - accuracy2)) / K;
 }

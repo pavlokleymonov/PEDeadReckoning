@@ -43,23 +43,23 @@ public:
     *
     * @param  ref      reference value
     */
-   void AddRef( const TValue& ref );
+   void AddRef( const double& ref );
    /**
     * Adds new raw value to the calibration
     *
     * @param  raw     raw value
     */
-   void AddRaw( const TValue& raw );
+   void AddRaw( const double& raw );
    /**
     * Returns bias/base of the calibration
     * @return         bias/base or NaN if there is no valid data
     */
-   const TValue& GetBias() const;
+   const double& GetBias() const;
    /**
     * Returns scale of the calibration
     * @return         scale or NaN if there is no valid data
     */
-   const TValue& GetScale() const;
+   const double& GetScale() const;
    /**
     * Calculates bias/base and scale of raw value.
     */
@@ -73,11 +73,11 @@ private:
    /**
     * Summ of all reference data before calculation - SUM(N)
     */
-   TValue m_Sum_Ref_before;
+   double m_Sum_Ref_before;
    /**
     * Summ of all raw data before calculation  - SUM(K)
     */
-   TValue m_Sum_Raw_before;
+   double m_Sum_Raw_before;
    /**
     * Index of summ of reference data before calculation - N
     */
@@ -85,11 +85,11 @@ private:
    /**
     * Summ of all reference data during calculation - SUM(N+1)
     */
-   TValue m_Sum_Ref_now;
+   double m_Sum_Ref_now;
    /**
     * Summ of all raw data during calculation  - SUM(K+1)
     */
-   TValue m_Sum_Raw_now;
+   double m_Sum_Raw_now;
    /**
     * Index of summ of reference data during calculation - N+1
     */
@@ -97,11 +97,11 @@ private:
    /**
     * Bias of the raw data
     */
-   TValue m_Bias;
+   double m_Bias;
    /**
     * Scale of the raw data
     */
-   TValue m_Scale;
+   double m_Scale;
    /**
     * Calculates bias/base and scale of raw value.
     * Did not check first iteration

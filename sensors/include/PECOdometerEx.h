@@ -35,15 +35,15 @@ public:
    /**
     * Constructor
     */
-   COdometerEx( const TValue& speedInterval,
-                const TValue& speedHysteresis,
-                const TValue& speedMin,
-                const TValue& speedMax,
-                const TValue& speedAccuracyRatio,
-                const TValue& odoInterval,
-                const TValue& odoHysteresis,
-                const TValue& odoMin,
-                const TValue& odoMax);
+   COdometerEx( const double& speedInterval,
+                const double& speedHysteresis,
+                const double& speedMin,
+                const double& speedMax,
+                const double& speedAccuracyRatio,
+                const double& odoInterval,
+                const double& odoHysteresis,
+                const double& odoMin,
+                const double& odoMax);
    /**
     * Constructor
     */
@@ -56,7 +56,7 @@ public:
     * @param  speed       Reference speed in [m/s]
     * @param  accuracy    Reference speed accuracy in +/-[m/s]
     */
-   bool AddSpeed(const TTimestamp& timestamp, const TValue& speed, const TAccuracy& accuracy);
+   bool AddSpeed(const double& timestamp, const double& speed, const double& accuracy);
    /**
     * Adds new odometer ticks value
     * @return true if odometer data was accepted
@@ -65,40 +65,40 @@ public:
     * @param  ticks       Odometer ticks number
     * @param  valid       True if sensors data is valid
     */
-   bool AddTicks(const TTimestamp& timestamp, const TValue& ticks, bool valid );
+   bool AddTicks(const double& timestamp, const double& ticks, bool valid );
    /**
     * Returns timestamp of last successfully added sensor value.
     *         It is undefined if last AddOdo() call was unsuccessful
     * @return Sensor timestamp in seconds
     */
-   const TTimestamp& TimeStamp() const;
+   const double& TimeStamp() const;
    /**
     * Returns converted odometer ticks value according to reference information.
     *         It is undefined if last AddTicks() call was unsuccessful
     * @return calculated speed based on odometer ticks value in [m/s]
     */
-   const TValue Value() const;
+   const double Value() const;
    /**
     * Returns accuracy of converted odometer ticks value.
     *         It is undefined if last AddTicks() call was unsuccessful
     * @return calculated speed accuracy based on odometer ticks value in +/-[m/s]
     */
-   const TAccuracy Accuracy() const;
+   const double Accuracy() const;
    /**
     * Returns odometer bias value
     * @return   bias of the odometer
     */
-   const TValue& Base() const;
+   const double& Base() const;
    /**
     * Returns odometer scale value
     * @return   scale of the odometer sensor
     */
-   const TValue& Scale() const;
+   const double& Scale() const;
    /**
     * Returns calibration completion status of the base in %
     * @return base calibration status in %
     */
-   const TValue& CalibratedTo() const;
+   const double& CalibratedTo() const;
 
 public:
    /**************************************************************************************
@@ -114,13 +114,13 @@ public:
     * @param  speed        new speed value in [m/s]
     * @param  accuracy     accuracy of new speed value in +/-[m/s]
     */
-   virtual bool SetRefValue(const TTimestamp& oldSpeedTS, const TTimestamp& newSpeedTS, const TValue& speed, const TAccuracy& accuracy);
+   virtual bool SetRefValue(const double& oldSpeedTS, const double& newSpeedTS, const double& speed, const double& accuracy);
    /**
     * Just simple return of last speed value.
     *
     * @return speed value in [m/s] or NaN in case of any errors
     */
-   virtual const TValue& GetRefValue() const;
+   virtual const double& GetRefValue() const;
    /**
     * Sets new odometer ticks and checks if the value, interval and validity are fit to expected conditions
     * @return   true if it passed all checkings
@@ -131,14 +131,14 @@ public:
     * @param  ticks        odometer ticks number
     * @param  valid        true if ticks number is valid
     */
-   virtual bool SetSenValue(const TTimestamp& oldSpeedTS, const TTimestamp& oldTicksTS, const TTimestamp& newTicksTS, const TValue& ticks, bool valid);
+   virtual bool SetSenValue(const double& oldSpeedTS, const double& oldTicksTS, const double& newTicksTS, const double& ticks, bool valid);
    /**
     * Adjust odometer ticks number to lineral velocity which was provided by previouse call SetSenValue()
     * Second call without upfront call of SetSenValue() has to return NaN
     *
     * @return adjusted linear velocity in [m/s] or NaN in case of any errors
     */
-   virtual const TValue& GetSenValue() const;
+   virtual const double& GetSenValue() const;
 
 private:
    /**
@@ -148,11 +148,11 @@ private:
    /**
     * Last reference speed [m/s]
     */
-   TValue m_speed;
+   double m_speed;
    /**
     * Last odometer sensor ticks value
     */
-   TValue m_ticks;
+   double m_ticks;
    /**
     * Last odometer sensor validity flag
     */
@@ -160,11 +160,11 @@ private:
    /**
     * Last odometer ticks per second speed [ticks/s]
     */
-   TValue m_ticksPerSecond;
+   double m_ticksPerSecond;
    /**
     * Last odometer linear velocity adjusted to reference timestamp [ticks/s]
     */
-   TValue m_odoLinearVelocity;
+   double m_odoLinearVelocity;
 
    
 private:
@@ -172,15 +172,15 @@ private:
     * Constant operation limits
     **************************************************************************************/
 
-   const TValue m_speedInterval;
-   const TValue m_speedHysteresis;
-   const TValue m_speedMin;
-   const TValue m_speedMax;
-   const TValue m_speedAccuracyRatio;
-   const TValue m_odoInterval;
-   const TValue m_odoHysteresis;
-   const TValue m_odoMin;
-   const TValue m_odoMax;
+   const double m_speedInterval;
+   const double m_speedHysteresis;
+   const double m_speedMin;
+   const double m_speedMax;
+   const double m_speedAccuracyRatio;
+   const double m_odoInterval;
+   const double m_odoHysteresis;
+   const double m_odoMin;
+   const double m_odoMax;
 };
 
 } //namespace PE
